@@ -5,7 +5,7 @@ import asyncio
 
 import socketio
 from sim_app.webhandler_chat import ChatWebHandler
-from web_architecture.sessionhandler_base import SessionHandler_Base
+from web_architecture.sessionhandler import SessionHandler_Base
 
 class SimulationSessionState(enum.Enum):
     NOT_STARTED = 0

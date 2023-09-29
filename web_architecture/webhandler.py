@@ -7,7 +7,7 @@ from pydantic import BaseModel, create_model
 import socketio
 
 if TYPE_CHECKING:
-    from web_architecture.sessionhandler_base import SessionHandler_Base
+    from web_architecture.sessionhandler import SessionHandler_Base
 
 
 class MyDataType(BaseModel):

@@ -1,9 +1,9 @@
 from __future__ import annotations
-from web_architecture.webhandler_base import WebHandler_Base
+from web_architecture.webhandler import WebHandler_Base
 from typing import TYPE_CHECKING, Any, Dict
 
 if TYPE_CHECKING:
-    from web_architecture.sessionhandler_base import SessionHandler_Base
+    from web_architecture.sessionhandler import SessionHandler_Base
 
 
 class ChatWebHandler(WebHandler_Base):

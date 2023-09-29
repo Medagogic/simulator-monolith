@@ -4,7 +4,7 @@ from fastapi import APIRouter, FastAPI
 from pydantic import BaseModel, Field
 import socketio
 import human_id
-from web_architecture.sessionhandler_base import SessionHandler_Base
+from web_architecture.sessionhandler import SessionHandler_Base
 
 
 class SessionData(BaseModel):
@@ -14,10 +14,10 @@ class SessionData(BaseModel):
 
 
 class SessionManager():
-    def __init__(self, sio: socketio.AsyncServer, app: FastAPI, session_type: Type[SessionHandler_Base]):
+    def __init__(self, sio: socketio.AsyncServer, app: FastAPI, session_handler_class: Type[SessionHandler_Base]):
         self.sio = sio
         self.app = app
-        self.SessionType = session_type
+        self.SessionHandlerClass = session_handler_class
         self.sessionIdByUser: Dict[str, str] = {}
         self.sessionDataBySessionId: Dict[str, SessionData] = {}
         self.sessionsBySessionId: Dict[str, SessionHandler_Base] = {}
@@ -42,7 +42,7 @@ class SessionManager():
         if not session_id:
             session_id = human_id.generate_id()
         session_data = SessionData(session_id=session_id, sids_in_session=[])
-        session = self.SessionType(session_id, self.sio)
+        session = self.SessionHandlerClass(session_id, self.sio)
 
         if sid:
             self.sessionIdByUser[sid] = session_id
