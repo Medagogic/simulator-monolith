@@ -1,13 +1,13 @@
 from __future__ import annotations
 from web_architecture.webhandler_base import WebHandler_Base
-from typing import TYPE_CHECKING
+from typing import TYPE_CHECKING, Any, Dict
 
 if TYPE_CHECKING:
-    from web_architecture.sessionhandler_base import SimulationSessionHandler
+    from web_architecture.sessionhandler_base import SessionHandler_Base
 
 
 class ChatWebHandler(WebHandler_Base):
-    def __init__(self, sesh_handler: SimulationSessionHandler):
+    def __init__(self, sesh_handler: SessionHandler_Base):
         WebHandler_Base.__init__(self, namespace="chat", sesh_handler=sesh_handler)
 
         self.router.get("/test-get")(self.handle_test)
@@ -17,6 +17,14 @@ class ChatWebHandler(WebHandler_Base):
         return {"content": f"Hello world in {self.session_id}"}
 
 
-    async def on_message(self, sid, msg):
-        print(f"on_message {msg} in {self.namespace}")
-        await self.emit("response", {"content": f"{msg} @ {self.namespace}"})  # or send to everyone
+    async def on_message(self, sid, data: Dict[str, Any]):
+        print(f"on_message {data} in {self.namespace}")
+        await self.emit("response", {"content": f"{data} @ {self.namespace}"})  # or send to everyone
+
+
+if __name__ == "__main__":
+    def main():
+        doc = ChatWebHandler.generate_doc()
+        print(doc)
+
+    main()

@@ -1,0 +1,28 @@
+{
+    "/<session_id>/chat": {
+        "input_events": {
+            "connect": null,
+            "some_message": {
+                "properties": {
+                    "something": {
+                        "title": "Something",
+                        "type": "string"
+                    },
+                    "some_number": {
+                        "title": "Some Number",
+                        "type": "integer"
+                    }
+                },
+                "required": [
+                    "something",
+                    "some_number"
+                ],
+                "title": "MyDataType",
+                "type": "object"
+            },
+            "message": {
+                "type": "object"
+            }
+        }
+    }
+}

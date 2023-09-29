@@ -21,6 +21,22 @@
                 }
             }
         },
+        "/save_docs": {
+            "post": {
+                "summary": "Save Api Json",
+                "operationId": "save_api_json_save_docs_post",
+                "responses": {
+                    "200": {
+                        "description": "Successful Response",
+                        "content": {
+                            "application/json": {
+                                "schema": {}
+                            }
+                        }
+                    }
+                }
+            }
+        },
         "/session/new": {
             "post": {
                 "summary": "Handle Create Session",

@@ -33,7 +33,11 @@ class SimulationSessionHandler(SessionHandler_Base):
         loop.create_task(self.main_loop())
 
 
+    def stop(self):
+        self.data.state = SimulationSessionState.FINISHED
+
+
     async def main_loop(self):
-        while self.data.state == SimulationSessionState.RUNNING:
+        while self.data.state != SimulationSessionState.FINISHED:
             await asyncio.sleep(1)
-            print("Running")
+        print("Finished")
