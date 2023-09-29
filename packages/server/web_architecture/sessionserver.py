@@ -44,11 +44,11 @@ class SessionServer:
         temp_session_id = "<session_id>"
         self.session_manager.create_session(session_id=temp_session_id)
 
-        with open("web_architecture/openapi.json", "w") as file:
+        with open("packages/server/openapi.json", "w") as file:
             json.dump(self.app.openapi(), file, indent=4)
 
         sio_docs = {}
-        with open("web_architecture/socketio.json", "w") as file:
+        with open("packages/server/socketio.json", "w") as file:
             for namespace, sio_handler in self.sio.namespace_handlers.items():
                 if isinstance(sio_handler, WebHandler_Base):
                     doc = type(sio_handler).generate_doc()
