@@ -3,7 +3,7 @@ from web_architecture.webhandler_base import WebHandler_Base
 from typing import TYPE_CHECKING
 
 if TYPE_CHECKING:
-    from simulation_session import SimulationSessionHandler
+    from web_architecture.sessionhandler_base import SimulationSessionHandler
 
 
 class ChatWebHandler(WebHandler_Base):

@@ -5,11 +5,11 @@ from fastapi import APIRouter
 import socketio
 
 if TYPE_CHECKING:
-    from simulation_session import SimulationSessionHandler
+    from web_architecture.sessionhandler_base import SessionHandler_Base
 
 
 class WebHandler_Base(socketio.AsyncNamespace):
-    def __init__(self, namespace: str, sesh_handler: SimulationSessionHandler):
+    def __init__(self, namespace: str, sesh_handler: SessionHandler_Base):
         self.api_namespace = namespace
         self.sesh_handler = sesh_handler
 

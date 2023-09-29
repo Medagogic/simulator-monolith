@@ -1,10 +1,10 @@
 from datetime import datetime
-from typing import Dict, Optional
+from typing import Dict, Optional, Type
 from fastapi import APIRouter, FastAPI
 from pydantic import BaseModel, Field
 import socketio
 import human_id
-from simulation_session import SimulationSessionHandler
+from web_architecture.sessionhandler_base import SessionHandler_Base
 
 
 class SessionData(BaseModel):
@@ -14,12 +14,13 @@ class SessionData(BaseModel):
 
 
 class SessionManager():
-    def __init__(self, sio: socketio.AsyncServer, app: FastAPI):
+    def __init__(self, sio: socketio.AsyncServer, app: FastAPI, session_type: Type[SessionHandler_Base]):
         self.sio = sio
         self.app = app
+        self.SessionType = session_type
         self.sessionIdByUser: Dict[str, str] = {}
         self.sessionDataBySessionId: Dict[str, SessionData] = {}
-        self.sessionsBySessionId: Dict[str, SimulationSessionHandler] = {}
+        self.sessionsBySessionId: Dict[str, SessionHandler_Base] = {}
 
         self.router = APIRouter(prefix="/session")
         self.router.add_api_route("/new", self.handle_create_session, methods=["POST"])
@@ -37,10 +38,11 @@ class SessionManager():
         return [d for d in self.sessionDataBySessionId.values()]
     
 
-    def create_session(self, sid: Optional[str]=None) -> str:
-        session_id = human_id.generate_id()
+    def create_session(self, sid: Optional[str]=None, session_id: str=None) -> str:
+        if not session_id:
+            session_id = human_id.generate_id()
         session_data = SessionData(session_id=session_id, sids_in_session=[])
-        session = SimulationSessionHandler(session_id, self.sio)
+        session = self.SessionType(session_id, self.sio)
 
         if sid:
             self.sessionIdByUser[sid] = session_id
@@ -49,21 +51,28 @@ class SessionManager():
         self.sessionDataBySessionId[session_id] = session_data
         self.sessionsBySessionId[session_id] = session
 
-        # self.app.add_api_route(f"/session/{session_id}/chat", self.handle_test, methods=["GET"])
-        self.app.include_router(session.router, prefix=f"/session/{session_id}")
+        self.app.include_router(session.router, prefix=f"")
         self.app.openapi_schema = None
         self.app.setup()
-
-        for k, v in self.sio.namespace_handlers.items():
-            print(k)
-            print(v)
 
         return session_id
     
 
-    async def handle_test(self):
-        return {"content": "Hello world"}
-    
+    def destroy_session(self, session_id: str) -> None:
+        if not session_id in self.sessionDataBySessionId:
+            return
+        
+        session = self.sessionsBySessionId[session_id]
+        for route in session.router.routes:
+            self.app.routes.remove(route)
+
+        self.app.openapi_schema = None
+        self.app.openapi()
+        self.app.setup()
+
+        del self.sessionDataBySessionId[session_id]
+        del self.sessionsBySessionId[session_id]
+
 
     def remove_user_from_session(self, sid: str, delete_session_if_empty=True) -> None:
         if sid not in self.sessionIdByUser:

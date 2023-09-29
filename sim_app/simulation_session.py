@@ -4,8 +4,8 @@ from pydantic import BaseModel
 import asyncio
 
 import socketio
-from webhandler_chat import ChatWebHandler
-
+from sim_app.webhandler_chat import ChatWebHandler
+from web_architecture.sessionhandler_base import SessionHandler_Base
 
 class SimulationSessionState(enum.Enum):
     NOT_STARTED = 0
@@ -19,19 +19,19 @@ class SimulationSessionData(BaseModel):
     exercise_name: str
 
 
-class SimulationSessionHandler:
+class SimulationSessionHandler(SessionHandler_Base):
     def __init__(self, session_id: str, sio: socketio.AsyncServer):
+        super().__init__(session_id, sio)
         self.data = SimulationSessionData(exercise_name="Exercise 1")
-        self.session_id = session_id
-        self.sio = sio
-
-        self.router = APIRouter(prefix="")
         self.chat_handler = ChatWebHandler(self)
+
+        self.start()
 
 
     def start(self):
         loop = asyncio.get_event_loop()
         loop.create_task(self.main_loop())
+
 
     async def main_loop(self):
         while self.data.state == SimulationSessionState.RUNNING:
