@@ -5,22 +5,6 @@
         "version": "0.1.0"
     },
     "paths": {
-        "/": {
-            "get": {
-                "summary": "Index",
-                "operationId": "index__get",
-                "responses": {
-                    "200": {
-                        "description": "Successful Response",
-                        "content": {
-                            "application/json": {
-                                "schema": {}
-                            }
-                        }
-                    }
-                }
-            }
-        },
         "/save_docs": {
             "post": {
                 "summary": "Save Api Json",
@@ -69,22 +53,6 @@
                                     "type": "array",
                                     "title": "Response Handle List Sessions Session List Get"
                                 }
-                            }
-                        }
-                    }
-                }
-            }
-        },
-        "/sessions/look-green-natural-end/chat/test-get": {
-            "get": {
-                "summary": "Handle Test",
-                "operationId": "handle_test_sessions_look_green_natural_end_chat_test_get_get",
-                "responses": {
-                    "200": {
-                        "description": "Successful Response",
-                        "content": {
-                            "application/json": {
-                                "schema": {}
                             }
                         }
                     }

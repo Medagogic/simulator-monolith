@@ -14,10 +14,7 @@ from fastapi.middleware.cors import CORSMiddleware
 
 class SessionServer:
     def __init__(self, session_handler_class: Type[SessionHandler_Base]):
-
-
         main_routes = [
-            APIRoute("/", endpoint=self.index, methods=["GET"]),
             APIRoute("/save_docs", endpoint=self.save_api_json, methods=["POST"])
         ]
 
@@ -45,12 +42,6 @@ class SessionServer:
             print(f"SIO client connection at / - {sid}")
             await self.sio.emit("response", {"content": "Hello world"}, room=sid)
 
-        self.session_manager.create_session()
-
-
-    async def index(self):
-        return HTMLResponse(open("socketio_test_page.html").read())
-    
 
     async def save_api_json(self):
         print("Saving API JSON")
