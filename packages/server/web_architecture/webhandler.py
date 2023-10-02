@@ -91,12 +91,8 @@ class WebHandler_Base(socketio.AsyncNamespace, metaclass=SocketEventMeta):
         return self.sesh_handler.session_id
 
     
-    async def on_connect(self, sid, environ):
-        print(f"Client connected to WebHandler_Base with ID {sid}")
-
-
-    async def on_some_message(self, sid, data: MyDataType):
-        pass
+    # async def on_connect(self, sid, environ):
+    #     print(f"Client connected to WebHandler_Base with ID {sid}")
 
 
     @classmethod

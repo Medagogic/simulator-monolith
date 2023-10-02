@@ -75,10 +75,10 @@
                 }
             }
         },
-        "/sessions/watch-various-reason-work/chat/test-get": {
+        "/sessions/look-green-natural-end/chat/test-get": {
             "get": {
                 "summary": "Handle Test",
-                "operationId": "handle_test_sessions_watch_various_reason_work_chat_test_get_get",
+                "operationId": "handle_test_sessions_look_green_natural_end_chat_test_get_get",
                 "responses": {
                     "200": {
                         "description": "Successful Response",

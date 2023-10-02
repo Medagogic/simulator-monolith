@@ -9,11 +9,12 @@ import json
 from web_architecture.sessionhandler import SessionHandler_Base
 from web_architecture.webhandler import WebHandler_Base
 import asyncio
+from fastapi.middleware.cors import CORSMiddleware
+
 
 class SessionServer:
     def __init__(self, session_handler_class: Type[SessionHandler_Base]):
-        self.sio = socketio.AsyncServer(async_mode="asgi", cors_allowed_origins='*')
-        self.socket_app = socketio.ASGIApp(self.sio, socketio_path="/")
+
 
         main_routes = [
             APIRoute("/", endpoint=self.index, methods=["GET"]),
@@ -21,6 +22,16 @@ class SessionServer:
         ]
 
         self.app = FastAPI(routes=main_routes)
+        self.app.add_middleware(
+            CORSMiddleware,
+            allow_origins=["*"],
+            allow_credentials=True,
+            allow_methods=["*"],
+            allow_headers=["*"]
+        )
+
+        self.sio = socketio.AsyncServer(async_mode="asgi", cors_allowed_origins="*")
+        self.socket_app = socketio.ASGIApp(self.sio, socketio_path="/")
 
         self.session_manager = SessionManager(sio=self.sio, app=self.app, session_handler_class=session_handler_class)
         self.app.mount("/socket.io", self.socket_app)  # Here we mount socket app to main fastapi app
@@ -34,6 +45,8 @@ class SessionServer:
             print(f"SIO client connection at / - {sid}")
             await self.sio.emit("response", {"content": "Hello world"}, room=sid)
 
+        self.session_manager.create_session()
+
 
     async def index(self):
         return HTMLResponse(open("socketio_test_page.html").read())
@@ -44,11 +57,11 @@ class SessionServer:
         temp_session_id = "<session_id>"
         self.session_manager.create_session(session_id=temp_session_id)
 
-        with open("packages/server/openapi.json", "w") as file:
+        with open("openapi.json", "w") as file:
             json.dump(self.app.openapi(), file, indent=4)
 
         sio_docs = {}
-        with open("packages/server/socketio.json", "w") as file:
+        with open("socketio.json", "w") as file:
             for namespace, sio_handler in self.sio.namespace_handlers.items():
                 if isinstance(sio_handler, WebHandler_Base):
                     doc = type(sio_handler).generate_doc()

@@ -13,6 +13,7 @@ class SessionData(BaseModel):
     creation_datetime: datetime = Field(default_factory=datetime.utcnow)
 
 
+
 class SessionManager():
     def __init__(self, sio: socketio.AsyncServer, app: FastAPI, session_handler_class: Type[SessionHandler_Base]):
         self.sio = sio
@@ -34,7 +35,7 @@ class SessionManager():
         return session_id
 
 
-    async def handle_list_sessions(self):
+    async def handle_list_sessions(self) -> list[SessionData]:
         return [d for d in self.sessionDataBySessionId.values()]
     
 

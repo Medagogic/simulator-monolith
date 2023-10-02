@@ -15,6 +15,11 @@ class ChatWebHandler(WebHandler_Base):
 
     async def handle_test(self):
         return {"content": f"Hello world in {self.session_id}"}
+    
+
+    async def on_connect(self, sid, environ):
+        print(f"on_connect {sid} in {self.namespace}")
+        await self.emit("response", {"content": f"Hello to {sid}!"})
 
 
     async def on_message(self, sid, data: Dict[str, Any]):

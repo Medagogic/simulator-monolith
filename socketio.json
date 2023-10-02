@@ -1,0 +1,18 @@
+{
+    "/look-green-natural-end/chat": {
+        "input_events": {
+            "connect": null,
+            "message": {
+                "type": "object"
+            }
+        }
+    },
+    "/<session_id>/chat": {
+        "input_events": {
+            "connect": null,
+            "message": {
+                "type": "object"
+            }
+        }
+    }
+}
