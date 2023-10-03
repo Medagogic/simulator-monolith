@@ -2,6 +2,8 @@
 import React, { useState, useEffect, FC, FormEvent } from 'react';
 import { Configuration, DefaultApi } from '@/src/api';
 import { io, Socket } from "socket.io-client";
+import Link from 'next/link';
+
 
 interface SessionData {
   session_id: string;
@@ -76,6 +78,7 @@ const Chat: FC = () => {
   return (
     <main style={{"height": "100vh"}}>
       <div>
+        <Link href="/chatter">Go to chatter</Link>
         <h2>Sessions</h2>
         <ul>
           {sessions.map(session => (

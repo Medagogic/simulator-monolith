@@ -10,13 +10,25 @@
     "generate-api": "openapi-generator-cli generate -i ../server/openapi.json -g typescript-axios -o src/api"
   },
   "dependencies": {
+    "@rangy/highlighter": "^2.1.0",
+    "@tailwindcss/typography": "^0.5.10",
+    "@types/rangy": "^0.0.36",
+    "mark.js": "^8.11.1",
+    "marked": "^9.0.3",
     "next": "latest",
+    "rangy": "^1.3.1",
+    "rangy-highlighter": "^2.1.0",
     "react": "latest",
+    "react-chat-elements": "^12.0.10",
     "react-dom": "latest",
+    "react-highlight-words": "^0.20.0",
+    "react-markdown": "^9.0.0",
+    "react-quill": "^2.0.0",
     "socket.io-client": "^4.7.2"
   },
   "devDependencies": {
     "@openapitools/openapi-generator-cli": "^2.7.0",
+    "@types/marked": "^5.0.2",
     "@types/node": "latest",
     "@types/react": "latest",
     "@types/react-dom": "latest",
@@ -25,6 +37,6 @@
     "eslint-config-next": "latest",
     "postcss": "latest",
     "tailwindcss": "latest",
-    "typescript": "latest"
+    "typescript": "^5.2.2"
   }
 }
