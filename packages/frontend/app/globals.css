@@ -78,3 +78,9 @@ span.poop.highlight {
   background: var(--selection_color);
   padding: none;
 }
+
+.markdown-outer {
+  background-color: antiquewhite;
+  padding: 10px;
+  width: 100%;
+}

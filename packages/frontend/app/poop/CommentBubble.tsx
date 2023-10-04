@@ -7,15 +7,18 @@ import 'rangy/lib/rangy-highlighter';
 import 'rangy/lib/rangy-classapplier';
 
 export type CommentBubbleProps = {
+  key: string;
   position: { top: number; left: number };
   onComment: (comment: string) => void;
   rangyRange: RangyRange | null;
   onCancel: () => void;
+  commentText?: string;
+  selectedText: string
 };
 
-const CommentBubble: React.FC<CommentBubbleProps> = ({ position, onComment, rangyRange, onCancel }) => {
+const CommentBubble: React.FC<CommentBubbleProps> = ({ position, onComment, rangyRange, onCancel, commentText: initialCommentText="" }) => {
   const textAreaRef = useRef<HTMLTextAreaElement>(null);
-  const [commentText, setCommentText] = useState<string>("");
+  const [commentText, setCommentText] = useState<string>(initialCommentText);
   const [isHovered, setIsHovered] = useState<boolean>(false);
 
   const highlighter = rangy.createHighlighter(document);
@@ -44,7 +47,7 @@ const CommentBubble: React.FC<CommentBubbleProps> = ({ position, onComment, rang
     if (highlights.length > 0) {
       const newHighlight = highlights[0];
       setHighlight(newHighlight);
-      console.log(newHighlight);
+      
       newHighlight.getHighlightElements().forEach((element: HTMLElement) => {
         element.onmouseenter = (e: MouseEvent) => {
           setIsHovered(true);
@@ -78,7 +81,6 @@ const CommentBubble: React.FC<CommentBubbleProps> = ({ position, onComment, rang
     onCancel();
   }
 
-
   const handleMouseOver = () => {
     setHighlighted(true);
     setIsHovered(true);
@@ -96,12 +98,19 @@ const CommentBubble: React.FC<CommentBubbleProps> = ({ position, onComment, rang
   };
 
   const handleKeyDown = (e: React.KeyboardEvent<HTMLTextAreaElement>) => {
-    if (e.key === 'Enter') {
-      // submit the comment
+    if (e.key === 'Enter' && !e.shiftKey) {
+      e.preventDefault();
+      textAreaRef.current!.blur();
+      handleMouseOut();
     } else if (e.key === 'Escape') {
       onCancel(); // cancel the comment
     }
   };
+
+  const handleCommentChange = (e: React.ChangeEvent<HTMLTextAreaElement>) => {
+    setCommentText(e.target.value);
+    onComment(e.target.value);
+  }
 
   return (
     <div
@@ -116,7 +125,8 @@ const CommentBubble: React.FC<CommentBubbleProps> = ({ position, onComment, rang
     >
       <textarea
         placeholder="Enter your comment"
-        onChange={e => setCommentText(e.target.value)}
+        value={commentText}
+        onChange={handleCommentChange}
         ref={textAreaRef}
         onKeyDown={handleKeyDown}
       />

@@ -25,7 +25,7 @@ console.log("This is a code block in JavaScript.");
 `;
 
   return (
-    <div style={{ padding: '20px' }} className='prose'>
+    <div style={{ padding: '20px' }}>
       <MarkdownDisplay content={sampleMarkdown} />
     </div>
   );
