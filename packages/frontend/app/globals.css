@@ -7,6 +7,7 @@
   --foreground-rgb: 0, 0, 0;
   --background-start-rgb: 214, 219, 220;
   --background-end-rgb: 255, 255, 255;
+  --selection_color:rgba(80, 191, 255, 0.455);
 }
 
 @media (prefers-color-scheme: dark) {
@@ -27,10 +28,53 @@ body {
     rgb(var(--background-start-rgb));
 }
 
-span.highlight {
+span.poop {
+  background-color: var(--selection_color);
+  display: inline-block;
+}
+
+span.poop.highlight {
   background-color: yellow;
 }
 
-span.poop {
-  background-color: brown;
+.comment-bubble {
+  position: absolute;
+  z-index: 10;
+  background: white;
+  border: 1px solid #ccc;
+  border-radius: 5px;
+  padding: 10px;
+  height: auto;
+}
+
+.comment-bubble textarea:focus {
+  border: none;
+  outline: none;
+}
+
+.comment-bubble.hovered {
+  box-shadow: 0 0 5px #000000;
+  z-index: 100;
+}
+
+/* .comment-bubble::before {
+  content: '';
+  position: absolute;
+  top: 50%;
+  left: 0%;
+  height: 100%;
+  width: 500px; 
+  background: radial-gradient(ellipse 80% 80% at top right, var(--selection_color), transparent);
+  transform: translateY(-50%) translateX(-100%);
+  z-index: -100;
+  pointer-events: none;
+} */
+
+.markdown-container {
+  cursor: pointer;
+}
+
+.markdown-container ::selection {
+  background: var(--selection_color);
+  padding: none;
 }

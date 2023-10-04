@@ -10,6 +10,7 @@
     "generate-api": "openapi-generator-cli generate -i ../server/openapi.json -g typescript-axios -o src/api"
   },
   "dependencies": {
+    "@rangy/classapplier": "^2.1.0",
     "@rangy/highlighter": "^2.1.0",
     "@tailwindcss/typography": "^0.5.10",
     "@types/rangy": "^0.0.36",

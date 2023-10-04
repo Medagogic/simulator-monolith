@@ -22,6 +22,7 @@ const MarkdownDisplay: React.FC<{ content: string }> = ({ content }) => {
     };
   }, []);
 
+
   const handleMouseUp = (e: MouseEvent) => {
     const selection = rangy.getSelection();
 
@@ -35,17 +36,22 @@ const MarkdownDisplay: React.FC<{ content: string }> = ({ content }) => {
         const markdownRect = markdownRef.current!.getBoundingClientRect();
 
         const position = {
-          top: rangeRect.top + (rangeRect.height / 2) - markdownRect.top,
+          top: (rangeRect.top - markdownRect.top) + 10,
           left: markdownRect.right
         };
 
-        addComment({
+        const props = {
           position: position,
           rangyRange: rangyRange,
           onComment: (comment: string) => {
             console.log(comment);  // Handle the comment as you see fit
+          },
+          onCancel: () => {
+            console.log("cancel")
+            setComments(comments.filter(comment => comment !== props));
           }
-        });
+        };
+        addComment(props)
       }
     }
   };
@@ -60,13 +66,14 @@ const MarkdownDisplay: React.FC<{ content: string }> = ({ content }) => {
 
   return (
     <div ref={markdownRef}>
-      <div dangerouslySetInnerHTML={markup} />
+      <div dangerouslySetInnerHTML={markup} className='markdown-container'/>
       {comments.map((props, index) => (
         <CommentBubble
           key={index}
           position={props.position}
           onComment={props.onComment}
           rangyRange={props.rangyRange}
+          onCancel={props.onCancel}
         />
       ))}
     </div>
