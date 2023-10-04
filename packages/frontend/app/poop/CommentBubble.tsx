@@ -20,9 +20,12 @@ const CommentBubble: React.FC<CommentBubbleProps> = ({ position, onComment, rang
   const textAreaRef = useRef<HTMLTextAreaElement>(null);
   const [commentText, setCommentText] = useState<string>(initialCommentText);
   const [isHovered, setIsHovered] = useState<boolean>(false);
-
+  
+  // @ts-ignore
   const highlighter = rangy.createHighlighter(document);
+  // @ts-ignore
   highlighter.addClassApplier(rangy.createClassApplier("highlight"));
+  // @ts-ignore
   highlighter.addClassApplier(rangy.createClassApplier("poop"));
 
   const [highlight, setHighlight] = useState<any>(null);
