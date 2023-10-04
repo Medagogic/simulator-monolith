@@ -24,6 +24,7 @@
     "react-chat-elements": "^12.0.10",
     "react-dom": "latest",
     "react-highlight-words": "^0.20.0",
+    "react-loader-spinner": "^5.4.5",
     "react-markdown": "^9.0.0",
     "react-quill": "^2.0.0",
     "socket.io-client": "^4.7.2",

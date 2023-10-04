@@ -3,17 +3,71 @@
 import React, { useEffect, useState } from 'react';
 import InitialParametersForm, { generateDefaultData, InitialParametersFormState } from './InitialParametersForm';
 import { motion, AnimatePresence } from 'framer-motion';
+import InitialGenerationLoader from './InitialGenerationLoader';
+import ExerciseReview, {GeneratedExerciseData} from './ExerciseReview';
 
 
 enum FormStage {
     Initial,
     Generating,
-    NextForm
+    EvaluateGeneratedExercise
 }
 
 const FormContainer: React.FC = () => {
     const [basicExerciseData, setBasicExerciseData] = useState<InitialParametersFormState>(generateDefaultData("3 years"));
     const [formStage, setFormStage] = useState<FormStage>(FormStage.Initial);
+    const [generatedExercise, setGeneratedExercise] = useState<GeneratedExerciseData | null>(null);
+
+    useEffect(() => {
+        setFormStage(FormStage.EvaluateGeneratedExercise);
+        setGeneratedExercise({
+            patientName: "Greta",
+            backgroundInformation: "Fever and cough for the last 4 days. Last 24 hours tired, not showing interest in anything, decreased intake of food and liquids, no urinary output since yesterday. Has been using her inhalers regularly the last few days without improvement.",
+            patientAge: "4 years",
+            patientWeight: "15 kg",
+            patientHeight: "100 cm",
+            patientSex: "female",
+            simulationInstructions: `
+- No change in patient state if bronchodialators are administered.
+- The patient's mother is present and can answer basic questions about the patient's history - is extremely worried, panicked, stressed - \"hasn't been herself today\". 
+- When first given fluids, rapid change: pulse 150 bpm, BP 80/50, cap refill 4 seconds. 
+- Second fluids: pulse to 140bpm.
+- No immediate change if antibiotics are administered.`,
+            initialVitalSigns: {
+                temperature: "38.4°C",
+                heartRate: "170 bpm",
+                respiratoryRate: "50 breaths/min",
+                bloodPressure: "70/50 mmHg",
+                bloodGlucose: "240 mg/dL",
+                oxygenSaturation: "85%",
+                capillaryRefill: "3 seconds"
+            },
+            initialABCDE: {
+                A: "Snoring/gurgling sounds. No free airway.",
+                B: "Intercostal and jugular retractions. Decreased air entry with bilateral ronchi and slight wheezing, symmetrical.",
+                C: "Greypale skin. Cold and slightly mottled extremities. No signs of organ enlargement.",
+                D: "P on AVPU scale (responds to pain stimuli). Pupils are normal.",
+                E: "No rash, no bruising or sores."
+            },
+            futureEvents: "Tonic-clonic seizure if blood glucose isn't resolved by @ 8 minutes. If seizure is resolved, patient enters persistent hypotension.",
+            futureVitalSigns: {
+                temperature: "39.5°C @ 10 minutes",
+                heartRate: "220 bpm @ 5 minutes",
+                respiratoryRate: "55 breaths/min @ 7 minutes",
+                bloodPressure: "60/30 mmHg @ 3 minutes",
+                bloodGlucose: "No change",
+                oxygenSaturation: "63% @ 5 minutes",
+                capillaryRefill: "6 seconds @ 3 minutes"
+            },
+            futureABCDE: {
+                A: "No change",
+                B: "No change",
+                C: "No change",
+                D: "U on AVPU scale (unresponsive). @ 5 minutes",
+                E: "No change"
+            }
+        })
+    }, []);
 
 
     const handleDataSubmission = async (data: typeof basicExerciseData) => {
@@ -23,14 +77,12 @@ const FormContainer: React.FC = () => {
         console.log("Form data submitted:", data);
 
         await new Promise(resolve => setTimeout(resolve, 3000)); // 2 seconds delay
-        setFormStage(FormStage.NextForm);
+        setFormStage(FormStage.EvaluateGeneratedExercise);
     };
 
     return (
-        // <InitialParametersForm onSubmit={handleDataSubmission} defaultData={initialParameters} />
-
         <div className='overflow-hidden'>
-        <AnimatePresence mode="sync">
+        <AnimatePresence mode="wait">
             {formStage === FormStage.Initial && (
                 <motion.div
                     key="initialForm"
@@ -51,12 +103,11 @@ const FormContainer: React.FC = () => {
                     exit={{ x: '-100%' }}
                     transition={{ duration: 0.5 }}
                 >
-                    {basicExerciseData.age}
-                    Generating...
+                    <InitialGenerationLoader data={basicExerciseData} />
                 </motion.div>
             )}
 
-            {formStage === FormStage.NextForm && (
+            {formStage === FormStage.EvaluateGeneratedExercise && (
                 <motion.div
                     key="nextForm"
                     initial={{ x: '100%' }}
@@ -64,8 +115,7 @@ const FormContainer: React.FC = () => {
                     exit={{ x: '-100%' }}
                     transition={{ duration: 0.5 }}
                 >
-                    {/* Your next form goes here */}
-                    Next Form Content...
+                    <ExerciseReview data={generatedExercise!} />
                 </motion.div>
             )}
         </AnimatePresence>

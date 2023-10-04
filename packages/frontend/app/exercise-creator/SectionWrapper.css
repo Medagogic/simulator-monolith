@@ -1,0 +1,53 @@
+.icon-wrapper {
+    position: absolute;
+    top: -10px;   /* You can adjust this based on your preference */
+    right: -10px; /* You can adjust this based on your preference */
+}
+
+.bg-white {
+    position: relative; /* Ensures the icon-wrapper is positioned relative to this div */
+}
+
+/* Fixed width for columns */
+.bg-white > div:first-child {
+    width: 70%; /* Adjust based on your preference */
+}
+
+.bg-white > div:last-child {
+    width: 28%; /* Slightly less than 30% to account for possible paddings/margins */
+}
+
+.buttons {
+    display: inline;
+    font-size: 1rem;
+    padding-left: 20px;
+}
+
+.comment-section {
+    height: 100%;
+    display: flex;
+    flex-direction: column;
+    align-items: end;
+}
+
+textarea {
+    width: 100%;
+    height: 100%;
+    resize: none;
+    border: 1px solid #ccc;
+    border-radius: 10px;
+    background-color: #0000000d;
+}
+
+textarea:focus {
+    outline: none;
+}
+
+.section-wrapper {
+    border: 2px solid transparent;
+}
+
+.section-wrapper.accepted {
+    border: 2px solid green;
+    background: #becebe
+}
