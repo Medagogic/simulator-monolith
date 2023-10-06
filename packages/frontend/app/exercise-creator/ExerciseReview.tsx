@@ -10,9 +10,22 @@ import ABCDERenderer from './ABCDERenderer';
 import VitalsRenderer from './VitalsRenderer';
 
 
+type SectionData = {
+    open: boolean;
+    edited: boolean;
+};
+
+
 const ExerciseReview: FC = () => {
-    const sections = ['basic', 'background', 'instructions', 'initialVital', 'initialABCDE', 'future'];
     const { exerciseData } = useExerciseStore(state => ({ exerciseData: state.exerciseData }));
+    const [sectionsState, setSectionsState] = useState<Record<string, SectionData>>({
+        basic: { open: false, edited: false },
+        background: { open: false, edited: false },
+        instructions: { open: false, edited: false },
+        initialVital: { open: false, edited: false },
+        initialABCDE: { open: false, edited: false },
+        future: { open: false, edited: false }
+    });
 
     // 1. Create a state to hold the comments for each section
     const [comments, setComments] = useState<Record<string, string>>({
@@ -34,9 +47,29 @@ const ExerciseReview: FC = () => {
         console.log(comments);
     }
 
-    const handleStatusChange = (section: string, status: SectionStatus, comment: string) => {
-        // You might want to handle status as well if needed
+    // const handleStatusChange = (section: string, status: SectionStatus, comment: string) => {
+    //     // You might want to handle status as well if needed
+    //     setComments({ ...comments, [section]: comment || '' });
+    // }
+
+    const toggleSection = (section: string) => {
+        const updatedState = { ...sectionsState };
+        updatedState[section].open = !updatedState[section].open;
+        setSectionsState(updatedState);
+    };
+
+    const handleStatusChange = (section: string, comment: string) => {
         setComments({ ...comments, [section]: comment || '' });
+
+        const updatedState = { ...sectionsState };
+        updatedState[section].edited = true;
+        setSectionsState(updatedState);
+    };
+
+    const setEdited = (section: string) => {
+        const updatedState = { ...sectionsState };
+        updatedState[section].edited = true;
+        setSectionsState(updatedState);
     }
 
     return (
@@ -44,7 +77,10 @@ const ExerciseReview: FC = () => {
             {/* Basic Information */}
             <SectionWrapper
                 title="Basic Information"
-                onStatusChange={(status, comment) => handleStatusChange('basic', status, comment)}>
+                onStatusChange={(status, comment) => handleStatusChange('basic', comment)}
+                isOpen={sectionsState.basic.open}
+                isEdited={sectionsState.basic.edited}
+                onToggle={() => toggleSection('basic')}>
                 <p><strong>Name:</strong> {exerciseData.patientName}</p>
                 <p><strong>Age:</strong> {exerciseData.patientAge}</p>
                 <p><strong>Sex:</strong> {exerciseData.patientSex}</p>
@@ -55,14 +91,22 @@ const ExerciseReview: FC = () => {
             {/* Background Information */}
             <SectionWrapper
                 title="Background Information"
-                onStatusChange={(status, comment) => handleStatusChange('background', status, comment)}>
+                onStatusChange={(status, comment) => handleStatusChange('background', comment)}
+                isOpen={sectionsState.background.open}
+                isEdited={sectionsState.background.edited}
+                onToggle={() => toggleSection('background')}
+                >
                 <p>{exerciseData.backgroundInformation}</p>
             </SectionWrapper>
 
             {/* Simulation Instructions */}
             <SectionWrapper
                 title="Simulation Instructions"
-                onStatusChange={(status, comment) => handleStatusChange('instructions', status, comment)}>
+                onStatusChange={(status, comment) => handleStatusChange('instructions', comment)}
+                isOpen={sectionsState.instructions.open}
+                isEdited={sectionsState.instructions.edited}
+                onToggle={() => toggleSection('instructions')}
+                >
                 <div
                     className="markdown-content"
                     dangerouslySetInnerHTML={{ __html: marked(exerciseData.simulationInstructions) }}
@@ -72,9 +116,14 @@ const ExerciseReview: FC = () => {
             {/* Initial Vital Signs */}
             <SectionWrapper
                 title="Initial Vital Signs"
-                onStatusChange={(status, comment) => handleStatusChange('initialVital', status, comment)}>
+                onStatusChange={(status, comment) => handleStatusChange('initialVital', comment)}
+                isOpen={sectionsState.initialVital.open}
+                isEdited={sectionsState.initialVital.edited}
+                onToggle={() => toggleSection('initialVital')}
+                >
                 <VitalsRenderer vitalData={exerciseData.initialVitalSigns} onChange={(key, value) => {
                     useExerciseStore.setState(state => {
+                        setEdited('initialVital');
                         const newExerciseData = { ...state.exerciseData };
                         newExerciseData.initialVitalSigns[key] = value;
                         return { exerciseData: newExerciseData };
@@ -85,9 +134,14 @@ const ExerciseReview: FC = () => {
             {/* Initial ABCDE */}
             <SectionWrapper
                 title="Initial ABCDE"
-                onStatusChange={(status, comment) => handleStatusChange('initialABCDE', status, comment)}>
+                onStatusChange={(status, comment) => handleStatusChange('initialABCDE', comment)}
+                isOpen={sectionsState.initialABCDE.open}
+                isEdited={sectionsState.initialABCDE.edited}
+                onToggle={() => toggleSection('initialABCDE')}
+                >
                 <ABCDERenderer abcdeData={exerciseData.initialABCDE} onChange={(key, value) => {
                     useExerciseStore.setState(state => {
+                        setEdited('initialABCDE');
                         const newExerciseData = { ...state.exerciseData };
                         newExerciseData.initialABCDE[key] = value;
                         return { exerciseData: newExerciseData };
@@ -98,7 +152,11 @@ const ExerciseReview: FC = () => {
             {/* Future Section */}
             <SectionWrapper
                 title="Future Section"
-                onStatusChange={(status, comment) => handleStatusChange('future', status, comment)}>
+                onStatusChange={(status, comment) => handleStatusChange('future', comment)}
+                isOpen={sectionsState.future.open}
+                isEdited={sectionsState.future.edited}
+                onToggle={() => toggleSection('future')}
+                >
                 {/* Future Events */}
                 <div className="mb-6">
                     <h3 className="text-xl font-medium mb-2">Events</h3>
@@ -113,6 +171,7 @@ const ExerciseReview: FC = () => {
                     <h3 className="text-xl font-medium mb-2">Future Vital Signs</h3>
                     <VitalsRenderer vitalData={exerciseData.futureVitalSigns} onChange={(key, value) => {
                         useExerciseStore.setState(state => {
+                            
                             const newExerciseData = { ...state.exerciseData };
                             newExerciseData.futureVitalSigns[key] = value;
                             return { exerciseData: newExerciseData };
@@ -125,6 +184,7 @@ const ExerciseReview: FC = () => {
                     <h3 className="text-xl font-medium mb-2">Future ABCDE</h3>
                     <ABCDERenderer abcdeData={exerciseData.futureABCDE} onChange={(key, value) => {
                         useExerciseStore.setState(state => {
+                            setEdited('future');
                             const newExerciseData = { ...state.exerciseData };
                             newExerciseData.futureABCDE[key] = value;
                             return { exerciseData: newExerciseData };

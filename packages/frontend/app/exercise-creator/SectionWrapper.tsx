@@ -1,7 +1,9 @@
-import { FC, useState } from "react";
-import { FaCheck, FaComment, FaSave } from 'react-icons/fa'; // Assuming you're using react-icons for the checkmark
+import { FC, useEffect, useState } from "react";
+import { FaCheck, FaComment, FaSave, FaCaretDown, FaCaretRight } from 'react-icons/fa'; // Assuming you're using react-icons for the checkmark
 import { MdCancel } from 'react-icons/md';
 import "./SectionWrapper.css"
+import { useSpring, animated } from 'react-spring';
+
 
 export type SectionStatus = 'none' | 'accepted' | 'commented';
 
@@ -9,12 +11,22 @@ type SectionProps = {
     title: string;
     children: React.ReactNode;
     onStatusChange: (status: SectionStatus, comment: string) => void;
+    isOpen: boolean;
+    isEdited: boolean;
+    onToggle: () => void;
 };
 
-const SectionWrapper: FC<SectionProps> = ({ title, children, onStatusChange }) => {
+const SectionWrapper: FC<SectionProps> = ({ title, children, onStatusChange, isOpen, isEdited, onToggle }) => {
     const [commentValue, setCommentValue] = useState<string>('');
     const [sectionStatus, setSectionStatus] = useState<SectionStatus>('none');
 
+    // Spring animation
+    const contentAnimation = useSpring({
+        maxHeight: isOpen ? 1000 : 0,
+        opacity: isOpen ? 1 : 0,
+        overflow: 'hidden',
+        config: { duration: 100 },
+    });
     const handleAccept = () => {
         setSectionStatus('accepted');
         onStatusChange('accepted', '');
@@ -43,6 +55,10 @@ const SectionWrapper: FC<SectionProps> = ({ title, children, onStatusChange }) =
         <div className={`${baseClasses} ${additionalClass}`}>
             <div className="prose">
                 <h2 className="text-2xl font-semibold mb-4">{title}
+                    <button onClick={onToggle} className="ml-2">
+                        {isOpen ? <FaCaretDown /> : <FaCaretRight />}
+                    </button>
+                    {/* {isEdited && <span className="ml-2 text-red-500">Edited</span>} */}
                     <div className="flex items-center mt-4 buttons">
                         {/* Show the "Accept" icon button only if it's not 'commented' or 'accepted' */}
                         {sectionStatus !== 'commented' && sectionStatus !== 'accepted' && (
@@ -59,7 +75,9 @@ const SectionWrapper: FC<SectionProps> = ({ title, children, onStatusChange }) =
                         )}
                     </div>
                 </h2>
-                {children}
+                <animated.div style={contentAnimation}>
+                    {children}
+                </animated.div>
             </div>
 
             <div className="icon-wrapper">
@@ -84,27 +102,27 @@ const SectionWrapper: FC<SectionProps> = ({ title, children, onStatusChange }) =
                             ></textarea>
 
                             <div className="flex flex-row self-center">
-                            <button className="px-4 py-2 bg-green-500 text-white rounded-md ml-2"
-                                style={{
-                                    margin: "2px",
-                                    display: "flex",
-                                    alignItems: "center",
-                                    gap: "4px"
-                                }}>
-                                Save
-                                <FaSave />
-                            </button>
+                                <button className="px-4 py-2 bg-green-500 text-white rounded-md ml-2"
+                                    style={{
+                                        margin: "2px",
+                                        display: "flex",
+                                        alignItems: "center",
+                                        gap: "4px"
+                                    }}>
+                                    Save
+                                    <FaSave />
+                                </button>
 
-                            <button onClick={handleCancelComment} className="px-4 py-2 bg-red-500 text-white rounded-md ml-2"
-                                style={{
-                                    margin: "2px",
-                                    display: "flex",
-                                    alignItems: "center",
-                                    gap: "4px"
-                                }}>
-                                Cancel
-                                <MdCancel />
-                            </button>
+                                <button onClick={handleCancelComment} className="px-4 py-2 bg-red-500 text-white rounded-md ml-2"
+                                    style={{
+                                        margin: "2px",
+                                        display: "flex",
+                                        alignItems: "center",
+                                        gap: "4px"
+                                    }}>
+                                    Cancel
+                                    <MdCancel />
+                                </button>
                             </div>
                         </>
                     )}
