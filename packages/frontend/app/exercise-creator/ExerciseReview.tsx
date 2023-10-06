@@ -4,52 +4,15 @@ import { useState, FC } from 'react';
 import { parse as marked } from 'marked';
 import "./ExerciseReview.css";
 import SectionWrapper, { SectionStatus } from './SectionWrapper';
+import { VitalSigns, vitalSignsLabels } from './ExerciseTypes';
+import { useExerciseStore } from './ExerciseStore';
+import ABCDERenderer from './ABCDERenderer';
+import VitalsRenderer from './VitalsRenderer';
 
-type VitalSigns = {
-    temperature: string;
-    heartRate: string;
-    respiratoryRate: string;
-    bloodPressure: string;
-    bloodGlucose: string;
-    oxygenSaturation: string;
-    capillaryRefill: string;
-};
 
-const vitalSignsLabels: { [key in keyof VitalSigns]: string } = {
-    temperature: "Temperature",
-    heartRate: "Heart Rate",
-    respiratoryRate: "Respiratory Rate",
-    bloodPressure: "Blood Pressure",
-    bloodGlucose: "Blood Glucose",
-    oxygenSaturation: "Oxygen Saturation",
-    capillaryRefill: "Capillary Refill",
-};
-
-type ABCDE = {
-    A: string;
-    B: string;
-    C: string;
-    D: string;
-    E: string;
-};
-
-export type GeneratedExerciseData = {
-    patientName: string;
-    patientAge: string;
-    patientSex: string;
-    patientHeight: string;
-    patientWeight: string;
-    backgroundInformation: string;
-    simulationInstructions: string;
-    initialVitalSigns: VitalSigns;
-    initialABCDE: ABCDE;
-    futureEvents: string;
-    futureVitalSigns: VitalSigns;
-    futureABCDE: ABCDE;
-};
-
-const ExerciseReview: FC<{ data: GeneratedExerciseData }> = ({ data }) => {
+const ExerciseReview: FC = () => {
     const sections = ['basic', 'background', 'instructions', 'initialVital', 'initialABCDE', 'future'];
+    const { exerciseData } = useExerciseStore(state => ({ exerciseData: state.exerciseData }));
 
     // 1. Create a state to hold the comments for each section
     const [comments, setComments] = useState<Record<string, string>>({
@@ -82,18 +45,18 @@ const ExerciseReview: FC<{ data: GeneratedExerciseData }> = ({ data }) => {
             <SectionWrapper
                 title="Basic Information"
                 onStatusChange={(status, comment) => handleStatusChange('basic', status, comment)}>
-                <p><strong>Name:</strong> {data.patientName}</p>
-                <p><strong>Age:</strong> {data.patientAge}</p>
-                <p><strong>Sex:</strong> {data.patientSex}</p>
-                <p><strong>Height:</strong> {data.patientHeight}</p>
-                <p><strong>Weight:</strong> {data.patientWeight}</p>
+                <p><strong>Name:</strong> {exerciseData.patientName}</p>
+                <p><strong>Age:</strong> {exerciseData.patientAge}</p>
+                <p><strong>Sex:</strong> {exerciseData.patientSex}</p>
+                <p><strong>Height:</strong> {exerciseData.patientHeight}</p>
+                <p><strong>Weight:</strong> {exerciseData.patientWeight}</p>
             </SectionWrapper>
 
             {/* Background Information */}
             <SectionWrapper
                 title="Background Information"
                 onStatusChange={(status, comment) => handleStatusChange('background', status, comment)}>
-                <p>{data.backgroundInformation}</p>
+                <p>{exerciseData.backgroundInformation}</p>
             </SectionWrapper>
 
             {/* Simulation Instructions */}
@@ -102,7 +65,7 @@ const ExerciseReview: FC<{ data: GeneratedExerciseData }> = ({ data }) => {
                 onStatusChange={(status, comment) => handleStatusChange('instructions', status, comment)}>
                 <div
                     className="markdown-content"
-                    dangerouslySetInnerHTML={{ __html: marked(data.simulationInstructions) }}
+                    dangerouslySetInnerHTML={{ __html: marked(exerciseData.simulationInstructions) }}
                 ></div>
             </SectionWrapper>
 
@@ -110,22 +73,26 @@ const ExerciseReview: FC<{ data: GeneratedExerciseData }> = ({ data }) => {
             <SectionWrapper
                 title="Initial Vital Signs"
                 onStatusChange={(status, comment) => handleStatusChange('initialVital', status, comment)}>
-                <ul>
-                    {Object.entries(data.initialVitalSigns).map(([key, value]) => (
-                        <li key={key}><strong>{vitalSignsLabels[key as keyof VitalSigns]}:</strong> {value}</li>
-                    ))}
-                </ul>
+                <VitalsRenderer vitalData={exerciseData.initialVitalSigns} onChange={(key, value) => {
+                    useExerciseStore.setState(state => {
+                        const newExerciseData = { ...state.exerciseData };
+                        newExerciseData.initialVitalSigns[key] = value;
+                        return { exerciseData: newExerciseData };
+                    });
+                }} />
             </SectionWrapper>
 
             {/* Initial ABCDE */}
             <SectionWrapper
                 title="Initial ABCDE"
                 onStatusChange={(status, comment) => handleStatusChange('initialABCDE', status, comment)}>
-                <ul>
-                    {Object.entries(data.initialABCDE).map(([key, value]) => (
-                        <li key={key}><strong>{key}:</strong> {value}</li>
-                    ))}
-                </ul>
+                <ABCDERenderer abcdeData={exerciseData.initialABCDE} onChange={(key, value) => {
+                    useExerciseStore.setState(state => {
+                        const newExerciseData = { ...state.exerciseData };
+                        newExerciseData.initialABCDE[key] = value;
+                        return { exerciseData: newExerciseData };
+                    });
+                }} />
             </SectionWrapper>
 
             {/* Future Section */}
@@ -137,28 +104,32 @@ const ExerciseReview: FC<{ data: GeneratedExerciseData }> = ({ data }) => {
                     <h3 className="text-xl font-medium mb-2">Events</h3>
                     <div
                         className="markdown-content"
-                        dangerouslySetInnerHTML={{ __html: marked(data.futureEvents) }}
+                        dangerouslySetInnerHTML={{ __html: marked(exerciseData.futureEvents) }}
                     ></div>
                 </div>
 
                 {/* Future Vital Signs */}
                 <div className="mb-6">
                     <h3 className="text-xl font-medium mb-2">Future Vital Signs</h3>
-                    <ul>
-                        {Object.entries(data.futureVitalSigns).map(([key, value]) => (
-                            <li key={key}><strong>{vitalSignsLabels[key as keyof VitalSigns]}:</strong> {value}</li>
-                        ))}
-                    </ul>
+                    <VitalsRenderer vitalData={exerciseData.futureVitalSigns} onChange={(key, value) => {
+                        useExerciseStore.setState(state => {
+                            const newExerciseData = { ...state.exerciseData };
+                            newExerciseData.futureVitalSigns[key] = value;
+                            return { exerciseData: newExerciseData };
+                        });
+                    }} />
                 </div>
 
                 {/* Future ABCDE */}
                 <div>
                     <h3 className="text-xl font-medium mb-2">Future ABCDE</h3>
-                    <ul>
-                        {Object.entries(data.futureABCDE).map(([key, value]) => (
-                            <li key={key}><strong>{key}:</strong> {value}</li>
-                        ))}
-                    </ul>
+                    <ABCDERenderer abcdeData={exerciseData.futureABCDE} onChange={(key, value) => {
+                        useExerciseStore.setState(state => {
+                            const newExerciseData = { ...state.exerciseData };
+                            newExerciseData.futureABCDE[key] = value;
+                            return { exerciseData: newExerciseData };
+                        });
+                    }} />
                 </div>
             </SectionWrapper>
 

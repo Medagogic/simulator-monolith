@@ -1,7 +1,7 @@
 "use client"
 import { useState, FC, useEffect } from 'react';
 
-const lookupTable = {
+const ageToWeightAndHeight = {
     '1 hour': { weight: 3.5, height: 50 },
     '6 hours': { weight: 3.6, height: 50.2 },
     '12 hours': { weight: 3.7, height: 50.4 },
@@ -28,7 +28,7 @@ const lookupTable = {
     '11 years': { weight: 30, height: 145 },
     '12 years': { weight: 32, height: 150 },
 };
-type AgeKey = keyof typeof lookupTable;
+type AgeKey = keyof typeof ageToWeightAndHeight;
 
 export interface InitialParametersFormState {
     age: AgeKey;
@@ -46,7 +46,7 @@ type InitialParametersFormProps = {
 };
 
 export function generateDefaultData(age: AgeKey = "3 years"): InitialParametersFormState {
-    const defaultData = lookupTable[age];
+    const defaultData = ageToWeightAndHeight[age];
     return {
         age: age,
         sex: "male",
@@ -62,7 +62,7 @@ const InitialParametersForm: FC<InitialParametersFormProps> = ({ onSubmit, defau
     const [isAdvancedVisible, setAdvancedVisible] = useState(false);
 
     useEffect(() => {
-        const data = lookupTable[formState.age];
+        const data = ageToWeightAndHeight[formState.age];
         setFormState(prev => ({ ...prev, ...data }));
     }, [formState.age]);
 
@@ -92,7 +92,7 @@ const InitialParametersForm: FC<InitialParametersFormProps> = ({ onSubmit, defau
                             className="mt-1 p-2 w-full border rounded-md"
                             required
                         >
-                            {Object.keys(lookupTable).map(ageKey => (
+                            {Object.keys(ageToWeightAndHeight).map(ageKey => (
                                 <option key={ageKey} value={ageKey}>{ageKey}</option>
                             ))}
                         </select>

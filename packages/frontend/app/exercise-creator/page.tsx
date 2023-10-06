@@ -4,7 +4,9 @@ import React, { useEffect, useState } from 'react';
 import InitialParametersForm, { generateDefaultData, InitialParametersFormState } from './InitialParametersForm';
 import { motion, AnimatePresence } from 'framer-motion';
 import InitialGenerationLoader from './InitialGenerationLoader';
-import ExerciseReview, {GeneratedExerciseData} from './ExerciseReview';
+import ExerciseReview from './ExerciseReview';
+import { GeneratedExerciseData } from './ExerciseTypes';
+import { useExerciseStore } from './ExerciseStore';
 
 
 enum FormStage {
@@ -16,11 +18,12 @@ enum FormStage {
 const FormContainer: React.FC = () => {
     const [basicExerciseData, setBasicExerciseData] = useState<InitialParametersFormState>(generateDefaultData("3 years"));
     const [formStage, setFormStage] = useState<FormStage>(FormStage.Initial);
-    const [generatedExercise, setGeneratedExercise] = useState<GeneratedExerciseData | null>(null);
+    // const [generatedExercise, setGeneratedExercise] = useState<GeneratedExerciseData | null>(null);
 
     useEffect(() => {
         setFormStage(FormStage.EvaluateGeneratedExercise);
-        setGeneratedExercise({
+
+        const tempExercise: GeneratedExerciseData = {
             patientName: "Greta",
             backgroundInformation: "Fever and cough for the last 4 days. Last 24 hours tired, not showing interest in anything, decreased intake of food and liquids, no urinary output since yesterday. Has been using her inhalers regularly the last few days without improvement.",
             patientAge: "4 years",
@@ -66,7 +69,9 @@ const FormContainer: React.FC = () => {
                 D: "U on AVPU scale (unresponsive). @ 5 minutes",
                 E: "No change"
             }
-        })
+        };
+
+        useExerciseStore.setState({ exerciseData: tempExercise });
     }, []);
 
 
@@ -115,7 +120,7 @@ const FormContainer: React.FC = () => {
                     exit={{ x: '-100%' }}
                     transition={{ duration: 0.5 }}
                 >
-                    <ExerciseReview data={generatedExercise!} />
+                    <ExerciseReview />
                 </motion.div>
             )}
         </AnimatePresence>
