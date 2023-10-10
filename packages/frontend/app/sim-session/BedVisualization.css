@@ -1,0 +1,15 @@
+.bed-container {
+    position: relative;
+}
+
+.bed {
+    width: 100%;
+    height: 100%;
+    position: relative;
+}
+
+.bed img {
+    height: 100%;
+    width: auto;
+    object-fit: cover; /* This will ensure the image covers the area without stretching */
+}
