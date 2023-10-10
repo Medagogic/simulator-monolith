@@ -5,7 +5,7 @@ import { Button, Input, MessageList } from 'react-chat-elements';
 import 'react-chat-elements/dist/main.css'
 
 
-type Message = {
+export type Message = {
     text: string;
     sender: 'user' | 'system' | "assistant";
     date: Date;
@@ -17,9 +17,9 @@ type ChatPageProps = {
 
 const ChatterBox: React.FC<ChatPageProps> = ({ messages=[] }) => {
 
-  messages.push({text: "Hello", sender: "user", date: new Date()});
-  messages.push({text: "Hi", sender: "assistant", date: new Date()});
-  messages.push({text: "This is a system message", sender: "system", date: new Date()});
+  // messages.push({text: "Hello", sender: "user", date: new Date()});
+  // messages.push({text: "Hi", sender: "assistant", date: new Date()});
+  // messages.push({text: "This is a system message", sender: "system", date: new Date()});
 
   function message_type(message: Message): string {
     return message.sender === 'system' ? 'system' : 'text';

@@ -20,14 +20,14 @@ const EmergencyRoomVisualization: React.FC<EmergencyRoomVisualizationProps> = ({
             {anesthetist && <div className="absolute top-0 left-1/4 w-1/2 flex justify-center">
                 <StaffCard definition={anesthetist} />
             </div>}
-            <div className="absolute left-0 top-1/4 w-1/4 h-1/2 flex flex-col justify-between">
+            <div className="absolute left-10 top-1/4 w-1/4 h-1/2 flex flex-col justify-between">
                 {otherStaff.slice(0, 2).map((person, index) => (
                     <div key={index} className="flex justify-center">
                         <StaffCard definition={person} />
                     </div>
                 ))}
             </div>
-            <div className="absolute right-0 top-1/4 w-1/4 h-1/2 flex flex-col justify-between">
+            <div className="absolute right-10 top-1/4 w-1/4 h-1/2 flex flex-col justify-between">
                 {otherStaff.slice(2, 4).map((person, index) => (
                     <div key={index} className="flex justify-center">
                         <StaffCard definition={person} />

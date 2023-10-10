@@ -13,3 +13,14 @@
     width: auto;
     object-fit: cover; /* This will ensure the image covers the area without stretching */
 }
+
+.colored-bg {
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    background-color: rgba(255, 0, 0, 0); /* Change this to any color you want */
+    mix-blend-mode: multiply;
+    z-index: 10;
+}
