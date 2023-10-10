@@ -1,15 +1,9 @@
 "use client"
 import React, { useState, useEffect, FC, FormEvent } from 'react';
-import { Configuration, DefaultApi } from '@/src/api';
+import { Configuration, DefaultApi, SessionData } from '@/src/api';
 import { io, Socket } from "socket.io-client";
 import Link from 'next/link';
 
-
-interface SessionData {
-  session_id: string;
-  sids_in_session: Array<string>;
-  creation_datetime?: string;
-}
 
 const api = new DefaultApi(new Configuration({
   basePath: 'http://localhost:5000',
@@ -24,8 +18,8 @@ const Chat: FC = () => {
   useEffect(() => {
     const refreshSessions = async () => {
       try {
-        const res = await api.handleListSessionsSessionListGet();
-        setSessions(res.data);
+        const res: SessionData[] = await api.handleListSessionsSessionListGet();
+        setSessions(res);
       } catch (error) {
         console.error('Failed to fetch sessions:', error);
       }
@@ -82,9 +76,9 @@ const Chat: FC = () => {
         <h2>Sessions</h2>
         <ul>
           {sessions.map(session => (
-            <li key={session.session_id}>
-              <button onClick={() => handleJoinSession(session.session_id)}>
-                Join Session {session.session_id}
+            <li key={session.sessionId}>
+              <button onClick={() => handleJoinSession(session.sessionId)}>
+                Join Session {session.sessionId}
               </button>
             </li>
           ))}
