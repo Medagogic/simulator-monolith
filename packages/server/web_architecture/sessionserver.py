@@ -10,10 +10,11 @@ from web_architecture.sessionhandler import SessionHandler_Base
 from web_architecture.webhandler import WebHandler_Base
 import asyncio
 from fastapi.middleware.cors import CORSMiddleware
+from web_architecture.static_api import StaticAPI
 
 
 class SessionServer:
-    def __init__(self, session_handler_class: Type[SessionHandler_Base]):
+    def __init__(self, session_handler_class: Type[SessionHandler_Base], static_api_class: StaticAPI = None):
         main_routes = [
             APIRoute("/save_docs", endpoint=self.save_api_json, methods=["POST"])
         ]
@@ -32,6 +33,9 @@ class SessionServer:
 
         self.session_manager = SessionManager(sio=self.sio, app=self.app, session_handler_class=session_handler_class)
         self.app.mount("/socket.io", self.socket_app)  # Here we mount socket app to main fastapi app
+
+        self.static_api = static_api_class() if static_api_class else None
+        self.app.include_router(self.static_api.router, prefix="/static_api") if self.static_api else None
 
         asyncio.create_task(self.save_api_json())
 

@@ -50,8 +50,8 @@ export function generateDefaultData(age: AgeKey = "3 years"): InitialParametersF
     return {
         age: age,
         sex: "male",
-        description: '',
-        simulationInstructions: '',
+        description: 'Accute sepsis with shallow breathing.',
+        simulationInstructions: 'No response to IV fluids.',
         weight: defaultData.weight,
         height: defaultData.height
     }

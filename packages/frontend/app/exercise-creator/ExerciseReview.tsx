@@ -82,10 +82,10 @@ const ExerciseReview: FC = () => {
                 isEdited={sectionsState.basic.edited}
                 onToggle={() => toggleSection('basic')}>
                 <p><strong>Name:</strong> {exerciseData.patientName}</p>
-                <p><strong>Age:</strong> {exerciseData.patientAge}</p>
-                <p><strong>Sex:</strong> {exerciseData.patientSex}</p>
-                <p><strong>Height:</strong> {exerciseData.patientHeight}</p>
-                <p><strong>Weight:</strong> {exerciseData.patientWeight}</p>
+                <p><strong>Age:</strong> {exerciseData.basicInfo.age}</p>
+                <p><strong>Sex:</strong> {exerciseData.basicInfo.sex}</p>
+                <p><strong>Height:</strong> {exerciseData.basicInfo.height}</p>
+                <p><strong>Weight:</strong> {exerciseData.basicInfo.weight}</p>
             </SectionWrapper>
 
             {/* Background Information */}
@@ -121,11 +121,11 @@ const ExerciseReview: FC = () => {
                 isEdited={sectionsState.initialVital.edited}
                 onToggle={() => toggleSection('initialVital')}
                 >
-                <VitalsRenderer vitalData={exerciseData.initialVitalSigns} onChange={(key, value) => {
+                <VitalsRenderer vitalData={exerciseData.vitalSigns} onChange={(key, value) => {
                     useExerciseStore.setState(state => {
                         setEdited('initialVital');
                         const newExerciseData = { ...state.exerciseData };
-                        newExerciseData.initialVitalSigns[key] = value;
+                        newExerciseData.vitalSigns[key] = value;
                         return { exerciseData: newExerciseData };
                     });
                 }} />
@@ -139,11 +139,11 @@ const ExerciseReview: FC = () => {
                 isEdited={sectionsState.initialABCDE.edited}
                 onToggle={() => toggleSection('initialABCDE')}
                 >
-                <ABCDERenderer abcdeData={exerciseData.initialABCDE} onChange={(key, value) => {
+                <ABCDERenderer abcdeData={exerciseData.aBCDE} onChange={(key, value) => {
                     useExerciseStore.setState(state => {
                         setEdited('initialABCDE');
                         const newExerciseData = { ...state.exerciseData };
-                        newExerciseData.initialABCDE[key] = value;
+                        newExerciseData.aBCDE[key] = value;
                         return { exerciseData: newExerciseData };
                     });
                 }} />
@@ -162,18 +162,18 @@ const ExerciseReview: FC = () => {
                     <h3 className="text-xl font-medium mb-2">Events</h3>
                     <div
                         className="markdown-content"
-                        dangerouslySetInnerHTML={{ __html: marked(exerciseData.futureEvents) }}
+                        dangerouslySetInnerHTML={{ __html: marked(exerciseData.future.events) }}
                     ></div>
                 </div>
 
                 {/* Future Vital Signs */}
                 <div className="mb-6">
                     <h3 className="text-xl font-medium mb-2">Future Vital Signs</h3>
-                    <VitalsRenderer vitalData={exerciseData.futureVitalSigns} onChange={(key, value) => {
+                    <VitalsRenderer vitalData={exerciseData.future.vitalSigns} onChange={(key, value) => {
                         useExerciseStore.setState(state => {
                             
                             const newExerciseData = { ...state.exerciseData };
-                            newExerciseData.futureVitalSigns[key] = value;
+                            newExerciseData.future.vitalSigns[key] = value;
                             return { exerciseData: newExerciseData };
                         });
                     }} />
@@ -182,11 +182,11 @@ const ExerciseReview: FC = () => {
                 {/* Future ABCDE */}
                 <div>
                     <h3 className="text-xl font-medium mb-2">Future ABCDE</h3>
-                    <ABCDERenderer abcdeData={exerciseData.futureABCDE} onChange={(key, value) => {
+                    <ABCDERenderer abcdeData={exerciseData.future.aBCDE} onChange={(key, value) => {
                         useExerciseStore.setState(state => {
                             setEdited('future');
                             const newExerciseData = { ...state.exerciseData };
-                            newExerciseData.futureABCDE[key] = value;
+                            newExerciseData.future.aBCDE[key] = value;
                             return { exerciseData: newExerciseData };
                         });
                     }} />

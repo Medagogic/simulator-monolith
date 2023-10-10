@@ -1,4 +1,5 @@
-import { GeneratedExerciseData } from "./ExerciseTypes";
+// import { GeneratedExerciseData } from "./ExerciseTypes";
+import { GeneratedExerciseData } from '@/src/api';
 import { create } from 'zustand';
 
 type StoreState = {
@@ -7,49 +8,7 @@ type StoreState = {
 };
 
 export const useExerciseStore = create<StoreState>((set) => ({
-    exerciseData: {
-        // make sure to provide initial values for all fields
-        patientName: '',
-        patientAge: '',
-        patientSex: '',
-        patientHeight: '',
-        patientWeight: '',
-        backgroundInformation: '',
-        simulationInstructions: '',
-        initialVitalSigns: {
-            temperature: '',
-            heartRate: '',
-            respiratoryRate: '',
-            bloodPressure: '',
-            bloodGlucose: '',
-            oxygenSaturation: '',
-            capillaryRefill: '',
-        },
-        initialABCDE: {
-            A: '',
-            B: '',
-            C: '',
-            D: '',
-            E: '',
-        },
-        futureEvents: '',
-        futureVitalSigns: {
-            temperature: '',
-            heartRate: '',
-            respiratoryRate: '',
-            bloodPressure: '',
-            bloodGlucose: '',
-            oxygenSaturation: '',
-            capillaryRefill: '',
-        },
-        futureABCDE: {
-            A: '',
-            B: '',
-            C: '',
-            D: '',
-            E: '',
-        },
-    },
+    exerciseData: {} as GeneratedExerciseData,
     setExerciseData: (data) => set((state) => ({
         exerciseData: {
             ...state.exerciseData,

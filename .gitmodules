@@ -1,0 +1,3 @@
+[submodule "packages/server/gpt"]
+	path = packages/server/gpt
+	url = git@gitlab.com:TernDev/sandbox/davidg/tern-gpt-quickstart.git

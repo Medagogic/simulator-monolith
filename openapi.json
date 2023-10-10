@@ -59,6 +59,44 @@
                 }
             }
         },
+        "/static_api/generate_exercise": {
+            "post": {
+                "summary": "Handle Generate",
+                "operationId": "handle_generate_static_api_generate_exercise_post",
+                "requestBody": {
+                    "content": {
+                        "application/json": {
+                            "schema": {
+                                "$ref": "#/components/schemas/ExerciseCreationParams"
+                            }
+                        }
+                    },
+                    "required": true
+                },
+                "responses": {
+                    "200": {
+                        "description": "Successful Response",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/GeneratedExerciseData"
+                                }
+                            }
+                        }
+                    },
+                    "422": {
+                        "description": "Validation Error",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/HTTPValidationError"
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+        },
         "/sessions/<session_id>/chat/test-get": {
             "get": {
                 "summary": "Handle Test",
@@ -78,6 +116,205 @@
     },
     "components": {
         "schemas": {
+            "ExerciseCreationParams": {
+                "properties": {
+                    "basic_info": {
+                        "$ref": "#/components/schemas/PatientBasicInfo"
+                    },
+                    "exerciseDescription": {
+                        "type": "string",
+                        "title": "Exercisedescription"
+                    },
+                    "simulationInstructions": {
+                        "type": "string",
+                        "title": "Simulationinstructions"
+                    }
+                },
+                "type": "object",
+                "required": [
+                    "basic_info",
+                    "exerciseDescription",
+                    "simulationInstructions"
+                ],
+                "title": "ExerciseCreationParams"
+            },
+            "FullABCDE": {
+                "properties": {
+                    "A": {
+                        "type": "string",
+                        "title": "A"
+                    },
+                    "B": {
+                        "type": "string",
+                        "title": "B"
+                    },
+                    "C": {
+                        "type": "string",
+                        "title": "C"
+                    },
+                    "D": {
+                        "type": "string",
+                        "title": "D"
+                    },
+                    "E": {
+                        "type": "string",
+                        "title": "E"
+                    }
+                },
+                "type": "object",
+                "required": [
+                    "A",
+                    "B",
+                    "C",
+                    "D",
+                    "E"
+                ],
+                "title": "FullABCDE"
+            },
+            "FullVitalSigns": {
+                "properties": {
+                    "temperature": {
+                        "type": "string",
+                        "title": "Temperature"
+                    },
+                    "heartRate": {
+                        "type": "string",
+                        "title": "Heartrate"
+                    },
+                    "respiratoryRate": {
+                        "type": "string",
+                        "title": "Respiratoryrate"
+                    },
+                    "bloodPressure": {
+                        "type": "string",
+                        "title": "Bloodpressure"
+                    },
+                    "bloodGlucose": {
+                        "type": "string",
+                        "title": "Bloodglucose"
+                    },
+                    "oxygenSaturation": {
+                        "type": "string",
+                        "title": "Oxygensaturation"
+                    },
+                    "capillaryRefill": {
+                        "type": "string",
+                        "title": "Capillaryrefill"
+                    }
+                },
+                "type": "object",
+                "required": [
+                    "temperature",
+                    "heartRate",
+                    "respiratoryRate",
+                    "bloodPressure",
+                    "bloodGlucose",
+                    "oxygenSaturation",
+                    "capillaryRefill"
+                ],
+                "title": "FullVitalSigns"
+            },
+            "FutureState": {
+                "properties": {
+                    "events": {
+                        "type": "string",
+                        "title": "Events"
+                    },
+                    "vitalSigns": {
+                        "$ref": "#/components/schemas/FullVitalSigns"
+                    },
+                    "ABCDE": {
+                        "$ref": "#/components/schemas/FullABCDE"
+                    }
+                },
+                "type": "object",
+                "required": [
+                    "events",
+                    "vitalSigns",
+                    "ABCDE"
+                ],
+                "title": "FutureState"
+            },
+            "GeneratedExerciseData": {
+                "properties": {
+                    "patientName": {
+                        "type": "string",
+                        "title": "Patientname"
+                    },
+                    "basicInfo": {
+                        "$ref": "#/components/schemas/PatientBasicInfo"
+                    },
+                    "simulationInstructions": {
+                        "type": "string",
+                        "title": "Simulationinstructions"
+                    },
+                    "backgroundInformation": {
+                        "type": "string",
+                        "title": "Backgroundinformation"
+                    },
+                    "vitalSigns": {
+                        "$ref": "#/components/schemas/FullVitalSigns"
+                    },
+                    "ABCDE": {
+                        "$ref": "#/components/schemas/FullABCDE"
+                    },
+                    "future": {
+                        "$ref": "#/components/schemas/FutureState"
+                    }
+                },
+                "type": "object",
+                "required": [
+                    "patientName",
+                    "basicInfo",
+                    "simulationInstructions",
+                    "backgroundInformation",
+                    "vitalSigns",
+                    "ABCDE",
+                    "future"
+                ],
+                "title": "GeneratedExerciseData"
+            },
+            "HTTPValidationError": {
+                "properties": {
+                    "detail": {
+                        "items": {
+                            "$ref": "#/components/schemas/ValidationError"
+                        },
+                        "type": "array",
+                        "title": "Detail"
+                    }
+                },
+                "type": "object",
+                "title": "HTTPValidationError"
+            },
+            "PatientBasicInfo": {
+                "properties": {
+                    "age": {
+                        "type": "string",
+                        "title": "Age"
+                    },
+                    "sex": {
+                        "type": "string",
+                        "title": "Sex"
+                    },
+                    "weight": {
+                        "type": "string",
+                        "title": "Weight"
+                    },
+                    "height": {
+                        "type": "string",
+                        "title": "Height"
+                    }
+                },
+                "type": "object",
+                "required": [
+                    "age",
+                    "sex",
+                    "weight",
+                    "height"
+                ],
+                "title": "PatientBasicInfo"
+            },
             "SessionData": {
                 "properties": {
                     "session_id": {
@@ -103,6 +340,39 @@
                     "sids_in_session"
                 ],
                 "title": "SessionData"
+            },
+            "ValidationError": {
+                "properties": {
+                    "loc": {
+                        "items": {
+                            "anyOf": [
+                                {
+                                    "type": "string"
+                                },
+                                {
+                                    "type": "integer"
+                                }
+                            ]
+                        },
+                        "type": "array",
+                        "title": "Location"
+                    },
+                    "msg": {
+                        "type": "string",
+                        "title": "Message"
+                    },
+                    "type": {
+                        "type": "string",
+                        "title": "Error Type"
+                    }
+                },
+                "type": "object",
+                "required": [
+                    "loc",
+                    "msg",
+                    "type"
+                ],
+                "title": "ValidationError"
             }
         }
     }

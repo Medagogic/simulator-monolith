@@ -1,8 +1,9 @@
-import { ABCDE } from "./ExerciseTypes";
+import { FullABCDE } from "@/src/api";
+
 
 const ABCDERenderer: React.FC<{
-    abcdeData: ABCDE;
-    onChange: (key: keyof ABCDE, value: string) => void;
+    abcdeData: FullABCDE;
+    onChange: (key: keyof FullABCDE, value: string) => void;
 }> = ({ abcdeData, onChange }) => {
     return (
         <div>
@@ -13,7 +14,7 @@ const ABCDERenderer: React.FC<{
                         style={{flexGrow: 1}}
                         type="text"
                         value={value ?? ''}
-                        onChange={(e) => onChange(key as keyof ABCDE, e.target.value)}
+                        onChange={(e) => onChange(key as keyof FullABCDE, e.target.value)}
                     />
                 </div>
             ))}
