@@ -1,15 +1,11 @@
 from __future__ import annotations
 from fastapi import APIRouter
 
-from pydantic import BaseModel
-from packages.server.sim_app.exercise_creation.imported.simulation_types import Vitals
+from sim_app.exercise_creation.imported.simulation_types import Vitals
 from sim_app.exercise_creation.exercise_creation_types import ExerciseCreationParams, GeneratedExerciseData, FullVitalSigns, FullABCDE, FutureState
-from web_architecture.webhandler import WebHandler_Base
-from typing import TYPE_CHECKING, Any, Dict
 from gpt.gpt_api import gpt, GPTMessage, MODEL_GPT4
 import asyncio
-if TYPE_CHECKING:
-    from web_architecture.sessionhandler import SessionHandler_Base
+
 
 prompt_template="""
 Create a description for a medical simulation, using accurate medical knowledge and data, for a training scenario. We will then use this data to progress through a training simulation. This should be a critical case with rapid intervention required, and the patient in rapid decline into shock and seizure. We need all patient info, vital signs, symptoms, etc. You are only to deal with the patient state and it's progression, you do not need to discuss any diagnoses, plans, objectives, or other "metadata" for the simulation.
