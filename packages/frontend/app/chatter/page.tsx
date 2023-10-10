@@ -3,6 +3,7 @@
 import React from 'react';
 import { Button, Input, MessageList } from 'react-chat-elements';
 import 'react-chat-elements/dist/main.css'
+import "./page.css"
 
 
 export type Message = {

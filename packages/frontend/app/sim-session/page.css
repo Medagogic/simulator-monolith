@@ -1,3 +1,8 @@
+.base{
+    background: #222;
+    color: #fff;
+}
+
 .toolbar {
     z-index: 100;
     background-color: #222;
@@ -7,9 +12,12 @@
 }
 
 .chatterbox-outer {
-    margin: 1rem;
+    margin: 0.5rem;
+}
+
+.chatterbox {
     padding: 1rem;
-    /* background: hsl(0, 0%, 36%); */
+    background: rgba(52,53,65);
     box-shadow: 0px 0px 10px black;
     border-radius: 10px;
 }

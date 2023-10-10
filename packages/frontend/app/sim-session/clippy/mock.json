@@ -1,0 +1,16 @@
+{
+    "suggestions": [
+        {
+            "description": "Introduce yourself to the team",
+            "command": "Hi, I'm your team lead. Let's start by introducing ourselves."
+        },
+        {
+            "description": "Start by assessing the airway",
+            "command": "Nurse, please assess the airway patency."
+        },
+        {
+            "description": "Prepare IV fluids",
+            "command": "Let's prepare IV fluids please."
+        }
+    ]
+}
