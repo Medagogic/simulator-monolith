@@ -1,6 +1,7 @@
 import React from 'react';
 import StaffCard, {StaffDefinition} from './StaffCard';
 import BedVisualization from './BedVisualization';
+import "./EmergencyRoomVisualization.css"
 
 type EmergencyRoomVisualizationProps = {
     staff: StaffDefinition[];
@@ -11,7 +12,7 @@ const EmergencyRoomVisualization: React.FC<EmergencyRoomVisualizationProps> = ({
     const otherStaff = staff.filter(person => person.role !== 'Anaesthetist');
 
     return (
-        <div className="relative bg-gray-200 p-4" style={{"width": "100%", "height": "100%"}} >
+        <div className="relative bg-gray-200 p-4 emergency-room-container" style={{"width": "100%", "height": "100%"}} >
             <div className="absolute inset-0 flex items-center justify-center">
                 <BedVisualization/>
             </div>

@@ -8,12 +8,16 @@ interface Props {
     vitalSigns: FullVitalSigns;
 }
 
+const VitalSignItem: React.FC<{ label: string, value: string | null, color?: string }> = ({ label, value, color = "text-white" }) => {
+    // Check if the value is null and display "Disconnected" if it is
+    const displayValue = value !== null ? value : "N/A";
+    const displayColor = value !== null ? color : "text-gray-500"; // Change color if disconnected
+    const valueColor = value !== null ? "text-white" : "text-gray-500"; // Change color if disconnected
 
-const VitalSignItem: React.FC<{ label: string, value: string, color?: string }> = ({ label, value, color = "text-white" }) => {
     return (
         <div className="flex flex-col items-center">
-            <span className={`text-xs uppercase ${color}`}>{label}</span>
-            <span className="text-sm font-bold">{value}</span>
+            <span className={`text-xs uppercase ${displayColor}`}>{label}</span>
+            <span className={`text-sm font-bold ${valueColor}`}>{displayValue}</span>
         </div>
     );
 };
