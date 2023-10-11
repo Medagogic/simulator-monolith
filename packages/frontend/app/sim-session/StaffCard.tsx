@@ -4,7 +4,7 @@ import "./StaffCard.css"
 export type StaffDefinition = {
     name: string;
     role: 'Doctor' | 'Nurse' | 'Anaesthetist';
-    activity: string;
+    activity?: string;
 };
 
 type StaffCardProps = {

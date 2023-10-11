@@ -9,6 +9,12 @@ interface CardContainerProps {
     description: string;
 }
 
+interface VitalSignProps {
+    label: string;
+    value: string | null;
+    color?: string;
+}
+
 const CardContainer: React.FC<CardContainerProps> = ({ children, title, description }) => {
     return (
         <div className="bg-gray-700 rounded-md shadow-md space-y-2 text-white abcde-card-container">
@@ -22,12 +28,6 @@ const CardContainer: React.FC<CardContainerProps> = ({ children, title, descript
         </div>
     );
 };
-
-interface VitalSignProps {
-    label: string;
-    value: string | null;
-    color?: string;
-}
 
 const VitalSignItem: React.FC<VitalSignProps> = ({ label, value, color = "text-white" }) => {
     const displayValue = value !== null ? value : "N/A";

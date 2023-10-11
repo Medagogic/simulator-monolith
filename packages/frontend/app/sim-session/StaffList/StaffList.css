@@ -1,0 +1,43 @@
+.staff-list {
+    display: flex;
+    flex-direction: column;
+    gap: 0.5rem;
+}
+
+.staff-member-container {
+    padding: 0.5rem;
+    display: flex;
+    flex-direction: column;
+    gap: 0.1rem; /* Reduced gap for a more condensed look */
+    border-radius: 8px;
+}
+
+.staff-member-name, .staff-member-specialty {
+    display: inline-block; /* Display name and specialty on the same line */
+}
+
+.staff-member-name {
+    color: #ffffff88;
+    font-weight: bold;
+    font-size: 1rem; /* Reduced font size */
+    margin-right: 0.5rem; /* Space between name and specialty */
+}
+
+.staff-member-specialty {
+    color: #ffffffaa;
+    font-size: 0.9rem; /* Reduced font size */
+}
+
+.activity-indicator {
+    padding: 0.1rem 0.4rem; /* Reduced padding for a more compact indicator */
+    border-radius: 4px;
+    font-size: 0.8rem; /* Reduced font size */
+    font-weight: 500;
+    /* text-transform: uppercase; */
+}
+
+.staff-info {
+    justify-content: space-between;
+    display: flex;
+    align-items: center;
+}

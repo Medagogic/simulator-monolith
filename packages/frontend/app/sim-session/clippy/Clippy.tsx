@@ -25,8 +25,8 @@ interface ClippyProps {
 }
 
 const Clippy: React.FC<ClippyProps> = ({ onClick }) => (
-    <div className="bg-#222 p-4 rounded-lg">
-        <h2 className="text-white text-lg font-bold mb-3">Dr Clippy</h2>
+    <div className="bg-#222 rounded-lg">
+        {/* <h2 className="text-white text-sm font-bold mb-3">Advisor</h2> */}
         {clippy.suggestions.map((suggestion, index) => (
             <Suggestion 
                 key={index}
