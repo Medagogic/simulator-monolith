@@ -1,16 +1,17 @@
 "use client"
 
-import React from 'react';
+import React, { useEffect } from 'react';
 import { StaffDefinition } from './StaffCard';
-import EmergencyRoomVisualization from './EmergencyRoomVisualization';
 import VitalSignsDisplay from './VitalSignsDisplay';
 import { FullABCDE, FullVitalSigns } from '@/src/api';
-import ChatterBox, { Message } from '../chatter/page';
+import ChatterBox from '../chatter/page';
 import "./page.css"
 import Clippy from './clippy/Clippy';
 import ABCDEList from './ABCDEList/ABCDEList';
 import StaffList, { StaffMemberData } from './StaffList/StaffList';
 import BedVisualization from './BedVisualization';
+import { useChatStore } from '../chatter/ChatStore';
+
 
 
 const staffData: StaffDefinition[] = [
@@ -39,11 +40,14 @@ const abcdeData: FullABCDE = {
   e: 'No external bleeding or rashes.',
 };
 
-const messages: Message[] = [{ text: "Hello", sender: "user", date: new Date() }];
-
-
 const SimSessionPage: React.FC = () => {
+  const namespace = "desired_namespace"; 
+  const initializeSocket = useChatStore((state) => state.initializeSocket);
 
+  useEffect(() => {
+    initializeSocket(namespace);
+  }, [namespace, initializeSocket]);
+  
   function handleClippySuggestion(data: { description: string, command: string }) {
     console.log(data.command);
   }
@@ -82,8 +86,8 @@ const SimSessionPage: React.FC = () => {
         </div>
         <div className='flex-auto m-2 flex flex-col gap-2' style={{ "width": "100%" }}>
           <div className="flex-auto flex gap-2">
-            <div className="chatterbox flex-auto">
-              <ChatterBox messages={messages} />
+            <div className="flex-auto">
+              <ChatterBox/>
             </div>
             <div className="flex-shrink">
               <StaffList staffData={getStaffData()} />

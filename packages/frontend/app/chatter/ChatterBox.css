@@ -1,0 +1,20 @@
+.chat-page {
+    height: 100%;
+    display: flex;
+    flex-direction: column;
+    justify-content: flex-end;
+    color: #222;
+    border-radius: 0.5rem;
+    box-shadow: inset 0px 0px 10px black;
+    padding: 0.5rem;
+    border: 1px solid transparent;
+}
+
+.message-list {
+    align-items: end;
+}
+
+.chat-input {
+    border-radius: 10px;
+    padding-left: 10px;
+}

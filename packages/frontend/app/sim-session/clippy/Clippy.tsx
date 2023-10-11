@@ -1,7 +1,8 @@
 "use client";
 
-import React from 'react';
+import React, { useState } from 'react';
 import mockData from "./mock.json";
+import { useChatStore } from '@/app/chatter/ChatStore';
 
 const clippy = mockData;
 
@@ -24,17 +25,29 @@ interface ClippyProps {
     onClick: (data: { description: string; command: string }) => void;
 }
 
-const Clippy: React.FC<ClippyProps> = ({ onClick }) => (
+const Clippy: React.FC<ClippyProps> = ({ onClick }) => {
+    const [suggestions, setSuggestions] = useState(clippy.suggestions);
+    const sendMessage = useChatStore((state) => state.sendMessage);
+
+    function handleClick(data: { description: string; command: string }) {
+        sendMessage(data.command);
+        onClick(data);
+        const updatedSuggestions = suggestions.filter((suggestion) => suggestion.command !== data.command);
+        setSuggestions(updatedSuggestions);
+    }
+
+   return (
     <div className="bg-#222 rounded-lg">
         {/* <h2 className="text-white text-sm font-bold mb-3">Advisor</h2> */}
-        {clippy.suggestions.map((suggestion, index) => (
+        {suggestions.map((suggestion, index) => (
             <Suggestion 
                 key={index}
                 data={suggestion}
-                onClick={onClick}
+                onClick={handleClick}
             />
         ))}
     </div>
-);
+   );
+};
 
 export default Clippy;
