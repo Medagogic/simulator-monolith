@@ -5,3 +5,8 @@
     justify-content: flex-end;
     color: black;
 }
+
+.chat-input {
+    border-radius: 10px;
+    padding-left: 10px;
+}

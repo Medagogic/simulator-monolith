@@ -4,10 +4,11 @@ import React from 'react';
 import { StaffDefinition } from './StaffCard';
 import EmergencyRoomVisualization from './EmergencyRoomVisualization';
 import VitalSignsDisplay from './VitalSignsDisplay';
-import { FullVitalSigns } from '@/src/api';
+import { FullABCDE, FullVitalSigns } from '@/src/api';
 import ChatterBox, { Message } from '../chatter/page';
 import "./page.css"
 import Clippy from './clippy/Clippy';
+import ABCDEList from './ABCDEList/ABCDEList';
 
 
 const staffData: StaffDefinition[] = [
@@ -19,13 +20,21 @@ const staffData: StaffDefinition[] = [
 ];
 
 const vitalSigns: FullVitalSigns = {
-  temperature: '98.6 °C',
+  temperature: '38.6 °C',
   heartRate: '75 bpm',
   respiratoryRate: '16 bpm',
   bloodPressure: '120/80 mmHg',
   bloodGlucose: '90 mg/dL',
   oxygenSaturation: '98%',
   capillaryRefill: '<2 seconds'
+};
+
+const abcdeData: FullABCDE = {
+  a: 'Airway patent.',
+  b: 'Laboured breathing, right chest pain.',
+  c: 'Tachycardic.',
+  d: 'AVPU: A',
+  e: 'No external bleeding or rashes.',
 };
 
 const messages: Message[] = [{ text: "Hello", sender: "user", date: new Date() }];
@@ -48,10 +57,10 @@ const SimSessionPage: React.FC = () => {
         <div className='flex flex-col flex-auto' style={{ "width": "100%" }}>
           <VitalSignsDisplay vitalSigns={vitalSigns} />
           <EmergencyRoomVisualization staff={staffData} />
-          {/* <div>Footer</div> */}
         </div>
         <div className='flex-auto chatterbox-outer flex flex-col' style={{ "width": "100%" }}>
-          <div>
+          <div className='flex flex-row'>
+          <ABCDEList abcdeData={abcdeData} vitalSigns={vitalSigns} />
             <Clippy onClick={(data) => {handleClippySuggestion(data)}} />
           </div>
           <div className="chatterbox flex-auto">

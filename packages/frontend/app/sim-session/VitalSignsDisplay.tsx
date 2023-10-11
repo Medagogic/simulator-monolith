@@ -17,7 +17,7 @@ const VitalSignItem: React.FC<{ label: string, value: string | null, color?: str
     return (
         <div className="flex flex-col items-center">
             <span className={`text-xs uppercase ${displayColor}`}>{label}</span>
-            <span className={`text-sm font-bold ${valueColor}`}>{displayValue}</span>
+            <span className={`text-sm font-bold ${valueColor} blinking`}>{displayValue}</span>
         </div>
     );
 };

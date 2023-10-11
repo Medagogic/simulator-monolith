@@ -1,0 +1,15 @@
+.abcde-card-container {
+    padding: 0.2rem;
+    padding-left: 0.5rem;
+}
+
+.abcde-card-title {
+    color: #ffffff88;
+}
+
+.vitals-chips-container {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 0.5rem;
+    font-size: small;
+}

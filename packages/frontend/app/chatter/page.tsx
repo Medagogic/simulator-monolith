@@ -64,6 +64,7 @@ const ChatterBox: React.FC<ChatPageProps> = ({ messages=[] }) => {
           maxHeight={200}
           onSubmit={send_message}
           rightButtons={<Button text='Send'/>}
+          className='chat-input'
         />
       </footer>
     </div>

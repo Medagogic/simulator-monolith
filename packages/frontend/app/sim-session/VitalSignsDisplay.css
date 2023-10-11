@@ -1,3 +1,13 @@
 .vitals-container {
     background: #222;
 }
+
+@keyframes blink {
+    80% { opacity: 1; }
+    90% { opacity: 0.5; }
+    100% { opacity: 1; }
+  }
+  
+  .blinking {
+    animation: blink 1s linear infinite;
+  }
