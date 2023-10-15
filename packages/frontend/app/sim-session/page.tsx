@@ -11,6 +11,7 @@ import ABCDEList from './ABCDEList/ABCDEList';
 import StaffList, { StaffMemberData } from './StaffList/StaffList';
 import PatientVisualization from './Patient/PatientVisualization';
 import { useChatStore } from '../chatter/ChatStore';
+import { ActionLog, ActionLogEntry, ActionType } from './ActionLog/ActionLog';
 
 
 
@@ -39,6 +40,13 @@ const abcdeData: FullABCDE = {
   d: 'AVPU: A',
   e: 'No external bleeding or rashes.',
 };
+
+const actionLogs: ActionLogEntry[] = [
+  { timestamp: new Date(), staffName: 'Aragon', action: 'assess capillary refill time', actionType: ActionType.Assessment },
+  { timestamp: new Date(), staffName: 'Gandalf', action: 'obtained IV access', actionType: ActionType.Intervention },
+  { timestamp: new Date(), staffName: 'Merry', action: 'called for xray prep', actionType: ActionType.Communication },
+  { timestamp: new Date(), staffName: 'Pippin', action: 'prepared 1L of saline', actionType: ActionType.Preparation },
+];
 
 const SimSessionPage: React.FC = () => {
   const namespace = "desired_namespace"; 
@@ -86,6 +94,9 @@ const SimSessionPage: React.FC = () => {
           
         </div>
         <div className='flex-auto m-2 flex flex-col gap-2' style={{ "width": "100%" }}>
+          <div>
+            <ActionLog logs={actionLogs}/>
+          </div>
           <div className="flex-auto flex gap-2">
             <div className="flex-auto">
               <ChatterBox/>
