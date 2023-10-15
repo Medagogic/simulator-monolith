@@ -1,6 +1,6 @@
 import React from 'react';
 import StaffCard, {StaffDefinition} from './StaffCard';
-import BedVisualization from './BedVisualization';
+import BedVisualization from './PatientVisualization';
 import "./EmergencyRoomVisualization.css"
 
 type EmergencyRoomVisualizationProps = {

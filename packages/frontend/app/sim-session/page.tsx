@@ -9,7 +9,7 @@ import "./page.css"
 import Clippy from './clippy/Clippy';
 import ABCDEList from './ABCDEList/ABCDEList';
 import StaffList, { StaffMemberData } from './StaffList/StaffList';
-import BedVisualization from './BedVisualization';
+import BedVisualization from './PatientVisualization';
 import { useChatStore } from '../chatter/ChatStore';
 
 
