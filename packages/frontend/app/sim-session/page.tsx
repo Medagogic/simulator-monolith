@@ -9,7 +9,7 @@ import "./page.css"
 import Clippy from './clippy/Clippy';
 import ABCDEList from './ABCDEList/ABCDEList';
 import StaffList, { StaffMemberData } from './StaffList/StaffList';
-import BedVisualization from './PatientVisualization';
+import PatientVisualization from './Patient/PatientVisualization';
 import { useChatStore } from '../chatter/ChatStore';
 
 
@@ -74,10 +74,11 @@ const SimSessionPage: React.FC = () => {
         <div className='flex flex-col flex-auto gap-2 m-2' style={{ "width": "100%" }}>
           <VitalSignsDisplay vitalSigns={vitalSigns} />
           {/* <EmergencyRoomVisualization staff={staffData} /> */}
+          <PatientVisualization/>
           <div className="flex gap-2">
-            <div className="flex-auto">
-              <BedVisualization/>
-            </div>
+            {/* <div className="flex-auto">
+              <PatientVisualization/>
+            </div> */}
             <div className="flex-auto">
               <ABCDEList abcdeData={abcdeData} vitalSigns={vitalSigns} />
             </div>
