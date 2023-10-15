@@ -13,6 +13,7 @@ import PatientVisualization from './Patient/PatientVisualization';
 import { useChatStore } from '../chatter/ChatStore';
 import { ActionLog, ActionLogEntry, ActionType } from './ActionLog/ActionLog';
 import TimeDisplay from './TimeDisplay/TimeDisplay';
+import { Objective, ObjectivesList } from './ObjectivesList/ObjectivesList';
 
 
 
@@ -47,6 +48,13 @@ const actionLogs: ActionLogEntry[] = [
   { timestamp: new Date(), staffName: 'Gandalf', action: 'obtained IV access', actionType: ActionType.Intervention },
   { timestamp: new Date(), staffName: 'Merry', action: 'called for xray prep', actionType: ActionType.Communication },
   { timestamp: new Date(), staffName: 'Pippin', action: 'prepared 1L of saline', actionType: ActionType.Preparation },
+];
+
+const objectives: Objective[] = [
+  { description: 'Assess airway as priority.', completed: true },
+  { description: 'Resolve airway obstruction.', completed: false },
+  { description: 'Administer 50mg medication A.', completed: true },
+  // ... other objectives
 ];
 
 const SimSessionPage: React.FC = () => {
@@ -116,9 +124,12 @@ const SimSessionPage: React.FC = () => {
           </div>
           
         </div>
-        <div className='flex-auto m-2 flex flex-col gap-2' style={{ "width": "50%" }}>
-          <Clippy onClick={(data) => { handleClippySuggestion(data) }} />
-        </div>
+        <div className='flex-auto m-2 flex flex-col justify-between' style={{ "width": "50%" }}>
+  <ObjectivesList objectives={objectives} />
+  <div className="self-end w-full"> {/* this line is changed */}
+    <Clippy onClick={(data) => { handleClippySuggestion(data) }} />
+  </div>
+</div>
       </div>
     </div>
   );
