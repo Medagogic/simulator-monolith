@@ -12,6 +12,7 @@ import StaffList, { StaffMemberData } from './StaffList/StaffList';
 import PatientVisualization from './Patient/PatientVisualization';
 import { useChatStore } from '../chatter/ChatStore';
 import { ActionLog, ActionLogEntry, ActionType } from './ActionLog/ActionLog';
+import TimeDisplay from './TimeDisplay/TimeDisplay';
 
 
 
@@ -49,13 +50,13 @@ const actionLogs: ActionLogEntry[] = [
 ];
 
 const SimSessionPage: React.FC = () => {
-  const namespace = "desired_namespace"; 
+  const namespace = "desired_namespace";
   const initializeSocket = useChatStore((state) => state.initializeSocket);
 
   useEffect(() => {
     initializeSocket(namespace);
   }, [namespace, initializeSocket]);
-  
+
   function handleClippySuggestion(data: { description: string, command: string }) {
     console.log(data.command);
   }
@@ -73,16 +74,27 @@ const SimSessionPage: React.FC = () => {
 
   return (
     <div style={{ width: "100%", height: "100%" }} className='flex flex-col base'>
-      <div className='toolbar prose' style={{ maxWidth: "100%" }}>
-        <h1 className="text-white">
+      <div className='toolbar' style={{ maxWidth: "100%", display: 'flex', flexDirection: 'row', alignItems: 'center', justifyContent: 'space-between' }}>
+        <div style={{ flex: 1 }}>
           Medagogic Simulator
-        </h1>
+        </div>
+
+        <div style={{ display: 'flex', justifyContent: 'center', position: 'absolute', left: 0, right: 0 }}>
+          <TimeDisplay />
+        </div>
+
+        <div style={{ flex: 1, display: 'flex', justifyContent: 'flex-end' }}>
+          <h1 className="text-white">
+
+          </h1>
+        </div>
       </div>
+
       <div style={{ "width": "100%", "height": "100%" }} className='flex flex-row'>
         <div className='flex flex-col flex-auto gap-2 m-2' style={{ "width": "100%" }}>
           <VitalSignsDisplay vitalSigns={vitalSigns} />
           {/* <EmergencyRoomVisualization staff={staffData} /> */}
-          <PatientVisualization/>
+          <PatientVisualization />
           <div className="flex gap-2">
             {/* <div className="flex-auto">
               <PatientVisualization/>
@@ -91,21 +103,21 @@ const SimSessionPage: React.FC = () => {
               <ABCDEList abcdeData={abcdeData} vitalSigns={vitalSigns} />
             </div>
           </div>
-          
+
         </div>
         <div className='flex-auto m-2 flex flex-col gap-2' style={{ "width": "100%" }}>
           <div>
-            <ActionLog logs={actionLogs}/>
+            <ActionLog logs={actionLogs} />
           </div>
           <div className="flex-auto flex gap-2">
             <div className="flex-auto">
-              <ChatterBox/>
+              <ChatterBox />
             </div>
             <div className="flex-shrink">
               <StaffList staffData={getStaffData()} />
             </div>
           </div>
-          <Clippy onClick={(data) => { handleClippySuggestion(data) }} /> 
+          <Clippy onClick={(data) => { handleClippySuggestion(data) }} />
         </div>
       </div>
     </div>
