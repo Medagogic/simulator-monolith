@@ -12,6 +12,7 @@
 
 .message-list {
     align-items: end;
+    height: 100%;
 }
 
 .chat-input {

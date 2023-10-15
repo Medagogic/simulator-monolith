@@ -62,7 +62,7 @@ export const useChatStore = create<ChatState>((set, get) => {
     sendMessage: (messageText: string) => {
       console.log('sending message', messageText);
     
-      const { socket, addMessage } = get(); // Use get() to access addMessage and socket from the state
+      const { socket, addMessage } = get();
     
       const message: Message = {
         text: messageText,
