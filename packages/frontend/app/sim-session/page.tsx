@@ -122,14 +122,14 @@ const SimSessionPage: React.FC = () => {
               <StaffList staffData={getStaffData()} />
             </div>
           </div>
-          
+
         </div>
         <div className='flex-auto m-2 flex flex-col justify-between' style={{ "width": "50%" }}>
-  <ObjectivesList objectives={objectives} />
-  <div className="self-end w-full"> {/* this line is changed */}
-    <Clippy onClick={(data) => { handleClippySuggestion(data) }} />
-  </div>
-</div>
+          <ObjectivesList objectives={objectives} />
+          <div className="self-end w-full"> {/* this line is changed */}
+            <Clippy onClick={(data) => { handleClippySuggestion(data) }} />
+          </div>
+        </div>
       </div>
     </div>
   );
