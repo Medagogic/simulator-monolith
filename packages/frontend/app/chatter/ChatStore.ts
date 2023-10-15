@@ -22,6 +22,7 @@ type ChatState = {
   setIsTyping: (status: boolean) => void;
   sendMessage: (message: string) => void;
   socket?: any;
+  attachments: any[];
 };
 
 export const useChatStore = create<ChatState>((set, get) => {
@@ -29,6 +30,7 @@ export const useChatStore = create<ChatState>((set, get) => {
     messages: [],
     currentMessage: '',
     isTyping: false,
+    attachments: [],
     initializeSocket: (namespace) => {
       const socket = io(`ws://127.0.0.1/${namespace}`);
 
