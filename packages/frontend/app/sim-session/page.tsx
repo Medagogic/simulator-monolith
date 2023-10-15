@@ -96,9 +96,6 @@ const SimSessionPage: React.FC = () => {
           {/* <EmergencyRoomVisualization staff={staffData} /> */}
           <PatientVisualization />
           <div className="flex gap-2">
-            {/* <div className="flex-auto">
-              <PatientVisualization/>
-            </div> */}
             <div className="flex-auto">
               <ABCDEList abcdeData={abcdeData} vitalSigns={vitalSigns} />
             </div>
@@ -117,6 +114,9 @@ const SimSessionPage: React.FC = () => {
               <StaffList staffData={getStaffData()} />
             </div>
           </div>
+          
+        </div>
+        <div className='flex-auto m-2 flex flex-col gap-2' style={{ "width": "50%" }}>
           <Clippy onClick={(data) => { handleClippySuggestion(data) }} />
         </div>
       </div>
