@@ -176,7 +176,17 @@ const PatientVisualization: React.FC = () => {
                         {label.component}
                     </div>
                 ))}
+
+
             </div>
+
+            <div className="absolute bottom-0 z-30 p-1 text-center w-full"> 
+                <span className="bg-black bg-opacity-70 text-white py-1 px-2 rounded"> 
+                    [Snoring sounds]
+                </span>
+            </div>
+
+
         </div>
     );
 };
