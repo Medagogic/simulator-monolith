@@ -3,7 +3,6 @@ import uvicorn
 from fastapi import FastAPI
 from fastapi.routing import APIRoute
 from fastapi.responses import HTMLResponse
-from web_architecture.sessionmanager import SessionManager
 import socketio
 import json
 from web_architecture.sessionhandler import SessionHandler_Base
@@ -20,7 +19,7 @@ class SessionServer:
             APIRoute("/save_docs", endpoint=self.save_api_json, methods=["POST"])
         ]
 
-        self.app = FastAPI(routes=main_routes)
+        self.app = FastAPI(routes=main_routes)  # type: ignore
         self.app.add_middleware(
             CORSMiddleware,
             allow_origins=["*"],
@@ -32,14 +31,12 @@ class SessionServer:
         self.sio = socketio.AsyncServer(async_mode="asgi", cors_allowed_origins="*")
         self.socket_app = socketio.ASGIApp(self.sio, socketio_path="/")
 
-        # self.session_manager = SessionManager(sio=self.sio, app=self.app, session_handler_class=session_handler_class)
         self.app.mount("/socket.io", self.socket_app)  # Here we mount socket app to main fastapi app
 
         self.static_api = static_api_class() if static_api_class else None
         self.app.include_router(self.static_api.router, prefix="/static_api") if self.static_api else None
 
-        # self.new_session_router = NewSessionRouter(self.app)
-        self.session_manager = session_handler_class(self.app)
+        self.session_manager = session_handler_class(app=self.app, sio=self.sio)
 
         asyncio.create_task(self.save_api_json())
 

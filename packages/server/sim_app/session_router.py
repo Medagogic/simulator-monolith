@@ -1,5 +1,6 @@
 
 from fastapi import Depends
+import socketio
 from packages.server.sim_app.med_sim.intervention_tracker import InterventionTracker
 from packages.server.sim_app.med_sim.simulation4d import LeafyBlossom
 from packages.server.sim_app.med_sim.simulation_time_keeper import DummyTimeKeeper
@@ -7,8 +8,8 @@ from packages.server.web_architecture.newsessionrouter import NewSessionRouter, 
 
 
 class SimSession(Session):
-    def __init__(self, session_id: str):
-        super().__init__(session_id)
+    def __init__(self, session_id: str, sio: socketio.AsyncServer):
+        super().__init__(session_id, sio)
         self.exercise_name = "Exercise 1"
 
         self.timekeeper = DummyTimeKeeper()
@@ -19,8 +20,8 @@ class SimSession(Session):
 
 
 class SimSessionRouter(NewSessionRouter[SimSession]):
-    def __init__(self, app):
-        super().__init__(app, session_cls=SimSession)
+    def __init__(self, app, sio: socketio.AsyncServer):
+        super().__init__(app=app, sio=sio, session_cls=SimSession)
 
     def init_routes(self):   
         @self.session_router.get("/medsim/vitals")

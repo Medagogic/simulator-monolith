@@ -3,17 +3,20 @@ from fastapi import APIRouter, FastAPI, Depends, HTTPException, Query
 from typing import Dict, Generic, Type, TypeVar
 
 import human_id
+import socketio
 
 
 class Session:
-    def __init__(self, session_id: str):
+    def __init__(self, session_id: str, sio: socketio.AsyncServer):
         self.session_id = session_id
+        self.sio = sio
 
 T = TypeVar('T', bound=Session)
 
 class NewSessionRouter(Generic[T]):
-    def __init__(self, app: FastAPI, session_cls: Type[T]) -> None:
+    def __init__(self, app: FastAPI, sio: socketio.AsyncServer, session_cls: Type[T]) -> None:
         self.app = app
+        self.sio = sio
         self.session_cls = session_cls
         self.existing_sessions: Dict[str, T] = {}
         self.router = APIRouter(prefix="/new-session-router")
@@ -25,7 +28,7 @@ class NewSessionRouter(Generic[T]):
 
     def create_session(self, session_id: str) -> T:
         if session_id not in self.existing_sessions:
-            session = self.session_cls(session_id)
+            session = self.session_cls(session_id, self.sio)
             self.existing_sessions[session_id] = session
             return session
         else:
