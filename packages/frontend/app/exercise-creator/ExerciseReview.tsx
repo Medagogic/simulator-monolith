@@ -3,8 +3,7 @@
 import { useState, FC } from 'react';
 import { parse as marked } from 'marked';
 import "./ExerciseReview.css";
-import SectionWrapper, { SectionStatus } from './SectionWrapper';
-import { VitalSigns, vitalSignsLabels } from './ExerciseTypes';
+import SectionWrapper from './SectionWrapper';
 import { useExerciseStore } from './ExerciseStore';
 import ABCDERenderer from './ABCDERenderer';
 import VitalsRenderer from './VitalsRenderer';

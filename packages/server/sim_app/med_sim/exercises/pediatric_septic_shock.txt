@@ -1,0 +1,55 @@
+# Patient Profile
+## Basic Information
+- Age: 4 years old
+- Sex: Female
+- Weight: 15 kg
+- Height: 100 cm
+
+## Background Information
+Fever and cough for the last 4 days. Last 24 hours tired, not showing interest in anything, decreased intake of food and liquids, no urinary output since yesterday. Has been using her inhalers regularly the last few days without improvement.
+
+# Simulation Instructions
+- The patient is suffering from sepsis. The patient's condition will deteriorate rapidly if not treated, resulting in seizure.
+- No change in patient state if bronchodialators are administered.
+- The patient's mother is present and can answer basic questions about the patient's history - is extremely worried, panicked, stressed - "hasn't been herself today". Her daughter (the patient)'s name is Greta.
+- When first given fluids, rapid change: pulse 150 bpm, BP 80/50, cap refill 4 seconds
+- Second fluids: pulse to 140bpm
+- No immediate change if antibiotics are administered.
+
+# Current Patient State
+## Vital Signs
+- Temperature: 38.4°C
+- Heart Rate: 170 bpm
+- Respiratory Rate: 50 breaths/min
+- Blood Pressure: 70/50 mmHg
+- Blood Glucose: 240 mg/dL
+- Oxygen Saturation: 85%
+- Capillary Refill: 3 seconds
+
+## ABCDE
+- A: Snoring/gurgling sounds. No free airway.
+- B: Intercostal and jugular retractions. Decreased air entry with bilateral ronchi and slight wheezing, symmetrical.
+- C: Greypale skin. Cold and slightly mottled extremities. No signs of organ enlargement.
+- D: P on AVPU scale (responds to pain stimuli). Pupils are normal.
+- E: No rash, no bruising or sores.
+
+# State Progression
+## Future Events
+- Tonic-clonic seizure if blood glucose isn't resolved by @ 8 minutes
+- If seizure is resolved, patient enters persistent hypotension
+
+## Vital Signs
+- Temperature: 39.5°C @ 10 minutes
+- Heart Rate: 220 bpm @ 5 minutes
+- Respiratory Rate: 55 breaths/min @ 7 minutes
+- Blood Pressure: 60/30 mmHg @ 3 minutes
+- Blood Glucose: No change
+- Oxygen Saturation: 63% @ 5 minutes
+- Capillary Refill: 6 seconds @ 3 minutes
+
+## ABCDE
+- A: No change
+- B: No change
+- C: No change
+- D: U on AVPU scale (unresponsive). @ 5 minutes
+- E: No change

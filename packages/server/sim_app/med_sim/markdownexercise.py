@@ -73,7 +73,6 @@ def _parse_state_progression(data_dict: Dict) -> ProgressionDetails:
 
 
 def _markdown_dict_to_markdown_exercise(data_dict: Dict):
-    print(data_dict)
     patient_profile = data_dict["Patient Profile"]
     basic_info = parse_basic_info_list(patient_profile["Basic Information"])
     background_info = patient_profile["Background Information"]

@@ -1,8 +1,8 @@
 from __future__ import annotations
 from fastapi import APIRouter
 
-from sim_app.exercise_creation.imported.simulation_types import Vitals
-from sim_app.exercise_creation.exercise_creation_types import ExerciseCreationParams, GeneratedExerciseData, FullVitalSigns, FullABCDE, FutureState
+from packages.server.sim_app.exercise_creation.imported.simulation_types_old import Vitals
+from sim_app.exercise_creation.exercise_creation_types import ExerciseCreationParams, GeneratedExerciseData, ExerciseCreationVitalSigns, ExerciseCreationABCDE, ExerciseCreationFutureState
 from gpt.gpt_api import gpt, GPTMessage, MODEL_GPT4
 import asyncio
 
@@ -182,7 +182,7 @@ Conditions/sympoms: {params.exerciseDescription}
             basicInfo=params.basic_info,
             backgroundInformation=exercise.patient_background,
             simulationInstructions=sim_instructions,
-            vitalSigns=FullVitalSigns(
+            vitalSigns=ExerciseCreationVitalSigns(
                 temperature=f"{exercise.current_state.vital_signs.temperature} °C",
                 heartRate=f"{exercise.current_state.vital_signs.heart_rate} bpm",
                 respiratoryRate=f"{exercise.current_state.vital_signs.respiratory_rate} breaths/min",
@@ -191,16 +191,16 @@ Conditions/sympoms: {params.exerciseDescription}
                 oxygenSaturation=f"{exercise.current_state.vital_signs.oxygen_saturation} %",
                 capillaryRefill=f"{exercise.current_state.vital_signs.capillary_refill} seconds"
             ),
-            ABCDE=FullABCDE(
+            ABCDE=ExerciseCreationABCDE(
                 A=exercise.current_state.abcde.a,
                 B=exercise.current_state.abcde.b,
                 C=exercise.current_state.abcde.c,
                 D=exercise.current_state.abcde.d,
                 E=exercise.current_state.abcde.e
             ),
-            future=FutureState(
+            future=ExerciseCreationFutureState(
                 events=progression_events,
-                vitalSigns=FullVitalSigns(
+                vitalSigns=ExerciseCreationVitalSigns(
                     temperature="?",
                     heartRate="",
                     respiratoryRate="",
@@ -209,7 +209,7 @@ Conditions/sympoms: {params.exerciseDescription}
                     oxygenSaturation="",
                     capillaryRefill=""
                 ),
-                ABCDE=FullABCDE(
+                ABCDE=ExerciseCreationABCDE(
                     A="?",
                     B="",
                     C="",

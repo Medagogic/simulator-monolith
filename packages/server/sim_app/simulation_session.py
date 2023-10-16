@@ -6,6 +6,7 @@ import asyncio
 import socketio
 from sim_app.webhandler_chat import ChatWebHandler
 from web_architecture.sessionhandler import SessionHandler_Base
+from sim_app.med_sim._web_wrapper import MedsimWebHandler
 
 class SimulationSessionState(enum.Enum):
     NOT_STARTED = 0
@@ -24,6 +25,7 @@ class SimulationSessionHandler(SessionHandler_Base):
         super().__init__(session_id, sio)
         self.data = SimulationSessionData(exercise_name="Exercise 1")
         self.chat_handler = ChatWebHandler(self)
+        self.medsim_handler = MedsimWebHandler(self)
 
         self.start()
 

@@ -3,6 +3,8 @@ from dataclasses import dataclass
 from enum import Enum
 import re
 from typing import Any, Dict, Final, List, Optional, Union
+
+from pydantic import BaseModel, Field
 class Vitals(str, Enum):
     TEMPERATURE: Final = "temperature"
     HEART_RATE: Final = "heart_rate"
@@ -29,15 +31,40 @@ class Basics:
     HEIGHT: Final = "height"
 
 
-class VitalSigns:
-    def __init__(self, temperature: float, heart_rate: float, respiratory_rate: float, blood_pressure: dict, blood_glucose: float, oxygen_saturation: float, capillary_refill: float):
-        self.temperature = temperature
-        self.heart_rate = heart_rate
-        self.respiratory_rate = respiratory_rate
-        self.blood_pressure = blood_pressure
-        self.oxygen_saturation = oxygen_saturation
-        self.blood_glucose = blood_glucose
-        self.capillary_refill = capillary_refill
+class BloodPressureModel(BaseModel):
+    systolic: float
+    diastolic: float
+
+    def vitals_dict(self) -> Dict[Vitals, float]:
+        return {
+            Vitals.SYSTOLIC: self.systolic,
+            Vitals.DIASTOLIC: self.diastolic
+        }
+
+class VitalSigns(BaseModel):
+    temperature: float = Field(..., description="The body temperature in degrees Celsius or Fahrenheit")
+    heart_rate: float = Field(..., description="The heart rate in beats per minute")
+    respiratory_rate: float = Field(..., description="The number of breaths taken per minute")
+    blood_pressure: BloodPressureModel = Field(..., description="Blood pressure measurements")
+    blood_glucose: float = Field(..., description="The blood glucose level")
+    oxygen_saturation: float = Field(..., description="The oxygen saturation in percentage")
+    capillary_refill: float = Field(..., description="The capillary refill time in seconds")
+    
+    class Config:
+        json_schema_extra = {
+            "example": {
+                "temperature": 38.6,
+                "heart_rate": 75,
+                "respiratory_rate": 16,
+                "blood_pressure": {
+                    "systolic": 120,
+                    "diastolic": 80
+                },
+                "blood_glucose": 5.5,
+                "oxygen_saturation": 98,
+                "capillary_refill": 2
+            }
+        }
 
     def __str__(self) -> str:
         return f"""===== VitalSigns
@@ -56,16 +83,16 @@ class VitalSigns:
         ]
         return "\n".join(markdown)
     
-    def dict(self) -> Dict[Vitals, Any]:
-        return {
-            Vitals.TEMPERATURE: self.temperature,
-            Vitals.HEART_RATE: self.heart_rate,
-            Vitals.RESPIRATORY_RATE: self.respiratory_rate,
-            Vitals.BLOOD_PRESSURE: self.blood_pressure,
-            Vitals.OXYGEN_SATURATION: self.oxygen_saturation,
-            Vitals.BLOOD_GLUCOSE: self.blood_glucose,
-            Vitals.CAPILLARY_REFILL: self.capillary_refill
-        }
+    # def dict(self) -> Dict[Vitals, Any]:
+    #     return {
+    #         Vitals.TEMPERATURE: self.temperature,
+    #         Vitals.HEART_RATE: self.heart_rate,
+    #         Vitals.RESPIRATORY_RATE: self.respiratory_rate,
+    #         Vitals.BLOOD_PRESSURE: self.blood_pressure,
+    #         Vitals.OXYGEN_SATURATION: self.oxygen_saturation,
+    #         Vitals.BLOOD_GLUCOSE: self.blood_glucose,
+    #         Vitals.CAPILLARY_REFILL: self.capillary_refill
+    #     }
     
     def update_from_dict(self, vitals_dict: Dict[Vitals, Any]) -> None:
         if Vitals.TEMPERATURE in vitals_dict:
@@ -202,9 +229,14 @@ def parse_basic_info_list(basic_info_list: List[str]) -> "BasicInfo":
     return BasicInfo(**basic_info)  # type: ignore
     
 
-def interpolate_values(value0: Union[float, dict], value1: Union[float, dict], t: float) -> Union[float, dict]:
-    if type(value0) != type(value1):
+def interpolate_values(value0: Union[float, BloodPressureModel], value1: Union[float, dict], t: float) -> Union[float, dict]:
+    if type(value0) == type(float) and type(value1) != type(float):
         raise TypeError("value0 and value1 must be the same type")
+    elif isinstance(value0, BloodPressureModel) and not isinstance(value1, dict):
+        raise TypeError("value0 and value1 must be compatible types")
+    
+    if isinstance(value0, BloodPressureModel):
+        value0 = value0.vitals_dict()
 
     if isinstance(value0, float):
         return value0 * (1 - t) + value1 * t    # type: ignore

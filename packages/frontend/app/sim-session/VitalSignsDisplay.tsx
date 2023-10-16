@@ -1,12 +1,15 @@
 // components/VitalSignsDisplay.tsx
+"use client"
 
-import { FullVitalSigns } from '@/src/api';
-import React from 'react';
+import { VitalSigns, DefaultApi, Configuration } from '@/src/api';
+import React, { useEffect } from 'react';
 import "./VitalSignsDisplay.css"
 
 interface Props {
-    vitalSigns: FullVitalSigns;
+    vitalSigns: VitalSigns;
 }
+
+const api = new DefaultApi(new Configuration({ basePath: "http://localhost:5000" }));
 
 const VitalSignItem: React.FC<{ label: string, value: string | null, color?: string }> = ({ label, value, color = "text-white" }) => {
     // Check if the value is null and display "Disconnected" if it is
@@ -23,15 +26,25 @@ const VitalSignItem: React.FC<{ label: string, value: string | null, color?: str
 };
 
 const VitalSignsDisplay: React.FC<Props> = ({ vitalSigns }) => {
+
+    useEffect(() => {
+        // const interval = setInterval(() => {
+        //     api.().then((vitalSigns) => {
+        //         console.log(vitalSigns);
+        //     });
+        // }, 1000);
+        // return () => clearInterval(interval);
+    }, []);
+
     return (
         <div className="flex justify-between p-2 text-white shadow-lg w-full vitals-container">
-            <VitalSignItem label="Temp" value={vitalSigns.temperature} />
-            <VitalSignItem label="Heart Rate" value={vitalSigns.heartRate} color="text-red-500" />
-            <VitalSignItem label="Resp Rate" value={vitalSigns.respiratoryRate} />
-            <VitalSignItem label="BP" value={vitalSigns.bloodPressure} />
-            <VitalSignItem label="Glucose" value={vitalSigns.bloodGlucose} />
-            <VitalSignItem label="O2 Sat" value={vitalSigns.oxygenSaturation} color="text-blue-500" />
-            <VitalSignItem label="Cap Refill" value={vitalSigns.capillaryRefill} />
+            <VitalSignItem label="Temp" value={`${vitalSigns.temperature}°C`} />
+            <VitalSignItem label="Heart Rate" value={`${vitalSigns.heartRate} BPM`} color="text-red-500" />
+            <VitalSignItem label="Resp Rate" value={`${vitalSigns.respiratoryRate} BPM`} />
+            <VitalSignItem label="BP" value={`${vitalSigns.bloodPressure.systolic}/${vitalSigns.bloodPressure.diastolic}`} />
+            <VitalSignItem label="Glucose" value={`${vitalSigns.bloodGlucose} mg/dL`} />
+            <VitalSignItem label="O2 Sat" value={`${vitalSigns.oxygenSaturation}%`} color="text-blue-500" />
+            <VitalSignItem label="Cap Refill" value={`${vitalSigns.capillaryRefill} sec`} />
         </div>
     );
 };

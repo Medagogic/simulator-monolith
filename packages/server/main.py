@@ -6,6 +6,7 @@ from web_architecture.sessionserver import SessionServer
 
 def gunicorn():
     server = SessionServer(session_handler_class=SimulationSessionHandler, static_api_class=MedagogicAPI)
+    server.session_manager.create_session(session_id="default-session")
     return server.app
 
 

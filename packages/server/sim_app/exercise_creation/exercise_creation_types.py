@@ -1,17 +1,17 @@
 from pydantic import BaseModel
 
-class PatientBasicInfo(BaseModel):
+class ExerciseCreationPatientBasicInfo(BaseModel):
     age: str
     sex: str
     weight: str
     height: str
 
 class ExerciseCreationParams(BaseModel):
-    basic_info: PatientBasicInfo
+    basic_info: ExerciseCreationPatientBasicInfo
     exerciseDescription: str
     simulationInstructions: str
 
-class FullVitalSigns(BaseModel):
+class ExerciseCreationVitalSigns(BaseModel):
     temperature: str
     heartRate: str
     respiratoryRate: str
@@ -20,23 +20,23 @@ class FullVitalSigns(BaseModel):
     oxygenSaturation: str
     capillaryRefill: str
 
-class FullABCDE(BaseModel):
+class ExerciseCreationABCDE(BaseModel):
     A: str
     B: str
     C: str
     D: str
     E: str
 
-class FutureState(BaseModel):
+class ExerciseCreationFutureState(BaseModel):
     events: str
-    vitalSigns: FullVitalSigns
-    ABCDE: FullABCDE
+    vitalSigns: ExerciseCreationVitalSigns
+    ABCDE: ExerciseCreationABCDE
 
 class GeneratedExerciseData(BaseModel):
     patientName: str
-    basicInfo: PatientBasicInfo
+    basicInfo: ExerciseCreationPatientBasicInfo
     simulationInstructions: str
     backgroundInformation: str
-    vitalSigns: FullVitalSigns
-    ABCDE: FullABCDE
-    future: FutureState
+    vitalSigns: ExerciseCreationVitalSigns
+    ABCDE: ExerciseCreationABCDE
+    future: ExerciseCreationFutureState

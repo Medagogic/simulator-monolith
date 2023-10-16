@@ -13,12 +13,12 @@
  */
 
 import { exists, mapValues } from '../runtime';
-import type { PatientBasicInfo } from './PatientBasicInfo';
+import type { ExerciseCreationPatientBasicInfo } from './ExerciseCreationPatientBasicInfo';
 import {
-    PatientBasicInfoFromJSON,
-    PatientBasicInfoFromJSONTyped,
-    PatientBasicInfoToJSON,
-} from './PatientBasicInfo';
+    ExerciseCreationPatientBasicInfoFromJSON,
+    ExerciseCreationPatientBasicInfoFromJSONTyped,
+    ExerciseCreationPatientBasicInfoToJSON,
+} from './ExerciseCreationPatientBasicInfo';
 
 /**
  * 
@@ -28,10 +28,10 @@ import {
 export interface ExerciseCreationParams {
     /**
      * 
-     * @type {PatientBasicInfo}
+     * @type {ExerciseCreationPatientBasicInfo}
      * @memberof ExerciseCreationParams
      */
-    basicInfo: PatientBasicInfo;
+    basicInfo: ExerciseCreationPatientBasicInfo;
     /**
      * 
      * @type {string}
@@ -68,7 +68,7 @@ export function ExerciseCreationParamsFromJSONTyped(json: any, ignoreDiscriminat
     }
     return {
         
-        'basicInfo': PatientBasicInfoFromJSON(json['basic_info']),
+        'basicInfo': ExerciseCreationPatientBasicInfoFromJSON(json['basic_info']),
         'exerciseDescription': json['exerciseDescription'],
         'simulationInstructions': json['simulationInstructions'],
     };
@@ -83,7 +83,7 @@ export function ExerciseCreationParamsToJSON(value?: ExerciseCreationParams | nu
     }
     return {
         
-        'basic_info': PatientBasicInfoToJSON(value.basicInfo),
+        'basic_info': ExerciseCreationPatientBasicInfoToJSON(value.basicInfo),
         'exerciseDescription': value.exerciseDescription,
         'simulationInstructions': value.simulationInstructions,
     };

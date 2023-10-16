@@ -19,6 +19,7 @@ import type {
   GeneratedExerciseData,
   HTTPValidationError,
   SessionData,
+  VitalSigns,
 } from '../models/index';
 import {
     ExerciseCreationParamsFromJSON,
@@ -29,6 +30,8 @@ import {
     HTTPValidationErrorToJSON,
     SessionDataFromJSON,
     SessionDataToJSON,
+    VitalSignsFromJSON,
+    VitalSignsToJSON,
 } from '../models/index';
 
 export interface HandleGenerateStaticApiGenerateExercisePostRequest {
@@ -99,6 +102,118 @@ export class DefaultApi extends runtime.BaseAPI {
     }
 
     /**
+     * Handle Get Time
+     */
+    async handleGetTimeSessionsDefaultSessionMedsimTimeGetRaw(initOverrides?: RequestInit | runtime.InitOverrideFunction): Promise<runtime.ApiResponse<number>> {
+        const queryParameters: any = {};
+
+        const headerParameters: runtime.HTTPHeaders = {};
+
+        const response = await this.request({
+            path: `/sessions/default-session/medsim/time`,
+            method: 'GET',
+            headers: headerParameters,
+            query: queryParameters,
+        }, initOverrides);
+
+        if (this.isJsonMime(response.headers.get('content-type'))) {
+            return new runtime.JSONApiResponse<number>(response);
+        } else {
+            return new runtime.TextApiResponse(response) as any;
+        }
+    }
+
+    /**
+     * Handle Get Time
+     */
+    async handleGetTimeSessionsDefaultSessionMedsimTimeGet(initOverrides?: RequestInit | runtime.InitOverrideFunction): Promise<number> {
+        const response = await this.handleGetTimeSessionsDefaultSessionMedsimTimeGetRaw(initOverrides);
+        return await response.value();
+    }
+
+    /**
+     * Handle Get Time
+     */
+    async handleGetTimeSessionsSessionIdMedsimTimeGetRaw(initOverrides?: RequestInit | runtime.InitOverrideFunction): Promise<runtime.ApiResponse<number>> {
+        const queryParameters: any = {};
+
+        const headerParameters: runtime.HTTPHeaders = {};
+
+        const response = await this.request({
+            path: `/sessions/<session_id>/medsim/time`,
+            method: 'GET',
+            headers: headerParameters,
+            query: queryParameters,
+        }, initOverrides);
+
+        if (this.isJsonMime(response.headers.get('content-type'))) {
+            return new runtime.JSONApiResponse<number>(response);
+        } else {
+            return new runtime.TextApiResponse(response) as any;
+        }
+    }
+
+    /**
+     * Handle Get Time
+     */
+    async handleGetTimeSessionsSessionIdMedsimTimeGet(initOverrides?: RequestInit | runtime.InitOverrideFunction): Promise<number> {
+        const response = await this.handleGetTimeSessionsSessionIdMedsimTimeGetRaw(initOverrides);
+        return await response.value();
+    }
+
+    /**
+     * Handle Get Vitals
+     */
+    async handleGetVitalsSessionsDefaultSessionMedsimVitalsGetRaw(initOverrides?: RequestInit | runtime.InitOverrideFunction): Promise<runtime.ApiResponse<VitalSigns>> {
+        const queryParameters: any = {};
+
+        const headerParameters: runtime.HTTPHeaders = {};
+
+        const response = await this.request({
+            path: `/sessions/default-session/medsim/vitals`,
+            method: 'GET',
+            headers: headerParameters,
+            query: queryParameters,
+        }, initOverrides);
+
+        return new runtime.JSONApiResponse(response, (jsonValue) => VitalSignsFromJSON(jsonValue));
+    }
+
+    /**
+     * Handle Get Vitals
+     */
+    async handleGetVitalsSessionsDefaultSessionMedsimVitalsGet(initOverrides?: RequestInit | runtime.InitOverrideFunction): Promise<VitalSigns> {
+        const response = await this.handleGetVitalsSessionsDefaultSessionMedsimVitalsGetRaw(initOverrides);
+        return await response.value();
+    }
+
+    /**
+     * Handle Get Vitals
+     */
+    async handleGetVitalsSessionsSessionIdMedsimVitalsGetRaw(initOverrides?: RequestInit | runtime.InitOverrideFunction): Promise<runtime.ApiResponse<VitalSigns>> {
+        const queryParameters: any = {};
+
+        const headerParameters: runtime.HTTPHeaders = {};
+
+        const response = await this.request({
+            path: `/sessions/<session_id>/medsim/vitals`,
+            method: 'GET',
+            headers: headerParameters,
+            query: queryParameters,
+        }, initOverrides);
+
+        return new runtime.JSONApiResponse(response, (jsonValue) => VitalSignsFromJSON(jsonValue));
+    }
+
+    /**
+     * Handle Get Vitals
+     */
+    async handleGetVitalsSessionsSessionIdMedsimVitalsGet(initOverrides?: RequestInit | runtime.InitOverrideFunction): Promise<VitalSigns> {
+        const response = await this.handleGetVitalsSessionsSessionIdMedsimVitalsGetRaw(initOverrides);
+        return await response.value();
+    }
+
+    /**
      * Handle List Sessions
      */
     async handleListSessionsSessionListGetRaw(initOverrides?: RequestInit | runtime.InitOverrideFunction): Promise<runtime.ApiResponse<Array<SessionData>>> {
@@ -122,6 +237,31 @@ export class DefaultApi extends runtime.BaseAPI {
     async handleListSessionsSessionListGet(initOverrides?: RequestInit | runtime.InitOverrideFunction): Promise<Array<SessionData>> {
         const response = await this.handleListSessionsSessionListGetRaw(initOverrides);
         return await response.value();
+    }
+
+    /**
+     * Handle Test
+     */
+    async handleTestSessionsDefaultSessionChatTestGetGetRaw(initOverrides?: RequestInit | runtime.InitOverrideFunction): Promise<runtime.ApiResponse<void>> {
+        const queryParameters: any = {};
+
+        const headerParameters: runtime.HTTPHeaders = {};
+
+        const response = await this.request({
+            path: `/sessions/default-session/chat/test-get`,
+            method: 'GET',
+            headers: headerParameters,
+            query: queryParameters,
+        }, initOverrides);
+
+        return new runtime.VoidApiResponse(response);
+    }
+
+    /**
+     * Handle Test
+     */
+    async handleTestSessionsDefaultSessionChatTestGetGet(initOverrides?: RequestInit | runtime.InitOverrideFunction): Promise<void> {
+        await this.handleTestSessionsDefaultSessionChatTestGetGetRaw(initOverrides);
     }
 
     /**

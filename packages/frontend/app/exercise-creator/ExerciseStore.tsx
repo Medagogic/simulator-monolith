@@ -1,4 +1,3 @@
-// import { GeneratedExerciseData } from "./ExerciseTypes";
 import { GeneratedExerciseData } from '@/src/api';
 import { create } from 'zustand';
 

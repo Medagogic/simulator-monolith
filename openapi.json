@@ -97,6 +97,59 @@
                 }
             }
         },
+        "/sessions/default-session/chat/test-get": {
+            "get": {
+                "summary": "Handle Test",
+                "operationId": "handle_test_sessions_default_session_chat_test_get_get",
+                "responses": {
+                    "200": {
+                        "description": "Successful Response",
+                        "content": {
+                            "application/json": {
+                                "schema": {}
+                            }
+                        }
+                    }
+                }
+            }
+        },
+        "/sessions/default-session/medsim/vitals": {
+            "get": {
+                "summary": "Handle Get Vitals",
+                "operationId": "handle_get_vitals_sessions_default_session_medsim_vitals_get",
+                "responses": {
+                    "200": {
+                        "description": "Successful Response",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/VitalSigns"
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+        },
+        "/sessions/default-session/medsim/time": {
+            "get": {
+                "summary": "Handle Get Time",
+                "operationId": "handle_get_time_sessions_default_session_medsim_time_get",
+                "responses": {
+                    "200": {
+                        "description": "Successful Response",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "type": "number",
+                                    "title": "Response Handle Get Time Sessions Default Session Medsim Time Get"
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+        },
         "/sessions/<session_id>/chat/test-get": {
             "get": {
                 "summary": "Handle Test",
@@ -112,33 +165,66 @@
                     }
                 }
             }
+        },
+        "/sessions/<session_id>/medsim/vitals": {
+            "get": {
+                "summary": "Handle Get Vitals",
+                "operationId": "handle_get_vitals_sessions__session_id__medsim_vitals_get",
+                "responses": {
+                    "200": {
+                        "description": "Successful Response",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/VitalSigns"
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+        },
+        "/sessions/<session_id>/medsim/time": {
+            "get": {
+                "summary": "Handle Get Time",
+                "operationId": "handle_get_time_sessions__session_id__medsim_time_get",
+                "responses": {
+                    "200": {
+                        "description": "Successful Response",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "type": "number",
+                                    "title": "Response Handle Get Time Sessions  Session Id  Medsim Time Get"
+                                }
+                            }
+                        }
+                    }
+                }
+            }
         }
     },
     "components": {
         "schemas": {
-            "ExerciseCreationParams": {
+            "BloodPressureModel": {
                 "properties": {
-                    "basic_info": {
-                        "$ref": "#/components/schemas/PatientBasicInfo"
+                    "systolic": {
+                        "type": "number",
+                        "title": "Systolic"
                     },
-                    "exerciseDescription": {
-                        "type": "string",
-                        "title": "Exercisedescription"
-                    },
-                    "simulationInstructions": {
-                        "type": "string",
-                        "title": "Simulationinstructions"
+                    "diastolic": {
+                        "type": "number",
+                        "title": "Diastolic"
                     }
                 },
                 "type": "object",
                 "required": [
-                    "basic_info",
-                    "exerciseDescription",
-                    "simulationInstructions"
+                    "systolic",
+                    "diastolic"
                 ],
-                "title": "ExerciseCreationParams"
+                "title": "BloodPressureModel"
             },
-            "FullABCDE": {
+            "ExerciseCreationABCDE": {
                 "properties": {
                     "A": {
                         "type": "string",
@@ -169,9 +255,80 @@
                     "D",
                     "E"
                 ],
-                "title": "FullABCDE"
+                "title": "ExerciseCreationABCDE"
             },
-            "FullVitalSigns": {
+            "ExerciseCreationFutureState": {
+                "properties": {
+                    "events": {
+                        "type": "string",
+                        "title": "Events"
+                    },
+                    "vitalSigns": {
+                        "$ref": "#/components/schemas/ExerciseCreationVitalSigns"
+                    },
+                    "ABCDE": {
+                        "$ref": "#/components/schemas/ExerciseCreationABCDE"
+                    }
+                },
+                "type": "object",
+                "required": [
+                    "events",
+                    "vitalSigns",
+                    "ABCDE"
+                ],
+                "title": "ExerciseCreationFutureState"
+            },
+            "ExerciseCreationParams": {
+                "properties": {
+                    "basic_info": {
+                        "$ref": "#/components/schemas/ExerciseCreationPatientBasicInfo"
+                    },
+                    "exerciseDescription": {
+                        "type": "string",
+                        "title": "Exercisedescription"
+                    },
+                    "simulationInstructions": {
+                        "type": "string",
+                        "title": "Simulationinstructions"
+                    }
+                },
+                "type": "object",
+                "required": [
+                    "basic_info",
+                    "exerciseDescription",
+                    "simulationInstructions"
+                ],
+                "title": "ExerciseCreationParams"
+            },
+            "ExerciseCreationPatientBasicInfo": {
+                "properties": {
+                    "age": {
+                        "type": "string",
+                        "title": "Age"
+                    },
+                    "sex": {
+                        "type": "string",
+                        "title": "Sex"
+                    },
+                    "weight": {
+                        "type": "string",
+                        "title": "Weight"
+                    },
+                    "height": {
+                        "type": "string",
+                        "title": "Height"
+                    }
+                },
+                "type": "object",
+                "required": [
+                    "age",
+                    "sex",
+                    "weight",
+                    "height"
+                ],
+                "title": "ExerciseCreationPatientBasicInfo"
+            },
+            "ExerciseCreationVitalSigns": {
                 "properties": {
                     "temperature": {
                         "type": "string",
@@ -212,28 +369,7 @@
                     "oxygenSaturation",
                     "capillaryRefill"
                 ],
-                "title": "FullVitalSigns"
-            },
-            "FutureState": {
-                "properties": {
-                    "events": {
-                        "type": "string",
-                        "title": "Events"
-                    },
-                    "vitalSigns": {
-                        "$ref": "#/components/schemas/FullVitalSigns"
-                    },
-                    "ABCDE": {
-                        "$ref": "#/components/schemas/FullABCDE"
-                    }
-                },
-                "type": "object",
-                "required": [
-                    "events",
-                    "vitalSigns",
-                    "ABCDE"
-                ],
-                "title": "FutureState"
+                "title": "ExerciseCreationVitalSigns"
             },
             "GeneratedExerciseData": {
                 "properties": {
@@ -242,7 +378,7 @@
                         "title": "Patientname"
                     },
                     "basicInfo": {
-                        "$ref": "#/components/schemas/PatientBasicInfo"
+                        "$ref": "#/components/schemas/ExerciseCreationPatientBasicInfo"
                     },
                     "simulationInstructions": {
                         "type": "string",
@@ -253,13 +389,13 @@
                         "title": "Backgroundinformation"
                     },
                     "vitalSigns": {
-                        "$ref": "#/components/schemas/FullVitalSigns"
+                        "$ref": "#/components/schemas/ExerciseCreationVitalSigns"
                     },
                     "ABCDE": {
-                        "$ref": "#/components/schemas/FullABCDE"
+                        "$ref": "#/components/schemas/ExerciseCreationABCDE"
                     },
                     "future": {
-                        "$ref": "#/components/schemas/FutureState"
+                        "$ref": "#/components/schemas/ExerciseCreationFutureState"
                     }
                 },
                 "type": "object",
@@ -286,34 +422,6 @@
                 },
                 "type": "object",
                 "title": "HTTPValidationError"
-            },
-            "PatientBasicInfo": {
-                "properties": {
-                    "age": {
-                        "type": "string",
-                        "title": "Age"
-                    },
-                    "sex": {
-                        "type": "string",
-                        "title": "Sex"
-                    },
-                    "weight": {
-                        "type": "string",
-                        "title": "Weight"
-                    },
-                    "height": {
-                        "type": "string",
-                        "title": "Height"
-                    }
-                },
-                "type": "object",
-                "required": [
-                    "age",
-                    "sex",
-                    "weight",
-                    "height"
-                ],
-                "title": "PatientBasicInfo"
             },
             "SessionData": {
                 "properties": {
@@ -373,6 +481,71 @@
                     "type"
                 ],
                 "title": "ValidationError"
+            },
+            "VitalSigns": {
+                "properties": {
+                    "temperature": {
+                        "type": "number",
+                        "title": "Temperature",
+                        "description": "The body temperature in degrees Celsius or Fahrenheit"
+                    },
+                    "heart_rate": {
+                        "type": "number",
+                        "title": "Heart Rate",
+                        "description": "The heart rate in beats per minute"
+                    },
+                    "respiratory_rate": {
+                        "type": "number",
+                        "title": "Respiratory Rate",
+                        "description": "The number of breaths taken per minute"
+                    },
+                    "blood_pressure": {
+                        "allOf": [
+                            {
+                                "$ref": "#/components/schemas/BloodPressureModel"
+                            }
+                        ],
+                        "description": "Blood pressure measurements"
+                    },
+                    "blood_glucose": {
+                        "type": "number",
+                        "title": "Blood Glucose",
+                        "description": "The blood glucose level"
+                    },
+                    "oxygen_saturation": {
+                        "type": "number",
+                        "title": "Oxygen Saturation",
+                        "description": "The oxygen saturation in percentage"
+                    },
+                    "capillary_refill": {
+                        "type": "number",
+                        "title": "Capillary Refill",
+                        "description": "The capillary refill time in seconds"
+                    }
+                },
+                "type": "object",
+                "required": [
+                    "temperature",
+                    "heart_rate",
+                    "respiratory_rate",
+                    "blood_pressure",
+                    "blood_glucose",
+                    "oxygen_saturation",
+                    "capillary_refill"
+                ],
+                "title": "VitalSigns",
+                "example": {
+                    "blood_glucose": 5.5,
+                    "blood_pressure": {
+                        "diastolic": 80,
+                        "systolic": 120
+                    },
+                    "capillary_refill": 2,
+                    "heart_rate": 75,
+                    "oxygen_saturation": 98,
+                    "respiratory_rate": 16,
+                    "temperature": 38.6
+                }
             }
         }
     }

@@ -13,30 +13,30 @@
  */
 
 import { exists, mapValues } from '../runtime';
-import type { FullABCDE } from './FullABCDE';
+import type { ExerciseCreationABCDE } from './ExerciseCreationABCDE';
 import {
-    FullABCDEFromJSON,
-    FullABCDEFromJSONTyped,
-    FullABCDEToJSON,
-} from './FullABCDE';
-import type { FullVitalSigns } from './FullVitalSigns';
+    ExerciseCreationABCDEFromJSON,
+    ExerciseCreationABCDEFromJSONTyped,
+    ExerciseCreationABCDEToJSON,
+} from './ExerciseCreationABCDE';
+import type { ExerciseCreationFutureState } from './ExerciseCreationFutureState';
 import {
-    FullVitalSignsFromJSON,
-    FullVitalSignsFromJSONTyped,
-    FullVitalSignsToJSON,
-} from './FullVitalSigns';
-import type { FutureState } from './FutureState';
+    ExerciseCreationFutureStateFromJSON,
+    ExerciseCreationFutureStateFromJSONTyped,
+    ExerciseCreationFutureStateToJSON,
+} from './ExerciseCreationFutureState';
+import type { ExerciseCreationPatientBasicInfo } from './ExerciseCreationPatientBasicInfo';
 import {
-    FutureStateFromJSON,
-    FutureStateFromJSONTyped,
-    FutureStateToJSON,
-} from './FutureState';
-import type { PatientBasicInfo } from './PatientBasicInfo';
+    ExerciseCreationPatientBasicInfoFromJSON,
+    ExerciseCreationPatientBasicInfoFromJSONTyped,
+    ExerciseCreationPatientBasicInfoToJSON,
+} from './ExerciseCreationPatientBasicInfo';
+import type { ExerciseCreationVitalSigns } from './ExerciseCreationVitalSigns';
 import {
-    PatientBasicInfoFromJSON,
-    PatientBasicInfoFromJSONTyped,
-    PatientBasicInfoToJSON,
-} from './PatientBasicInfo';
+    ExerciseCreationVitalSignsFromJSON,
+    ExerciseCreationVitalSignsFromJSONTyped,
+    ExerciseCreationVitalSignsToJSON,
+} from './ExerciseCreationVitalSigns';
 
 /**
  * 
@@ -52,10 +52,10 @@ export interface GeneratedExerciseData {
     patientName: string;
     /**
      * 
-     * @type {PatientBasicInfo}
+     * @type {ExerciseCreationPatientBasicInfo}
      * @memberof GeneratedExerciseData
      */
-    basicInfo: PatientBasicInfo;
+    basicInfo: ExerciseCreationPatientBasicInfo;
     /**
      * 
      * @type {string}
@@ -70,22 +70,22 @@ export interface GeneratedExerciseData {
     backgroundInformation: string;
     /**
      * 
-     * @type {FullVitalSigns}
+     * @type {ExerciseCreationVitalSigns}
      * @memberof GeneratedExerciseData
      */
-    vitalSigns: FullVitalSigns;
+    vitalSigns: ExerciseCreationVitalSigns;
     /**
      * 
-     * @type {FullABCDE}
+     * @type {ExerciseCreationABCDE}
      * @memberof GeneratedExerciseData
      */
-    aBCDE: FullABCDE;
+    aBCDE: ExerciseCreationABCDE;
     /**
      * 
-     * @type {FutureState}
+     * @type {ExerciseCreationFutureState}
      * @memberof GeneratedExerciseData
      */
-    future: FutureState;
+    future: ExerciseCreationFutureState;
 }
 
 /**
@@ -115,12 +115,12 @@ export function GeneratedExerciseDataFromJSONTyped(json: any, ignoreDiscriminato
     return {
         
         'patientName': json['patientName'],
-        'basicInfo': PatientBasicInfoFromJSON(json['basicInfo']),
+        'basicInfo': ExerciseCreationPatientBasicInfoFromJSON(json['basicInfo']),
         'simulationInstructions': json['simulationInstructions'],
         'backgroundInformation': json['backgroundInformation'],
-        'vitalSigns': FullVitalSignsFromJSON(json['vitalSigns']),
-        'aBCDE': FullABCDEFromJSON(json['ABCDE']),
-        'future': FutureStateFromJSON(json['future']),
+        'vitalSigns': ExerciseCreationVitalSignsFromJSON(json['vitalSigns']),
+        'aBCDE': ExerciseCreationABCDEFromJSON(json['ABCDE']),
+        'future': ExerciseCreationFutureStateFromJSON(json['future']),
     };
 }
 
@@ -134,12 +134,12 @@ export function GeneratedExerciseDataToJSON(value?: GeneratedExerciseData | null
     return {
         
         'patientName': value.patientName,
-        'basicInfo': PatientBasicInfoToJSON(value.basicInfo),
+        'basicInfo': ExerciseCreationPatientBasicInfoToJSON(value.basicInfo),
         'simulationInstructions': value.simulationInstructions,
         'backgroundInformation': value.backgroundInformation,
-        'vitalSigns': FullVitalSignsToJSON(value.vitalSigns),
-        'ABCDE': FullABCDEToJSON(value.aBCDE),
-        'future': FutureStateToJSON(value.future),
+        'vitalSigns': ExerciseCreationVitalSignsToJSON(value.vitalSigns),
+        'ABCDE': ExerciseCreationABCDEToJSON(value.aBCDE),
+        'future': ExerciseCreationFutureStateToJSON(value.future),
     };
 }
 
