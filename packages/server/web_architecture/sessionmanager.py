@@ -39,7 +39,7 @@ class SessionManager():
         return [d for d in self.sessionDataBySessionId.values()]
     
 
-    def create_session(self, sid: Optional[str]=None, session_id: str=None) -> str:
+    def create_session(self, sid: Optional[str]=None, session_id: str=None) -> str: # type: ignore
         if not session_id:
             session_id = human_id.generate_id()
         session_data = SessionData(session_id=session_id, sids_in_session=[])

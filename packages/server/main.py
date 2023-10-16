@@ -12,4 +12,4 @@ def gunicorn():
 
 if __name__ == "__main__":
     kwargs = {"host": "localhost", "port": 5000, "reload": True, "factory": True}
-    uvicorn.run("main:gunicorn", **kwargs)
+    uvicorn.run("main:gunicorn", **kwargs)  # type: ignore
