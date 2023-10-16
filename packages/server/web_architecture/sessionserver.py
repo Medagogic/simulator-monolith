@@ -2,15 +2,12 @@ from typing import Type
 import uvicorn
 from fastapi import FastAPI
 from fastapi.routing import APIRoute
-from fastapi.responses import HTMLResponse
 import socketio
 import json
-from web_architecture.sessionhandler import SessionHandler_Base
-from web_architecture.webhandler import WebHandler_Base
 import asyncio
 from fastapi.middleware.cors import CORSMiddleware
 from web_architecture.static_api import StaticAPI
-from web_architecture.newsessionrouter import NewSessionRouter
+from packages.server.web_architecture.sessionrouter import NewSessionRouter
 
 
 class SessionServer:
@@ -49,27 +46,23 @@ class SessionServer:
 
 
     async def save_api_json(self):
-        print("Saving API JSON")
-        temp_session_id = "<session_id>"
-        self.session_manager.create_session(session_id=temp_session_id)
-
         with open("openapi.json", "w") as file:
             json.dump(self.app.openapi(), file, indent=4)
 
-        sio_docs = {}
-        with open("socketio.json", "w") as file:
-            for namespace, sio_handler in self.sio.namespace_handlers.items():
-                if isinstance(sio_handler, WebHandler_Base):
-                    doc = type(sio_handler).generate_doc()
-                    sio_docs[namespace] = doc
+        print("Saved API JSON")
 
-            json.dump(sio_docs, file, indent=4)
+        # sio_docs = {}
+        # with open("socketio.json", "w") as file:
+        #     for namespace, sio_handler in self.sio.namespace_handlers.items():
+        #         if isinstance(sio_handler, WebHandler_Base):
+        #             doc = type(sio_handler).generate_doc()
+        #             sio_docs[namespace] = doc
 
-        self.session_manager.destroy_session(temp_session_id)
+        #     json.dump(sio_docs, file, indent=4)
 
 
 def gunicorn():
-    server = SessionServer(session_handler_class=SessionHandler_Base)
+    server = SessionServer(session_handler_class=NewSessionRouter)
     return server.app
 
 

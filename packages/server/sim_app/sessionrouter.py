@@ -4,7 +4,8 @@ import socketio
 from packages.server.sim_app.med_sim.intervention_tracker import InterventionTracker
 from packages.server.sim_app.med_sim.simulation4d import LeafyBlossom
 from packages.server.sim_app.med_sim.simulation_time_keeper import DummyTimeKeeper
-from packages.server.web_architecture.newsessionrouter import NewSessionRouter, Session
+from packages.server.web_architecture.sessionrouter import NewSessionRouter, Session
+from packages.server.sim_app.med_sim._runner import MedsimRunner
 
 
 class SimSession(Session):
@@ -12,11 +13,7 @@ class SimSession(Session):
         super().__init__(session_id, sio)
         self.exercise_name = "Exercise 1"
 
-        self.timekeeper = DummyTimeKeeper()
-        self.intervention_tracker = InterventionTracker()
-        self.sim = LeafyBlossom("packages/server/sim_app/med_sim/exercises/pediatric_septic_shock.txt",
-                           timekeeper=self.timekeeper, 
-                           intervention_tracker=self.intervention_tracker)
+        self.medsim = MedsimRunner()
 
 
 class SimSessionRouter(NewSessionRouter[SimSession]):
@@ -26,6 +23,6 @@ class SimSessionRouter(NewSessionRouter[SimSession]):
     def init_routes(self):   
         @self.session_router.get("/medsim/vitals")
         async def medsim_vitals(session: SimSession = Depends(self.get_session)):
-            return session.sim.getCurrentVitals()
+            return session.medsim.get_vitals()
         
         return super().init_routes()
