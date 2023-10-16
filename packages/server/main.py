@@ -1,5 +1,5 @@
 import uvicorn
-from sim_app.session_router import SimSessionRouter
+from packages.server.sim_app.sessionrouter import SimSessionRouter
 from sim_app.static_api import MedagogicAPI
 from web_architecture.sessionserver import SessionServer
 

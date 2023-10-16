@@ -1,10 +1,12 @@
+import socketio
 from packages.server.sim_app.med_sim.simulation4d import LeafyBlossom
 from packages.server.sim_app.med_sim.simulation_types import VitalSigns
 from packages.server.sim_app.med_sim.simulation_time_keeper import DummyTimeKeeper
 from packages.server.sim_app.med_sim.intervention_tracker import InterventionTracker
 
 class MedsimRunner():
-    def __init__(self):
+    def __init__(self, sio: socketio.AsyncServer):
+        self.sio = sio
         timekeeper = DummyTimeKeeper()
         intervention_tracker = InterventionTracker()
         self.sim = LeafyBlossom("packages/server/sim_app/med_sim/exercises/pediatric_septic_shock.txt",

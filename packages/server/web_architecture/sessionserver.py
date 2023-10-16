@@ -7,11 +7,11 @@ import json
 import asyncio
 from fastapi.middleware.cors import CORSMiddleware
 from web_architecture.static_api import StaticAPI
-from packages.server.web_architecture.sessionrouter import NewSessionRouter
+from packages.server.web_architecture.sessionrouter import SessionRouter
 
 
 class SessionServer:
-    def __init__(self, session_handler_class: Type[NewSessionRouter], static_api_class: StaticAPI = None):
+    def __init__(self, session_handler_class: Type[SessionRouter], static_api_class: StaticAPI = None):
         main_routes = [
             APIRoute("/save_docs", endpoint=self.save_api_json, methods=["POST"])
         ]
@@ -62,7 +62,7 @@ class SessionServer:
 
 
 def gunicorn():
-    server = SessionServer(session_handler_class=NewSessionRouter)
+    server = SessionServer(session_handler_class=SessionRouter)
     return server.app
 
 
