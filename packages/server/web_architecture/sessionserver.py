@@ -11,6 +11,7 @@ from web_architecture.webhandler import WebHandler_Base
 import asyncio
 from fastapi.middleware.cors import CORSMiddleware
 from web_architecture.static_api import StaticAPI
+from web_architecture.newsessionrouter import NewSessionRouter, init_new_session_router_routes
 
 
 class SessionServer:
@@ -36,6 +37,9 @@ class SessionServer:
 
         self.static_api = static_api_class() if static_api_class else None
         self.app.include_router(self.static_api.router, prefix="/static_api") if self.static_api else None
+
+        self.new_session_router = NewSessionRouter(self.app)
+        init_new_session_router_routes(self.new_session_router)
 
         asyncio.create_task(self.save_api_json())
 
