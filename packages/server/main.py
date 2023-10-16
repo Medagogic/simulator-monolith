@@ -1,11 +1,11 @@
 import uvicorn
-from sim_app.simulation_session import SimulationSessionHandler
+from sim_app.session_router import SimSessionRouter
 from sim_app.static_api import MedagogicAPI
 from web_architecture.sessionserver import SessionServer
 
 
 def gunicorn():
-    server = SessionServer(session_handler_class=SimulationSessionHandler, static_api_class=MedagogicAPI)
+    server = SessionServer(session_handler_class=SimSessionRouter, static_api_class=MedagogicAPI)
     server.session_manager.create_session(session_id="default-session")
     return server.app
 

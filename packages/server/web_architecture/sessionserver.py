@@ -11,11 +11,11 @@ from web_architecture.webhandler import WebHandler_Base
 import asyncio
 from fastapi.middleware.cors import CORSMiddleware
 from web_architecture.static_api import StaticAPI
-from web_architecture.newsessionrouter import NewSessionRouter, init_new_session_router_routes
+from web_architecture.newsessionrouter import NewSessionRouter
 
 
 class SessionServer:
-    def __init__(self, session_handler_class: Type[SessionHandler_Base], static_api_class: StaticAPI = None):
+    def __init__(self, session_handler_class: Type[NewSessionRouter], static_api_class: StaticAPI = None):
         main_routes = [
             APIRoute("/save_docs", endpoint=self.save_api_json, methods=["POST"])
         ]
@@ -32,14 +32,14 @@ class SessionServer:
         self.sio = socketio.AsyncServer(async_mode="asgi", cors_allowed_origins="*")
         self.socket_app = socketio.ASGIApp(self.sio, socketio_path="/")
 
-        self.session_manager = SessionManager(sio=self.sio, app=self.app, session_handler_class=session_handler_class)
+        # self.session_manager = SessionManager(sio=self.sio, app=self.app, session_handler_class=session_handler_class)
         self.app.mount("/socket.io", self.socket_app)  # Here we mount socket app to main fastapi app
 
         self.static_api = static_api_class() if static_api_class else None
         self.app.include_router(self.static_api.router, prefix="/static_api") if self.static_api else None
 
-        self.new_session_router = NewSessionRouter(self.app)
-        init_new_session_router_routes(self.new_session_router)
+        # self.new_session_router = NewSessionRouter(self.app)
+        self.session_manager = session_handler_class(self.app)
 
         asyncio.create_task(self.save_api_json())
 
@@ -78,4 +78,4 @@ def gunicorn():
 
 if __name__ == "__main__":
     kwargs = {"host": "localhost", "port": 5000, "reload": True, "factory": True}
-    uvicorn.run("main:gunicorn", **kwargs)
+    uvicorn.run("main:gunicorn", **kwargs)  # type: ignore

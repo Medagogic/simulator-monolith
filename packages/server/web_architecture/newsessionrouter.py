@@ -1,39 +1,60 @@
-from fastapi import FastAPI, Depends, Query
-from typing import Dict
+from __future__ import annotations
+from fastapi import APIRouter, FastAPI, Depends, HTTPException, Query
+from typing import Dict, Generic, Type, TypeVar
 
-existing_sessions: Dict[str, "Session"] = {}
+import human_id
 
 
 class Session:
     def __init__(self, session_id: str):
         self.session_id = session_id
 
-    async def get_data(self):
-        # Logic for retrieving session data. Here's a placeholder implementation.
-        return {"session_id": self.session_id, "data": "Some data related to this session"}
+T = TypeVar('T', bound=Session)
 
-class NewSessionRouter:
-    def __init__(self, app: FastAPI) -> None:
+class NewSessionRouter(Generic[T]):
+    def __init__(self, app: FastAPI, session_cls: Type[T]) -> None:
         self.app = app
-        self.existing_sessions: Dict[str, Session] = {}
+        self.session_cls = session_cls
+        self.existing_sessions: Dict[str, T] = {}
+        self.router = APIRouter(prefix="/new-session-router")
+        self.session_router = APIRouter(prefix="/session/{session_id}")
+        self.init_routes()
 
-    def create_session(self, session_id: str) -> Session:
+        self.router.include_router(self.session_router)
+        self.app.include_router(self.router)
+
+    def create_session(self, session_id: str) -> T:
         if session_id not in self.existing_sessions:
-            session = Session(session_id)
+            session = self.session_cls(session_id)
             self.existing_sessions[session_id] = session
             return session
         else:
             raise ValueError("Session already exists")
 
-    def get_session(self, session_id: str) -> Session:
+    def get_session(self, session_id: str) -> T:
         session = self.existing_sessions.get(session_id)
         if session is None:
-            # raise HTTPException(status_code=404, detail="Session not found")
-            session = self.create_session(session_id)   
+            raise HTTPException(status_code=404, detail="Session not found")
         return session
+    
+    def destroy_session(self, session_id: str):
+        if session_id in self.existing_sessions:
+            del self.existing_sessions[session_id]
+        else:
+            raise HTTPException(status_code=404, detail="Session not found")
+    
+    def init_routes(self):
+        @self.session_router.get("/test-session")
+        async def test_endpoint(session: T = Depends(self.get_session)):
+            return {"session_id": session.session_id, "session_type": type(session).__name__}
+        
+        @self.router.get("/list-sessions")
+        async def list_sessions():
+            return list(self.existing_sessions.keys())
+        
+        @self.router.get("/create-session")
+        async def create_session():
+            id = human_id.generate_id()
+            session = self.create_session(id)
+            return {"session_id": session.session_id}
 
-
-def init_new_session_router_routes(session_manager: NewSessionRouter):
-    @session_manager.app.get("/new-session-router/sessions/{session_id}/data")
-    async def read_session_data(session: Session = Depends(session_manager.get_session), poop: str = Query(...)):
-        return {"poop": poop, "session": await session.get_data()}

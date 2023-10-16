@@ -21,44 +21,6 @@
                 }
             }
         },
-        "/session/new": {
-            "post": {
-                "summary": "Handle Create Session",
-                "operationId": "handle_create_session_session_new_post",
-                "responses": {
-                    "200": {
-                        "description": "Successful Response",
-                        "content": {
-                            "application/json": {
-                                "schema": {}
-                            }
-                        }
-                    }
-                }
-            }
-        },
-        "/session/list": {
-            "get": {
-                "summary": "Handle List Sessions",
-                "operationId": "handle_list_sessions_session_list_get",
-                "responses": {
-                    "200": {
-                        "description": "Successful Response",
-                        "content": {
-                            "application/json": {
-                                "schema": {
-                                    "items": {
-                                        "$ref": "#/components/schemas/SessionData"
-                                    },
-                                    "type": "array",
-                                    "title": "Response Handle List Sessions Session List Get"
-                                }
-                            }
-                        }
-                    }
-                }
-            }
-        },
         "/static_api/generate_exercise": {
             "post": {
                 "summary": "Handle Generate",
@@ -97,10 +59,42 @@
                 }
             }
         },
-        "/new-session-router/sessions/{session_id}/data": {
+        "/new-session-router/list-sessions": {
             "get": {
-                "summary": "Read Session Data",
-                "operationId": "read_session_data_new_session_router_sessions__session_id__data_get",
+                "summary": "List Sessions",
+                "operationId": "list_sessions_new_session_router_list_sessions_get",
+                "responses": {
+                    "200": {
+                        "description": "Successful Response",
+                        "content": {
+                            "application/json": {
+                                "schema": {}
+                            }
+                        }
+                    }
+                }
+            }
+        },
+        "/new-session-router/create-session": {
+            "get": {
+                "summary": "Create Session",
+                "operationId": "create_session_new_session_router_create_session_get",
+                "responses": {
+                    "200": {
+                        "description": "Successful Response",
+                        "content": {
+                            "application/json": {
+                                "schema": {}
+                            }
+                        }
+                    }
+                }
+            }
+        },
+        "/new-session-router/session/{session_id}/medsim/vitals": {
+            "get": {
+                "summary": "Medsim Vitals",
+                "operationId": "medsim_vitals_new_session_router_session__session_id__medsim_vitals_get",
                 "parameters": [
                     {
                         "name": "session_id",
@@ -109,15 +103,6 @@
                         "schema": {
                             "type": "string",
                             "title": "Session Id"
-                        }
-                    },
-                    {
-                        "name": "poop",
-                        "in": "query",
-                        "required": true,
-                        "schema": {
-                            "type": "string",
-                            "title": "Poop"
                         }
                     }
                 ],
@@ -143,10 +128,21 @@
                 }
             }
         },
-        "/sessions/default-session/chat/test-get": {
+        "/new-session-router/session/{session_id}/test-session": {
             "get": {
-                "summary": "Handle Test",
-                "operationId": "handle_test_sessions_default_session_chat_test_get_get",
+                "summary": "Test Endpoint",
+                "operationId": "test_endpoint_new_session_router_session__session_id__test_session_get",
+                "parameters": [
+                    {
+                        "name": "session_id",
+                        "in": "path",
+                        "required": true,
+                        "schema": {
+                            "type": "string",
+                            "title": "Session Id"
+                        }
+                    }
+                ],
                 "responses": {
                     "200": {
                         "description": "Successful Response",
@@ -155,93 +151,13 @@
                                 "schema": {}
                             }
                         }
-                    }
-                }
-            }
-        },
-        "/sessions/default-session/medsim/vitals": {
-            "get": {
-                "summary": "Handle Get Vitals",
-                "operationId": "handle_get_vitals_sessions_default_session_medsim_vitals_get",
-                "responses": {
-                    "200": {
-                        "description": "Successful Response",
+                    },
+                    "422": {
+                        "description": "Validation Error",
                         "content": {
                             "application/json": {
                                 "schema": {
-                                    "$ref": "#/components/schemas/VitalSigns"
-                                }
-                            }
-                        }
-                    }
-                }
-            }
-        },
-        "/sessions/default-session/medsim/time": {
-            "get": {
-                "summary": "Handle Get Time",
-                "operationId": "handle_get_time_sessions_default_session_medsim_time_get",
-                "responses": {
-                    "200": {
-                        "description": "Successful Response",
-                        "content": {
-                            "application/json": {
-                                "schema": {
-                                    "type": "number",
-                                    "title": "Response Handle Get Time Sessions Default Session Medsim Time Get"
-                                }
-                            }
-                        }
-                    }
-                }
-            }
-        },
-        "/sessions/<session_id>/chat/test-get": {
-            "get": {
-                "summary": "Handle Test",
-                "operationId": "handle_test_sessions__session_id__chat_test_get_get",
-                "responses": {
-                    "200": {
-                        "description": "Successful Response",
-                        "content": {
-                            "application/json": {
-                                "schema": {}
-                            }
-                        }
-                    }
-                }
-            }
-        },
-        "/sessions/<session_id>/medsim/vitals": {
-            "get": {
-                "summary": "Handle Get Vitals",
-                "operationId": "handle_get_vitals_sessions__session_id__medsim_vitals_get",
-                "responses": {
-                    "200": {
-                        "description": "Successful Response",
-                        "content": {
-                            "application/json": {
-                                "schema": {
-                                    "$ref": "#/components/schemas/VitalSigns"
-                                }
-                            }
-                        }
-                    }
-                }
-            }
-        },
-        "/sessions/<session_id>/medsim/time": {
-            "get": {
-                "summary": "Handle Get Time",
-                "operationId": "handle_get_time_sessions__session_id__medsim_time_get",
-                "responses": {
-                    "200": {
-                        "description": "Successful Response",
-                        "content": {
-                            "application/json": {
-                                "schema": {
-                                    "type": "number",
-                                    "title": "Response Handle Get Time Sessions  Session Id  Medsim Time Get"
+                                    "$ref": "#/components/schemas/HTTPValidationError"
                                 }
                             }
                         }
@@ -252,24 +168,6 @@
     },
     "components": {
         "schemas": {
-            "BloodPressureModel": {
-                "properties": {
-                    "systolic": {
-                        "type": "number",
-                        "title": "Systolic"
-                    },
-                    "diastolic": {
-                        "type": "number",
-                        "title": "Diastolic"
-                    }
-                },
-                "type": "object",
-                "required": [
-                    "systolic",
-                    "diastolic"
-                ],
-                "title": "BloodPressureModel"
-            },
             "ExerciseCreationABCDE": {
                 "properties": {
                     "A": {
@@ -469,32 +367,6 @@
                 "type": "object",
                 "title": "HTTPValidationError"
             },
-            "SessionData": {
-                "properties": {
-                    "session_id": {
-                        "type": "string",
-                        "title": "Session Id"
-                    },
-                    "sids_in_session": {
-                        "items": {
-                            "type": "string"
-                        },
-                        "type": "array",
-                        "title": "Sids In Session"
-                    },
-                    "creation_datetime": {
-                        "type": "string",
-                        "format": "date-time",
-                        "title": "Creation Datetime"
-                    }
-                },
-                "type": "object",
-                "required": [
-                    "session_id",
-                    "sids_in_session"
-                ],
-                "title": "SessionData"
-            },
             "ValidationError": {
                 "properties": {
                     "loc": {
@@ -527,71 +399,6 @@
                     "type"
                 ],
                 "title": "ValidationError"
-            },
-            "VitalSigns": {
-                "properties": {
-                    "temperature": {
-                        "type": "number",
-                        "title": "Temperature",
-                        "description": "The body temperature in degrees Celsius or Fahrenheit"
-                    },
-                    "heart_rate": {
-                        "type": "number",
-                        "title": "Heart Rate",
-                        "description": "The heart rate in beats per minute"
-                    },
-                    "respiratory_rate": {
-                        "type": "number",
-                        "title": "Respiratory Rate",
-                        "description": "The number of breaths taken per minute"
-                    },
-                    "blood_pressure": {
-                        "allOf": [
-                            {
-                                "$ref": "#/components/schemas/BloodPressureModel"
-                            }
-                        ],
-                        "description": "Blood pressure measurements"
-                    },
-                    "blood_glucose": {
-                        "type": "number",
-                        "title": "Blood Glucose",
-                        "description": "The blood glucose level"
-                    },
-                    "oxygen_saturation": {
-                        "type": "number",
-                        "title": "Oxygen Saturation",
-                        "description": "The oxygen saturation in percentage"
-                    },
-                    "capillary_refill": {
-                        "type": "number",
-                        "title": "Capillary Refill",
-                        "description": "The capillary refill time in seconds"
-                    }
-                },
-                "type": "object",
-                "required": [
-                    "temperature",
-                    "heart_rate",
-                    "respiratory_rate",
-                    "blood_pressure",
-                    "blood_glucose",
-                    "oxygen_saturation",
-                    "capillary_refill"
-                ],
-                "title": "VitalSigns",
-                "example": {
-                    "blood_glucose": 5.5,
-                    "blood_pressure": {
-                        "diastolic": 80,
-                        "systolic": 120
-                    },
-                    "capillary_refill": 2,
-                    "heart_rate": 75,
-                    "oxygen_saturation": 98,
-                    "respiratory_rate": 16,
-                    "temperature": 38.6
-                }
             }
         }
     }
