@@ -1,11 +1,15 @@
 from __future__ import annotations
 from functools import wraps
+import inspect
+import json
 import sys
 import traceback
 from fastapi import APIRouter, FastAPI, Depends, HTTPException
-from typing import Dict, Generic, Type, TypeVar
+from typing import Callable, Dict, Generic, List, Tuple, Type, TypeVar, get_type_hints
 import human_id
+from pydantic import BaseModel
 import socketio
+from socketio_api import generate_socketio_openapi_schema
 
 from colorama import Fore
 import colorama
@@ -30,8 +34,8 @@ class Session():
         return wrapper
 
 
-T = TypeVar('T', bound=Session)
 
+T = TypeVar('T', bound=Session)
 class SessionRouter(socketio.AsyncNamespace, Generic[T]):
     def __init__(self, app: FastAPI, sio: socketio.AsyncServer, session_cls: Type[T]=None) -> None:
         super().__init__(namespace="/session")
@@ -48,6 +52,19 @@ class SessionRouter(socketio.AsyncNamespace, Generic[T]):
         self.app.include_router(self.router)
 
         self.sio.register_namespace(self)
+
+
+    @classmethod
+    def describe_socketio_routes(cls, session_cls: Type[T]):
+        members = inspect.getmembers(cls)
+
+        cls_methods = [member for member in members if member[0].startswith('on_') and inspect.isfunction(member[1])]
+        session_methods = [(k, v) for k, v in session_cls.SIO_EVENT_HANDLERS.items()]
+        all_handlers: List[Tuple[str, Callable]] = cls_methods + session_methods
+
+        schema = generate_socketio_openapi_schema(all_handlers)
+
+        print(json.dumps(schema, indent=4))
 
 
     def create_session(self, session_id: str) -> T:
@@ -170,67 +187,9 @@ async def test_setup(router_class: Type[SessionRouter] = SessionRouter):
 
 
 if __name__ == "__main__":
-    import uvicorn
-    from fastapi import FastAPI
     import asyncio
-    import socketio
-
-    sio = socketio.AsyncServer(async_mode="asgi", namespaces=["/session"])
-    app = FastAPI()
-    app_asgi = socketio.ASGIApp(sio, app)
-
-    session_router = SessionRouter(app, sio, Session)
-
-    session_name = "test-session"
-
-    async def start_test_client(session_id: str):
-        test_client = socketio.AsyncClient()
-        test_client.on('connect', lambda: print("Connected to server"))
-
-        def callback(data=None):
-            print(f"Callback received: {data}")
-
-        await test_client.connect('http://localhost:8000', namespaces=["/session"])
-        await asyncio.sleep(1)
-        await test_client.emit('join_session', session_id, namespace="/session")
-        await test_client.emit('test_event', {'example': 'data'}, namespace="/session")
-        await test_client.emit("magic_event", {"example": "data"}, namespace="/session", callback=callback)
-
-        await asyncio.sleep(1)
-
-        print("Joining unused session and sending test_event_2")
-        await test_client.emit('join_session', "unused-sesh", namespace="/session")
-        await test_client.emit('test_event_2', {'example': 'data'}, namespace="/session", callback=callback)
-
-        await asyncio.sleep(1)
-        print("Sending unknown event")
-        await test_client.emit('unknown_event', {'example': 'data'}, namespace="/session")
-
-        await asyncio.sleep(1)
-        print("Sending event when not in session")
-        await test_client.emit('leave_session', "unused-sesh", namespace="/session")
-
-        await test_client.emit('test_event', {'example': 'data'}, namespace="/session")
-
-        await asyncio.sleep(1)
-        await test_client.disconnect()
 
     async def main():
-        config = uvicorn.Config(app_asgi, host="0.0.0.0", port=8000, log_level="info")
-        server = uvicorn.Server(config)
-
-        server_task = asyncio.create_task(server.serve())
-
-        session_router.create_session(session_id=session_name)
-        session_router.create_session(session_id="unused-sesh")
-        client_task = asyncio.create_task(start_test_client(session_id=session_name))
-
-        await client_task
-
-        await asyncio.sleep(1)
-
-        server.should_exit = True
-        await server_task
-
+        SessionRouter.describe_socketio_routes(Session)
 
     asyncio.run(main())
