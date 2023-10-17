@@ -56,7 +56,7 @@ class SIOEmitter(type):
                     new_class.EVENT_DATA.append(emit_info)
 
     @staticmethod
-    def generate_schema(emit_data: List[SIOEmitSchema]):
+    def _generate_schema(emit_data: List[SIOEmitSchema]):
         schema: Dict = {}
 
         for emit_info in emit_data:
@@ -67,8 +67,8 @@ class SIOEmitter(type):
         return schema
 
     @staticmethod
-    def get_emit_event_schema(new_class):
-        return SIOEmitter.generate_schema(new_class.EVENT_DATA)
+    def _get_emit_event_schema(new_class):
+        return SIOEmitter._generate_schema(new_class.EVENT_DATA)
 
 
 if __name__ == "__main__":
@@ -91,7 +91,7 @@ if __name__ == "__main__":
 
         @classmethod
         def list_emit_calls(cls):
-            schema = SIOEmitter.get_emit_event_schema(cls)
+            schema = SIOEmitter._get_emit_event_schema(cls)
             print(json.dumps(schema, indent=4))
 
     Session.list_emit_calls()

@@ -1,0 +1,21 @@
+{
+    "$id": "SIO Events",
+    "$schema": "http://json-schema.org/schema#",
+    "type": "object",
+    "properties": {
+        "new_person": {
+            "$ref": "complexData.schema.json"
+        },
+        "delete_person": {
+            "$ref": "test.schema.json"
+        },
+        "dummy_func": null
+    },
+    "additionalProperties": false,
+    "required": [
+        "new_person",
+        "delete_person",
+        "events",
+        "dummy_func"
+    ]
+}

@@ -9,7 +9,7 @@ from typing import Callable, Dict, Generic, List, Tuple, Type, TypeVar, get_args
 import human_id
 from pydantic import BaseModel
 import socketio
-from packages.server.web_architecture.sio_api_handlers import generate_socketio_openapi_schema
+from packages.server.web_architecture.sio_api_handlers import __generate_socketio_openapi_schema
 from packages.server.web_architecture.sio_api_emitters import SIOEmitter, emits
 
 from colorama import Fore
@@ -56,19 +56,19 @@ class SessionRouter(socketio.AsyncNamespace, Generic[T], metaclass=SIOEmitter):
 
 
     @classmethod
-    def get_sio_handlers(cls, session_cls: Type[T]):
+    def get_sio_handler_schema(cls, session_cls: Type[T]):
         members = inspect.getmembers(cls)
         cls_methods = [member for member in members if member[0].startswith('on_') and inspect.isfunction(member[1])]
         session_methods = [(k, v) for k, v in session_cls.SIO_EVENT_HANDLERS.items()]
         all_handlers: List[Tuple[str, Callable]] = cls_methods + session_methods
 
-        schema = generate_socketio_openapi_schema(all_handlers)
+        schema = __generate_socketio_openapi_schema(all_handlers)
         return schema
 
     
     @classmethod
-    def get_sio_emits(cls):
-        schema = SIOEmitter.get_emit_event_schema(cls)
+    def get_sio_emits_schema(cls):
+        schema = SIOEmitter._get_emit_event_schema(cls)
         return schema
 
 
@@ -160,10 +160,6 @@ class SessionRouter(socketio.AsyncNamespace, Generic[T], metaclass=SIOEmitter):
 
         return self.existing_sessions[room_id]
     
-    @emits("test_event", Dict[str, str])
-    def some_magic_function(self):
-        self.emit("test_event", {"test_param": "test_value"})
-    
 
 async def test_setup(router_class: Type[SessionRouter] = SessionRouter):
     import uvicorn
@@ -199,7 +195,7 @@ if __name__ == "__main__":
     import asyncio
 
     async def main():
-        SessionRouter.get_sio_handlers(Session)
-        SessionRouter.get_sio_emits()
+        SessionRouter.get_sio_handler_schema(Session)
+        SessionRouter.get_sio_emits_schema()
 
     asyncio.run(main())
