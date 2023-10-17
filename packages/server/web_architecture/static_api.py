@@ -2,7 +2,6 @@ from __future__ import annotations
 
 from fastapi import APIRouter
 
-
 class StaticAPI():
     def __init__(self):
         self.router = APIRouter()

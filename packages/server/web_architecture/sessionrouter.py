@@ -9,8 +9,8 @@ from typing import Any, Callable, Dict, Generic, List, Protocol, Tuple, Type, Ty
 import human_id
 from pydantic import BaseModel
 import socketio
-from packages.server.web_architecture.sio_api_handlers import generate_socketio_openapi_schema
-from packages.server.web_architecture.sio_api_emitters import SIOEmitSchema, SIOEmitter, emits
+from packages.server.web_architecture.sio_typing.sio_api_handlers import generate_socketio_openapi_schema
+from packages.server.web_architecture.sio_typing.sio_api_emitters import SIOEmitSchema, SIOEmitter, emits
 
 from colorama import Fore
 import colorama

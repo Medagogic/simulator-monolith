@@ -6,7 +6,7 @@ from pydantic import BaseModel
 import socketio
 from packages.server.web_architecture.sessionrouter import SessionRouter, Session, test_setup, SessionRouterProtocol
 from packages.server.sim_app.med_sim._runner import MedsimRunner
-from packages.server.web_architecture.sio_api_emitters import emits
+from packages.server.web_architecture.sio_typing.sio_api_emitters import emits
 
 class InterventionData(BaseModel):
     interventions: List[str]

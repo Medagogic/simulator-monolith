@@ -8,8 +8,8 @@ import os
 from pathlib import Path
 import re
 
-from packages.server.web_architecture.sio_api_emitters import SIOEmitSchema
-from packages.server.web_architecture.sio_api_handlers import get_field_info
+from packages.server.web_architecture.sio_typing.sio_api_emitters import SIOEmitSchema
+from packages.server.web_architecture.sio_typing.sio_api_handlers import get_field_info
 
 this_file = Path(os.path.realpath(__file__))
 this_dir = this_file.parent
