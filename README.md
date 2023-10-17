@@ -14,3 +14,13 @@
 # Frontend
 - Install dependencies using npm
 - Run `npm run dev` to start the dev server
+
+# Automatic code generation
+
+## Web client event handlers
+- In `packages/tools/sio_client_handler_generator`
+- Run `python main.py`
+- This looks in `packages/server/sim_app/sessiounrouter.py` for `emits(event_name, data_type)` decorators in the `SimSessionRouter` class
+- It then generates a schema for each event, and uses json-schema-to-typescript (`json2ts`) to generate typescript types
+- Then, we give this to GPT to generate an abstract class which automatically connects the socketio handlers to the events
+- This gets put in `packages/frontend/src/sioevents`
