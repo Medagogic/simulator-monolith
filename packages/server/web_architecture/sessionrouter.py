@@ -5,12 +5,12 @@ import json
 import sys
 import traceback
 from fastapi import APIRouter, FastAPI, Depends, HTTPException
-from typing import Callable, Dict, Generic, List, Tuple, Type, TypeVar, get_args, get_type_hints
+from typing import Any, Callable, Dict, Generic, List, Protocol, Tuple, Type, TypeVar, get_args, get_type_hints
 import human_id
 from pydantic import BaseModel
 import socketio
-from packages.server.web_architecture.sio_api_handlers import __generate_socketio_openapi_schema
-from packages.server.web_architecture.sio_api_emitters import SIOEmitter, emits
+from packages.server.web_architecture.sio_api_handlers import _generate_socketio_openapi_schema
+from packages.server.web_architecture.sio_api_emitters import SIOEmitSchema, SIOEmitter, emits
 
 from colorama import Fore
 import colorama
@@ -18,7 +18,7 @@ import colorama
 colorama.init(autoreset=True)
 
 
-class Session():
+class Session(metaclass=SIOEmitter):
     SIO_EVENT_HANDLERS: Dict = {}
 
     def __init__(self, session_id: str, sio: socketio.AsyncServer):
@@ -33,7 +33,15 @@ class Session():
         
         cls.SIO_EVENT_HANDLERS[func.__name__] = wrapper
         return wrapper
+    
+    def emit(self, event_name: str, data: Any) -> None:
+        self.sio.emit(event_name, data, room=self.session_id, namespace="/session")
 
+
+# Use this protocol to type hint an object (mixins for the SessionRouter) which can emit events
+class SessionRouterProtocol(Protocol):
+    def emit(self, event_name: str, data: Any) -> None:
+        ...
 
 
 T = TypeVar('T', bound=Session)
@@ -62,14 +70,14 @@ class SessionRouter(socketio.AsyncNamespace, Generic[T], metaclass=SIOEmitter):
         session_methods = [(k, v) for k, v in session_cls.SIO_EVENT_HANDLERS.items()]
         all_handlers: List[Tuple[str, Callable]] = cls_methods + session_methods
 
-        schema = __generate_socketio_openapi_schema(all_handlers)
+        schema = _generate_socketio_openapi_schema(all_handlers)
         return schema
 
     
     @classmethod
-    def get_sio_emits_schema(cls):
-        schema = SIOEmitter._get_emit_event_schema(cls)
-        return schema
+    def get_emitted_events(cls, session_cls: Type[T]) -> List[SIOEmitSchema]:
+        emitted_events: List[SIOEmitSchema] = cls.SIO_EMIT_DATA + session_cls.SIO_EMIT_DATA # type: ignore
+        return emitted_events
 
 
     def create_session(self, session_id: str) -> T:
@@ -195,7 +203,7 @@ if __name__ == "__main__":
     import asyncio
 
     async def main():
-        SessionRouter.get_sio_handler_schema(Session)
-        SessionRouter.get_sio_emits_schema()
+        # SessionRouter.get_sio_handler_schema(Session)
+        print(SessionRouter.get_emitted_events(Session))
 
     asyncio.run(main())

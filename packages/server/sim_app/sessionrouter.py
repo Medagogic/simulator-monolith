@@ -1,9 +1,10 @@
 
-from typing import List, Type
+from __future__ import annotations
+from typing import List
 from fastapi import Depends
 from pydantic import BaseModel
 import socketio
-from packages.server.web_architecture.sessionrouter import SessionRouter, Session, test_setup
+from packages.server.web_architecture.sessionrouter import SessionRouter, Session, test_setup, SessionRouterProtocol
 from packages.server.sim_app.med_sim._runner import MedsimRunner
 from packages.server.web_architecture.sio_api_emitters import emits
 
@@ -27,7 +28,14 @@ class SimUpdateData(BaseModel):
     value: float
     name: str
 
-class SimSessionRouter(SessionRouter[SimSession]):
+
+class PatientStateMixin:
+    @emits("patient_state", SimUpdateData)
+    def emit_patient_state(self: SessionRouterProtocol, timestamp: float, value: float, name: str):
+        self.emit("patient_state", SimUpdateData(timestamp=timestamp, value=value, name=name))
+
+
+class SimSessionRouter(SessionRouter[SimSession], PatientStateMixin):
     def __init__(self, app, sio: socketio.AsyncServer):
         super().__init__(app=app, sio=sio, session_cls=SimSession)
 
@@ -38,11 +46,6 @@ class SimSessionRouter(SessionRouter[SimSession]):
         
         return super().init_api_routes()
     
-    @emits("test_event", SimUpdateData)
-    def some_magic_function(self):
-        self.emit("test_event", SimUpdateData(timestamp=0, value=0, name="test"))
-    
-
 
 if __name__ == "__main__":
     import asyncio
@@ -54,9 +57,7 @@ if __name__ == "__main__":
         # cls: Type[Session] = session_router.session_cls
         # print(cls.SIO_EVENT_HANDLERS)
 
-        SimSessionRouter.get_sio_handler_schema(SimSession)
-        emits = SimSessionRouter.get_sio_emits_schema()
-        print(json.dumps(emits, indent=4))
+        print(SimSessionRouter.get_emitted_events(SimSession))
 
         # await test_client.emit("apply_interventions", {"interventions": ["medication"]}, namespace="/session")
 

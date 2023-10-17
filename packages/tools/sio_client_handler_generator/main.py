@@ -16,7 +16,7 @@ this_dir = this_file.parent
 schema_dir = f"{this_dir}/schemas"
 generated_dir = f"{this_dir}/generated"
 
-event_datas: List[SIOEmitSchema] = SimSessionRouter.EVENT_DATA
+event_datas: List[SIOEmitSchema] = SimSessionRouter.SIO_EMIT_DATA
 
 schema_properties: Dict[str, Dict] = {}
 

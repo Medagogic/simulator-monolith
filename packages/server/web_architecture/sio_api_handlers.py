@@ -18,7 +18,7 @@ def get_field_info(annotation) -> dict:
         return {"type": "object"}
 
 
-def __generate_socketio_openapi_schema(all_handlers: List[Tuple[str, Callable]]) -> Dict:
+def _generate_socketio_openapi_schema(all_handlers: List[Tuple[str, Callable]]) -> Dict:
     openapi_schema = {
         "openapi": "3.0.0",
         "info": {

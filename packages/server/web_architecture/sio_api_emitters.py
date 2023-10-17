@@ -35,9 +35,9 @@ class SIOEmitter(type):
         # Create the new class.
         new_class = super().__new__(cls, name, bases, dct)
 
-        # Initialize EVENT_DATA if it doesn't exist in the current class.
-        if 'EVENT_DATA' not in dct:
-            new_class.EVENT_DATA: List[SIOEmitSchema] = []   # type: ignore
+        # Initialize SIO_EMIT_DATA if it doesn't exist in the current class.
+        if 'SIO_EMIT_DATA' not in dct:
+            new_class.SIO_EMIT_DATA: List[SIOEmitSchema] = []   # type: ignore
 
         cls.process_emits(new_class)
 
@@ -53,8 +53,8 @@ class SIOEmitter(type):
                 openapi_schema = process_event_type(event_type)
                 emit_info = SIOEmitSchema(event_name=event_name, data_schema=openapi_schema, real_type=event_type)
 
-                if emit_info not in new_class.EVENT_DATA:
-                    new_class.EVENT_DATA.append(emit_info)
+                if emit_info not in new_class.SIO_EMIT_DATA:
+                    new_class.SIO_EMIT_DATA.append(emit_info)
 
     @staticmethod
     def _generate_schema(emit_data: List[SIOEmitSchema]):
@@ -69,7 +69,7 @@ class SIOEmitter(type):
 
     @staticmethod
     def _get_emit_event_schema(new_class):
-        return SIOEmitter._generate_schema(new_class.EVENT_DATA)
+        return SIOEmitter._generate_schema(new_class.SIO_EMIT_DATA)
 
 
 if __name__ == "__main__":
