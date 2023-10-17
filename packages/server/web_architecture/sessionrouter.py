@@ -6,28 +6,14 @@ from typing import Any, Callable, Dict, Generic, Type, TypeVar
 import human_id
 import socketio
 
-class SIOSession:
-    EVENT_HANDLERS: Dict[str, Callable] = {}
-
-    @staticmethod
-    def event(func):
-        @wraps(func)
-        def wrapper(self: Session, *args, **kwargs):
-            return func(self, *args, **kwargs)
-
-        SIOSession.EVENT_HANDLERS[func.__name__] = wrapper
-        return wrapper
-
 class Session():
     def __init__(self, session_id: str, sio: socketio.AsyncServer):
         self.session_id = session_id
         self.sio = sio
 
-    # @SIOSession.event
     async def on_test_event(self, sid, data):
         print(f"Yooooo, test event received from {sid}: {data} in session {self.session_id}")
 
-    # @SIOSession.event
     async def on_test_event_2(self, sid, data):
         print(f"Oi, test event 2 received from {sid}: {data} in session {self.session_id}")
 
@@ -52,10 +38,6 @@ class SessionRouter(socketio.AsyncNamespace, Generic[T]):
         self.router.include_router(self.session_router)
         self.app.include_router(self.router)
 
-        # self.sio.on('join_session', self.on_join_session, namespace=self.namespace)
-        # self.sio.on('leave_session', self.on_leave_session, namespace=self.namespace)
-        # self.setup_socketio()
-
         self.sio.register_namespace(self)
 
 
@@ -67,28 +49,6 @@ class SessionRouter(socketio.AsyncNamespace, Generic[T]):
         else:
             raise ValueError("Session already exists")
         
-    # def setup_socketio(self):
-    #     for event_name, wrapped_func in SIOSession.EVENT_HANDLERS.items():
-    #         def room_filter(func):
-    #             @wraps(func)
-    #             async def wrapper(sid, *args, **kwargs) -> None:
-    #                 rooms = self.sio.rooms(sid, self.namespace)
-    #                 if len(rooms) <= 1:
-    #                     raise HTTPException(status_code=404, detail=f"{sid} is not in a session")
-    #                 room_id = rooms[1]
-                
-    #                 if room_id not in self.existing_sessions:
-    #                     raise HTTPException(status_code=404, detail=f"Session {room_id} not found")
-
-    #                 session: T = self.existing_sessions[room_id]
-    #                 # print(f"Event {func.__name__} received from {sid}: {data} for {session.session_id}")
-    #                 return await func(session, sid, *args, **kwargs)
-    #             return wrapper
-            
-    #         self.sio.on(event_name, handler=room_filter(wrapped_func), namespace=self.namespace)
-
-    #     self.sio.on("*", self.__handle_unknown_event, namespace=self.namespace)
-
     async def trigger_event(self, event, sid, *args):
         if not hasattr(self, f"on_{event}"):
             try:
@@ -200,15 +160,15 @@ if __name__ == "__main__":
         await test_client.emit('join_session', "unused-sesh", namespace="/session")
         await test_client.emit('test_event_2', {'example': 'data'}, namespace="/session", callback=callback)
 
-        # await asyncio.sleep(1)
-        # print("Sending unknown event")
-        # await test_client.emit('unknown_event', {'example': 'data'}, namespace="/session")
+        await asyncio.sleep(1)
+        print("Sending unknown event")
+        await test_client.emit('unknown_event', {'example': 'data'}, namespace="/session")
 
-        # await asyncio.sleep(1)
-        # print("Sending event when not in session")
-        # await test_client.emit('leave_session', "unused-sesh", namespace="/session")
+        await asyncio.sleep(1)
+        print("Sending event when not in session")
+        await test_client.emit('leave_session', "unused-sesh", namespace="/session")
 
-        # await test_client.emit('test_event', {'example': 'data'}, namespace="/session")
+        await test_client.emit('test_event', {'example': 'data'}, namespace="/session")
 
         await asyncio.sleep(1)
         await test_client.disconnect()
