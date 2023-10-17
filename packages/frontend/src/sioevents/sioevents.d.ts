@@ -5,17 +5,15 @@
  * and run json-schema-to-typescript to regenerate this file.
  */
 
+export type Timestamp = number;
+export type Value = number;
+export type Name = string;
+
 export interface SIOEvents {
-  new_person: ComplexDataSchemaJson;
-  delete_person: TestSchema;
-  dummy_func: null;
+  test_event: SimUpdateData;
 }
-export interface ComplexDataSchemaJson {
-  firstName: string;
-  lastName: string;
-}
-export interface TestSchema {
-  age?: number;
-  hairColor?: "black" | "brown" | "blue";
-  complexData: ComplexDataSchemaJson;
+export interface SimUpdateData {
+  timestamp: Timestamp;
+  value: Value;
+  name: Name;
 }

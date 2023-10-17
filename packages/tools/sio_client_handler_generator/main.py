@@ -25,6 +25,7 @@ for event_data in event_datas:
         schema = event_data.real_type.model_json_schema()
         filename = f"{schema['title']}.schema.json"
         schema["$id"] = filename
+        schema["additionalProperties"] = False
         with open(f"{schema_dir}/{filename}", "w") as f:
             json.dump(schema, f, indent=4)
         schema_properties[event_data.event_name] = {"$ref": f"schemas/{filename}"}
@@ -124,6 +125,11 @@ import { Socket } from "socket.io";
         f.write(output_text)
     with open(f"{generated_dir}/sioevents.d.ts", "w") as f:
         f.write(ts_file_contents)
+
+    # Move the two files to packages/frontend/src/sioevents
+    import shutil
+    shutil.move(f"{generated_dir}/SIOEventProcessor.ts", f"packages/frontend/src/sioevents/SIOEventProcessor.ts")
+    shutil.move(f"{generated_dir}/sioevents.d.ts", f"packages/frontend/src/sioevents/sioevents.d.ts")
 
 import asyncio
 asyncio.run(main())

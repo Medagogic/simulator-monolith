@@ -20,5 +20,6 @@
     ],
     "title": "SimUpdateData",
     "type": "object",
-    "$id": "SimUpdateData.schema.json"
+    "$id": "SimUpdateData.schema.json",
+    "additionalProperties": false
 }

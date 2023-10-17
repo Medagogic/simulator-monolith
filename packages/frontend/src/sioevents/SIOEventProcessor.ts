@@ -5,18 +5,14 @@
  */
 
 import { Socket } from "socket.io";
-import { ComplexDataSchemaJson, TestSchema } from "./sioevents";
+import {SimUpdateData} from "./sioevents";
 
 export abstract class SIOEventProcessor {
   socket: Socket;
-  abstract on_new_person(data: ComplexDataSchemaJson): void;
-  abstract on_delete_person(data: TestSchema): void;
-  abstract on_dummy_func(): void;
+  abstract on_test_event(data: SimUpdateData): void;
 
   constructor(socket: Socket) {
     this.socket = socket;
-    this.socket.on("new_person", (data: ComplexDataSchemaJson) => this.on_new_person(data));
-    this.socket.on("delete_person", (data: TestSchema) => this.on_delete_person(data));
-    this.socket.on("dummy_func", () => this.on_dummy_func());
+    this.socket.on("test_event", (data: SimUpdateData) => this.on_test_event(data));
   }
 }
