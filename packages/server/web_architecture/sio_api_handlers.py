@@ -18,7 +18,7 @@ def get_field_info(annotation) -> dict:
         return {"type": "object"}
 
 
-def _generate_socketio_openapi_schema(all_handlers: List[Tuple[str, Callable]]) -> Dict:
+def generate_socketio_openapi_schema(all_handlers: List[Tuple[str, Callable]]) -> Dict:
     openapi_schema = {
         "openapi": "3.0.0",
         "info": {
@@ -74,7 +74,7 @@ def _generate_socketio_openapi_schema(all_handlers: List[Tuple[str, Callable]]) 
                     }
                 parameters.append(param)
 
-            openapi_schema["paths"][f"/{event}"] = {
+            openapi_schema["paths"][f"/{event}"] = {    # type: ignore
                 "post": {
                     "summary": f"Handle {event} event",
                     "operationId": handler_name,

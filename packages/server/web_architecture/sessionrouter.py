@@ -9,7 +9,7 @@ from typing import Any, Callable, Dict, Generic, List, Protocol, Tuple, Type, Ty
 import human_id
 from pydantic import BaseModel
 import socketio
-from packages.server.web_architecture.sio_api_handlers import _generate_socketio_openapi_schema
+from packages.server.web_architecture.sio_api_handlers import generate_socketio_openapi_schema
 from packages.server.web_architecture.sio_api_emitters import SIOEmitSchema, SIOEmitter, emits
 
 from colorama import Fore
@@ -46,7 +46,7 @@ class SessionRouterProtocol(Protocol):
 
 T = TypeVar('T', bound=Session)
 class SessionRouter(socketio.AsyncNamespace, Generic[T], metaclass=SIOEmitter):
-    def __init__(self, app: FastAPI, sio: socketio.AsyncServer, session_cls: Type[T]=None) -> None:
+    def __init__(self, app: FastAPI, sio: socketio.AsyncServer, session_cls: Type[T]=None) -> None: # type: ignore
         super().__init__(namespace="/session")
         self.sio = sio
 
@@ -70,7 +70,7 @@ class SessionRouter(socketio.AsyncNamespace, Generic[T], metaclass=SIOEmitter):
         session_methods = [(k, v) for k, v in session_cls.SIO_EVENT_HANDLERS.items()]
         all_handlers: List[Tuple[str, Callable]] = cls_methods + session_methods
 
-        schema = _generate_socketio_openapi_schema(all_handlers)
+        schema = generate_socketio_openapi_schema(all_handlers)
         return schema
 
     
