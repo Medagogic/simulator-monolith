@@ -1,7 +1,7 @@
 
 from fastapi import Depends
 import socketio
-from packages.server.web_architecture.sessionrouter import SessionRouter, Session
+from packages.server.web_architecture.sessionrouter import SessionRouter, Session, test_setup
 from packages.server.sim_app.med_sim._runner import MedsimRunner
 
 
@@ -12,22 +12,39 @@ class SimSession(Session):
 
         self.medsim = MedsimRunner(self.sio)
 
-    def register_sio_events(self):
-        @self.sio.event
-        def test_event(sid, data):
-            print(f"Test event received from {sid}: {data}")
-
-        return super().register_sio_events()
+    @Session.sio_handler
+    async def on_apply_interventions(self, sid, data):
+        print(f"Client {sid} applied interventions {data} in {self.session_id}")
 
 
 class SimSessionRouter(SessionRouter[SimSession]):
     def __init__(self, app, sio: socketio.AsyncServer):
         super().__init__(app=app, sio=sio, session_cls=SimSession)
 
-    def init_routes(self):   
+    def init_api_routes(self):   
         @self.session_router.get("/medsim/vitals")
         async def medsim_vitals(session: SimSession = Depends(self.get_session)):
             return session.medsim.get_vitals()
         
-        return super().init_routes()
-    
+        return super().init_api_routes()
+
+
+if __name__ == "__main__":
+    import asyncio
+
+    async def main():
+        server, server_task, session_router, test_client = await test_setup(router_class=SimSessionRouter)
+
+        await test_client.emit("apply_interventions", {"interventions": ["medication"]}, namespace="/session")
+
+        session_router.create_session(session_id="session-2")
+        await test_client.emit("join_session", "session-2", namespace="/session")
+        await test_client.emit("apply_interventions", {"interventions": ["medication"]}, namespace="/session")
+
+        await asyncio.sleep(1) 
+
+        await test_client.disconnect()
+        await server.shutdown()
+
+
+    asyncio.run(main())

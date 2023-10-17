@@ -3,6 +3,7 @@ import inspect
 import json
 import os
 import logging
+import sys
 import dotenv
 
 
@@ -31,7 +32,7 @@ def get_logger(name=None, level=logging.WARNING) -> logging.Logger:
     if logger.handlers:
         return logger
 
-    handler = logging.StreamHandler()
+    handler = logging.StreamHandler(sys.stdout)
     formatter = logging.Formatter(
         '%(asctime)s %(name)-12s %(levelname)-8s %(message)s', datefmt='%Y-%m-%d %H:%M:%S')
     handler.setFormatter(formatter)

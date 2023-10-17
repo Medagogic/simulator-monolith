@@ -1,30 +1,39 @@
 from __future__ import annotations
 from functools import wraps
-from fastapi import APIRouter, FastAPI, Depends, HTTPException, Query
-from typing import Any, Callable, Dict, Generic, Type, TypeVar
-
+import sys
+import traceback
+from fastapi import APIRouter, FastAPI, Depends, HTTPException
+from typing import Dict, Generic, Type, TypeVar
 import human_id
 import socketio
 
+from colorama import Fore
+import colorama
+
+colorama.init(autoreset=True)
+
+
 class Session():
+    SIO_EVENT_HANDLERS: Dict = {}
+
     def __init__(self, session_id: str, sio: socketio.AsyncServer):
         self.session_id = session_id
         self.sio = sio
 
-    async def on_test_event(self, sid, data):
-        print(f"Yooooo, test event received from {sid}: {data} in session {self.session_id}")
-
-    async def on_test_event_2(self, sid, data):
-        print(f"Oi, test event 2 received from {sid}: {data} in session {self.session_id}")
-
-    async def handle_magic_event(self, sid, data):
-        return f"Magic event finished from {sid}: {data} in session {self.session_id}"
+    @classmethod
+    def sio_handler(cls, func):
+        @wraps(func)
+        async def wrapper(self: Session, sid, *args, **kwargs):
+            return await func(self, sid, *args, **kwargs)
+        
+        cls.SIO_EVENT_HANDLERS[func.__name__] = wrapper
+        return wrapper
 
 
 T = TypeVar('T', bound=Session)
 
 class SessionRouter(socketio.AsyncNamespace, Generic[T]):
-    def __init__(self, app: FastAPI, sio: socketio.AsyncServer, session_cls: Type[T]) -> None:
+    def __init__(self, app: FastAPI, sio: socketio.AsyncServer, session_cls: Type[T]=None) -> None:
         super().__init__(namespace="/session")
         self.sio = sio
 
@@ -33,7 +42,7 @@ class SessionRouter(socketio.AsyncNamespace, Generic[T]):
         self.existing_sessions: Dict[str, T] = {}
         self.router = APIRouter(prefix="/new-session-router")
         self.session_router = APIRouter(prefix="/session/{session_id}")
-        self.init_routes()
+        self.init_api_routes()
 
         self.router.include_router(self.session_router)
         self.app.include_router(self.router)
@@ -50,16 +59,21 @@ class SessionRouter(socketio.AsyncNamespace, Generic[T]):
             raise ValueError("Session already exists")
         
     async def trigger_event(self, event, sid, *args):
-        if not hasattr(self, f"on_{event}"):
-            try:
-                session = self.get_session_for_sid(sid)
-                func = getattr(session, f"on_{event}", None)
+        handler_name = f"on_{event}"
+        if not hasattr(self, handler_name):
+            session = self.get_session_for_sid(sid)
+            if handler_name in session.SIO_EVENT_HANDLERS:
+                func = session.SIO_EVENT_HANDLERS[handler_name]
                 if func is not None:
-                    return await func(sid, *args)
-            except:
-                pass
-            print(f"SIO ERROR: {event} not found")
-            return False
+                    try:
+                        return await func(session, sid, *args)
+                    except Exception as e:
+                        sys.stderr.write(f"{Fore.YELLOW}SIO SESSION ERROR: {event}{args}\nSee traceback:\n")
+                        traceback.print_exc(file=sys.stderr)
+                        raise e
+
+            print(f"{Fore.YELLOW}SIO ERROR: {event} not found")
+            return
 
         return await super().trigger_event(event, sid, *args)
 
@@ -75,7 +89,7 @@ class SessionRouter(socketio.AsyncNamespace, Generic[T]):
         else:
             raise HTTPException(status_code=404, detail="Session not found")
     
-    def init_routes(self):
+    def init_api_routes(self):
         @self.session_router.get("/test-session")
         async def test_endpoint(session: T = Depends(self.get_session)):
             return {"session_id": session.session_id, "session_type": type(session).__name__}
@@ -91,10 +105,12 @@ class SessionRouter(socketio.AsyncNamespace, Generic[T]):
             return {"session_id": session.session_id}
 
     async def on_connect(self, sid, environ):
-        print(f"Client {sid} connected.")
+        # print(f"Client {sid} connected.")
+        pass
 
     async def on_disconnect(self, sid):
-        print(f"Client {sid} disconnected.")
+        # print(f"Client {sid} disconnected.")
+        pass
 
     async def on_join_session(self, sid, session_id: str):
         current_rooms = self.sio.rooms(sid, namespace=self.namespace)
@@ -121,10 +137,36 @@ class SessionRouter(socketio.AsyncNamespace, Generic[T]):
             raise Exception(f"Session {room_id} not found")
 
         return self.existing_sessions[room_id]
+    
 
-    async def on_magic_event(self, sid, data):
-        session = self.get_session_for_sid(sid)
-        return await session.handle_magic_event(sid, data)
+async def test_setup(router_class: Type[SessionRouter] = SessionRouter):
+    import uvicorn
+    from fastapi import FastAPI
+    import asyncio
+    import socketio
+
+    sio = socketio.AsyncServer(async_mode="asgi", namespaces=["/session"])
+    app = FastAPI()
+    app_asgi = socketio.ASGIApp(sio, app)
+
+    config = uvicorn.Config(app_asgi, host="0.0.0.0", port=8000, log_level="info")
+    server = uvicorn.Server(config)
+
+    server_task = asyncio.create_task(server.serve())
+
+    session_router = router_class(app, sio)
+    session_name = "test-session"
+
+    session_router.create_session(session_id=session_name)
+
+
+    test_client = socketio.AsyncClient()
+    test_client.on('connect', lambda: print("Connected to server"))
+
+    await test_client.connect('http://localhost:8000', namespaces=["/session"])
+    await test_client.emit('join_session', session_name, namespace="/session")
+
+    return server, server_task, session_router, test_client
 
 
 if __name__ == "__main__":
