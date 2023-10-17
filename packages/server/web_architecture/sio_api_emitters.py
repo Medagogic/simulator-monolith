@@ -27,6 +27,7 @@ def emits(event_name: str, event_type: Type) -> Callable:
 class SIOEmitSchema(BaseModel):
     event_name: str
     data_schema: Dict
+    real_type: Any = None
 
 
 class SIOEmitter(type):
@@ -50,7 +51,7 @@ class SIOEmitter(type):
                 event_name, event_type = attr._emit_info
 
                 openapi_schema = process_event_type(event_type)
-                emit_info = SIOEmitSchema(event_name=event_name, data_schema=openapi_schema)
+                emit_info = SIOEmitSchema(event_name=event_name, data_schema=openapi_schema, real_type=event_type)
 
                 if emit_info not in new_class.EVENT_DATA:
                     new_class.EVENT_DATA.append(emit_info)

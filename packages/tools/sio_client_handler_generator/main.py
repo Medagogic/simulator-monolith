@@ -1,19 +1,54 @@
+from typing import Dict, List
+
+from pydantic import BaseModel
 from packages.server.sim_app.sessionrouter import SimSessionRouter
 import json
 # get the location of this file
 import os
 from pathlib import Path
 import re
+
+from packages.server.web_architecture.sio_api_emitters import SIOEmitSchema
+from packages.server.web_architecture.sio_api_handlers import get_field_info
+
 this_file = Path(os.path.realpath(__file__))
 this_dir = this_file.parent
+schema_dir = f"{this_dir}/schemas"
+generated_dir = f"{this_dir}/generated"
 
-schema = SimSessionRouter.get_sio_emits_schema()
-print(schema)
+event_datas: List[SIOEmitSchema] = SimSessionRouter.EVENT_DATA
 
-with open(f"{this_dir}/sioevents.schema.json", "w") as f:
-    json.dump(schema, f, indent=4)
+schema_properties: Dict[str, Dict] = {}
 
-exit()
+for event_data in event_datas:
+    if event_data.real_type is not None and issubclass(event_data.real_type, BaseModel):
+        schema = event_data.real_type.model_json_schema()
+        filename = f"{schema['title']}.schema.json"
+        schema["$id"] = filename
+        with open(f"{schema_dir}/{filename}", "w") as f:
+            json.dump(schema, f, indent=4)
+        schema_properties[event_data.event_name] = {"$ref": f"schemas/{filename}"}
+    else:
+        schema_properties[event_data.event_name] = get_field_info(event_data.data_schema)
+
+required_fields = [event_data.event_name for event_data in event_datas]
+
+schema_dict = {
+    "$id": "SIO Events",
+    "$schema": "http://json-schema.org/schema#",
+    "type": "object",
+    "properties": schema_properties,
+    "additionalProperties": False,
+    "required": required_fields
+}
+
+with open(f"{schema_dir}/sioevents.schema.json", "w") as f:
+    json.dump(schema_dict, f, indent=4)
+
+
+# run generate_events.sh
+import subprocess
+subprocess.run(["bash", f"{this_dir}/generate_events.sh"])
 
 prompt = """
 Create an abstract typescript class which provides virtual functions for each element in SIOEvents, with a single paramater "data" of the associated type. Do not provide any surrounding text, provide only the code.
@@ -47,7 +82,7 @@ Generate the code for the following SIOEvents object:
 <SCHEMA>
 """
 
-ts_file_path = f"{this_dir}/sioevents.d.ts"
+ts_file_path = f"{generated_dir}/sioevents.d.ts"
 
 with open(ts_file_path, "r") as f:
     ts_file_contents = f.read()
@@ -70,8 +105,6 @@ print(formatted_prompt)
 
 from packages.server.gpt.gpt_api import gpt, MODEL_GPT35, GPTMessage, Role
 
-output_folder = "packages/frontend/src/sioevents"
-
 async def main():
     response = await gpt([GPTMessage(role=Role.USER, content=formatted_prompt)], model=MODEL_GPT35)
     print(response)
@@ -87,10 +120,9 @@ import { Socket } from "socket.io";
 <CLASS>
 """.strip().replace("<CLASS>", response)
 
-    output_file_path = f"{output_folder}/SIOEventProcessor.ts"
-    with open(output_file_path, "w") as f:
+    with open(f"{generated_dir}/SIOEventProcessor.ts", "w") as f:
         f.write(output_text)
-    with open(f"{output_folder}/sioevents.d.ts", "w") as f:
+    with open(f"{generated_dir}/sioevents.d.ts", "w") as f:
         f.write(ts_file_contents)
 
 import asyncio

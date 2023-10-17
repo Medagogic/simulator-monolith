@@ -1,0 +1,14 @@
+{
+    "$id": "SIO Events",
+    "$schema": "http://json-schema.org/schema#",
+    "type": "object",
+    "properties": {
+        "test_event": {
+            "$ref": "schemas/SimUpdateData.schema.json"
+        }
+    },
+    "additionalProperties": false,
+    "required": [
+        "test_event"
+    ]
+}

@@ -1,1 +1,0 @@
-json2ts -i sioevents.schema.json -o sioevents.d.ts

@@ -1,0 +1,24 @@
+{
+    "properties": {
+        "timestamp": {
+            "title": "Timestamp",
+            "type": "number"
+        },
+        "value": {
+            "title": "Value",
+            "type": "number"
+        },
+        "name": {
+            "title": "Name",
+            "type": "string"
+        }
+    },
+    "required": [
+        "timestamp",
+        "value",
+        "name"
+    ],
+    "title": "SimUpdateData",
+    "type": "object",
+    "$id": "SimUpdateData.schema.json"
+}
