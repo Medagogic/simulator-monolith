@@ -5,11 +5,12 @@ import json
 import sys
 import traceback
 from fastapi import APIRouter, FastAPI, Depends, HTTPException
-from typing import Callable, Dict, Generic, List, Tuple, Type, TypeVar, get_type_hints
+from typing import Callable, Dict, Generic, List, Tuple, Type, TypeVar, get_args, get_type_hints
 import human_id
 from pydantic import BaseModel
 import socketio
-from socketio_api import generate_socketio_openapi_schema
+from packages.server.web_architecture.sio_api_handlers import generate_socketio_openapi_schema
+from packages.server.web_architecture.sio_api_emitters import SIOEmitter, emits
 
 from colorama import Fore
 import colorama
@@ -36,7 +37,7 @@ class Session():
 
 
 T = TypeVar('T', bound=Session)
-class SessionRouter(socketio.AsyncNamespace, Generic[T]):
+class SessionRouter(socketio.AsyncNamespace, Generic[T], metaclass=SIOEmitter):
     def __init__(self, app: FastAPI, sio: socketio.AsyncServer, session_cls: Type[T]=None) -> None:
         super().__init__(namespace="/session")
         self.sio = sio
@@ -55,16 +56,20 @@ class SessionRouter(socketio.AsyncNamespace, Generic[T]):
 
 
     @classmethod
-    def describe_socketio_routes(cls, session_cls: Type[T]):
+    def get_sio_handlers(cls, session_cls: Type[T]):
         members = inspect.getmembers(cls)
-
         cls_methods = [member for member in members if member[0].startswith('on_') and inspect.isfunction(member[1])]
         session_methods = [(k, v) for k, v in session_cls.SIO_EVENT_HANDLERS.items()]
         all_handlers: List[Tuple[str, Callable]] = cls_methods + session_methods
 
         schema = generate_socketio_openapi_schema(all_handlers)
+        return schema
 
-        print(json.dumps(schema, indent=4))
+    
+    @classmethod
+    def get_sio_emits(cls):
+        schema = SIOEmitter.get_emit_event_schema(cls)
+        return schema
 
 
     def create_session(self, session_id: str) -> T:
@@ -155,6 +160,10 @@ class SessionRouter(socketio.AsyncNamespace, Generic[T]):
 
         return self.existing_sessions[room_id]
     
+    @emits("test_event", Dict[str, str])
+    def some_magic_function(self):
+        self.emit("test_event", {"test_param": "test_value"})
+    
 
 async def test_setup(router_class: Type[SessionRouter] = SessionRouter):
     import uvicorn
@@ -190,6 +199,7 @@ if __name__ == "__main__":
     import asyncio
 
     async def main():
-        SessionRouter.describe_socketio_routes(Session)
+        SessionRouter.get_sio_handlers(Session)
+        SessionRouter.get_sio_emits()
 
     asyncio.run(main())

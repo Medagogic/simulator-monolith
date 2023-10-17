@@ -42,7 +42,8 @@ if __name__ == "__main__":
         # cls: Type[Session] = session_router.session_cls
         # print(cls.SIO_EVENT_HANDLERS)
 
-        SimSessionRouter.describe_socketio_routes(SimSession)
+        SimSessionRouter.get_sio_handlers(SimSession)
+        SimSessionRouter.get_sio_emits()
 
         # await test_client.emit("apply_interventions", {"interventions": ["medication"]}, namespace="/session")
 
