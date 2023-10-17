@@ -9,10 +9,10 @@ import {SimUpdateData} from "./sioevents";
 
 export abstract class SIOEventProcessor {
   socket: Socket;
-  abstract on_test_event(data: SimUpdateData): void;
+  abstract on_patient_state(data: SimUpdateData): void;
 
   constructor(socket: Socket) {
     this.socket = socket;
-    this.socket.on("test_event", (data: SimUpdateData) => this.on_test_event(data));
+    this.socket.on("patient_state", (data: SimUpdateData) => this.on_patient_state(data));
   }
 }

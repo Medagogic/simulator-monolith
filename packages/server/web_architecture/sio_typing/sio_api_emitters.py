@@ -2,7 +2,7 @@ from __future__ import annotations
 from functools import wraps
 import json
 from typing import Any, Callable, Dict, List, Type
-from packages.server.web_architecture.sio_api_handlers import get_field_info
+from packages.server.web_architecture.sio_typing.sio_api_handlers import get_field_info
 from pydantic import BaseModel
 
 

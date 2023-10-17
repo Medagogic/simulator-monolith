@@ -10,7 +10,7 @@ export type Value = number;
 export type Name = string;
 
 export interface SIOEvents {
-  test_event: SimUpdateData;
+  patient_state: SimUpdateData;
 }
 export interface SimUpdateData {
   timestamp: Timestamp;

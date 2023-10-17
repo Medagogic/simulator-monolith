@@ -3,12 +3,12 @@
     "$schema": "http://json-schema.org/schema#",
     "type": "object",
     "properties": {
-        "test_event": {
+        "patient_state": {
             "$ref": "schemas/SimUpdateData.schema.json"
         }
     },
     "additionalProperties": false,
     "required": [
-        "test_event"
+        "patient_state"
     ]
 }

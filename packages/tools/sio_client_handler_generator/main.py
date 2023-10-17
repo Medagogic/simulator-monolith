@@ -1,7 +1,7 @@
 from typing import Dict, List
 
 from pydantic import BaseModel
-from packages.server.sim_app.sessionrouter import SimSessionRouter
+from packages.server.sim_app.sessionrouter import SimSessionRouter, SimSession
 import json
 # get the location of this file
 import os
@@ -16,7 +16,7 @@ this_dir = this_file.parent
 schema_dir = f"{this_dir}/schemas"
 generated_dir = f"{this_dir}/generated"
 
-event_datas: List[SIOEmitSchema] = SimSessionRouter.SIO_EMIT_DATA
+event_datas: List[SIOEmitSchema] = SimSessionRouter.get_emitted_events(SimSession)
 
 schema_properties: Dict[str, Dict] = {}
 
