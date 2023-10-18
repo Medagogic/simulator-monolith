@@ -5,7 +5,8 @@
     */
 
     import { Socket } from "socket.io";
-    import { ChatMessage, SimUpdateData } from "./scribetypes";
+    import { ChatMessage } from "./scribetypes";
+import { SimUpdateData } from "./scribetypes";
 
 export abstract class ScribeClient {
   socket: Socket;
