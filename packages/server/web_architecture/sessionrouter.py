@@ -6,7 +6,7 @@ from fastapi import APIRouter, FastAPI, Depends, HTTPException
 from typing import Any, Callable, Dict, Generic, List, Optional, Protocol, Type, TypeVar
 import human_id
 import socketio
-from packages.server.web_architecture.sio_typing.scribe import ScribeMixin_Handler, ScribeEmitSchema, ScribeMixin_Emit, ScribeHandlerSchema, scribe_emits, scribe_handler
+from packages.server.web_architecture.scribe.scribe import ScribeMixin_Handler, ScribeEmitSchema, ScribeMixin_Emit, ScribeHandlerSchema, scribe_emits, scribe_handler
 
 from colorama import Fore
 import colorama

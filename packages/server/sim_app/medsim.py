@@ -4,8 +4,8 @@ from fastapi import Depends
 from pydantic import BaseModel
 import socketio
 from packages.server.sim_app.chat import SessionMixin_Chat
-from packages.server.web_architecture.sessionrouter import Session, SessionRouter, SessionRouterProtocol
-from packages.server.web_architecture.sio_typing.scribe import scribe_emits, scribe_handler
+from packages.server.web_architecture.sessionrouter import Session, SessionRouter
+from packages.server.web_architecture.scribe.scribe import scribe_emits, scribe_handler
 
 
 class InterventionData(BaseModel):
@@ -61,7 +61,7 @@ if __name__ == "__main__":
 
     async def run_test():
         await test_docs()
-        print("\n\n")
+        print("\n")
 
         server, server_task, session_router, test_client = await setup_router_for_test(router_class=Router_MedSim)
         await asyncio.sleep(1) 
