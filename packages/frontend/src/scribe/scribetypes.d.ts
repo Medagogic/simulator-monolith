@@ -5,15 +5,24 @@
  * and run json-schema-to-typescript to regenerate this file.
  */
 
-export type Timestamp = number;
+export type Message = string;
+export type Timestamp = string;
+export type Sender = string;
+export type Timestamp1 = number;
 export type Value = number;
 export type Name = string;
 
-export interface SIOEvents {
+export interface ScribeEvents {
+  chat_message: ChatMessage;
   patient_state: SimUpdateData;
 }
-export interface SimUpdateData {
+export interface ChatMessage {
+  message: Message;
   timestamp: Timestamp;
+  sender: Sender;
+}
+export interface SimUpdateData {
+  timestamp: Timestamp1;
   value: Value;
   name: Name;
 }

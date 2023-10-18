@@ -1,14 +1,18 @@
 {
-    "$id": "SIO Events",
+    "$id": "Scribe Events",
     "$schema": "http://json-schema.org/schema#",
     "type": "object",
     "properties": {
+        "chat_message": {
+            "$ref": "schemas/ChatMessage.schema.json"
+        },
         "patient_state": {
             "$ref": "schemas/SimUpdateData.schema.json"
         }
     },
     "additionalProperties": false,
     "required": [
+        "chat_message",
         "patient_state"
     ]
 }

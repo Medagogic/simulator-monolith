@@ -3,8 +3,9 @@ from functools import wraps
 import sys
 import traceback
 from fastapi import APIRouter, FastAPI, Depends, HTTPException
-from typing import Any, Callable, Dict, Generic, List, Optional, Protocol, Type, TypeVar
+from typing import Any, Callable, Dict, Generic, List, Optional, Protocol, Type, TypeVar, Union
 import human_id
+from pydantic import BaseModel
 import socketio
 from packages.server.web_architecture.scribe.scribe import ScribeMixin_Handler, ScribeEmitSchema, ScribeMixin_Emit, ScribeHandlerSchema, scribe_emits, scribe_handler
 
@@ -15,8 +16,10 @@ colorama.init(autoreset=True)
 
 
 from abc import ABC, abstractmethod, abstractproperty
+SerializableType = Union[str, int, float, List[Any], Dict[str, Any]]
+EmittableType = Union[SerializableType, BaseModel]
 
-class SessionBase(ABC):
+class AbstractSession(ABC):
     def __init__(self, session_id: str, sio: socketio.AsyncServer):
         pass
 
@@ -29,13 +32,11 @@ class SessionBase(ABC):
         pass
 
     @abstractmethod
-    def emit(self, event_name: str, data: Any) -> None:
+    async def emit(self, event_name: str, data: EmittableType) -> None:
         pass
 
 
-class Session(SessionBase, ScribeMixin_Emit, ScribeMixin_Handler):
-    # SIO_EVENT_HANDLERS: Dict = {}
-
+class Session(AbstractSession, ScribeMixin_Emit, ScribeMixin_Handler):
     def __init__(self, session_id: str, sio: socketio.AsyncServer):
         self._session_id = session_id
         self._sio = sio
@@ -47,18 +48,11 @@ class Session(SessionBase, ScribeMixin_Emit, ScribeMixin_Handler):
     @property
     def sio(self) -> socketio.AsyncServer:
         return self._sio
-
-    # @classmethod
-    # def sio_handler(cls, func):
-    #     @wraps(func)
-    #     async def wrapper(self: Session, sid, *args, **kwargs):
-    #         return await func(self, sid, *args, **kwargs)
-        
-    #     cls.SIO_EVENT_HANDLERS[func.__name__] = wrapper
-    #     return wrapper
     
-    def emit(self, event_name: str, data: Any) -> None:
-        self.sio.emit(event_name, data, room=self.session_id, namespace="/session")
+    async def emit(self, event_name: str, data: EmittableType) -> None:
+        if isinstance(data, BaseModel):
+            data = data.model_dump()
+        await self.sio.emit(event_name, data, room=self.session_id, namespace="/session")
 
 
 # Use this protocol to type hint an object (mixins for the SessionRouter) which can emit events

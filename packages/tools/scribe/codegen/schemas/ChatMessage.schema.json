@@ -1,0 +1,26 @@
+{
+    "properties": {
+        "message": {
+            "title": "Message",
+            "type": "string"
+        },
+        "timestamp": {
+            "format": "date-time",
+            "title": "Timestamp",
+            "type": "string"
+        },
+        "sender": {
+            "title": "Sender",
+            "type": "string"
+        }
+    },
+    "required": [
+        "message",
+        "timestamp",
+        "sender"
+    ],
+    "title": "ChatMessage",
+    "type": "object",
+    "$id": "ChatMessage.schema.json",
+    "additionalProperties": false
+}
