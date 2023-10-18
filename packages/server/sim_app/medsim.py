@@ -28,8 +28,8 @@ class Session_MedSim(Session, SessionMixin_Chat):
         return TestVitals(heart_rate=100, blood_pressure=120, temperature=38.6)
     
     @scribe_emits("patient_state", SimUpdateData)
-    def emit_patient_state(self, timestamp: float, value: float, name: str):
-        self.emit("patient_state", SimUpdateData(timestamp=timestamp, value=value, name=name))
+    async def emit_patient_state(self, timestamp: float, value: float, name: str):
+        await self.emit("patient_state", SimUpdateData(timestamp=timestamp, value=value, name=name))
 
     @scribe_handler
     async def on_apply_interventions(self, sid, data: InterventionData):
