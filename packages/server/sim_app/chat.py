@@ -3,7 +3,7 @@ from datetime import datetime
 from typing import List
 from pydantic import BaseModel
 from packages.server.web_architecture.sessionrouter import AbstractSession
-from packages.server.web_architecture.scribe.scribe import scribe_emits, scribe_handler
+from packages.tools.scribe import scribe_emits, scribe_handler
 
 class ChatMessage(BaseModel):
     message: str

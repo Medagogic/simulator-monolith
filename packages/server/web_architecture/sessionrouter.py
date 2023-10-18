@@ -7,7 +7,7 @@ from typing import Any, Callable, Dict, Generic, List, Optional, Protocol, Type,
 import human_id
 from pydantic import BaseModel
 import socketio
-from packages.server.web_architecture.scribe.scribe import ScribeMixin_Handler, ScribeEmitSchema, ScribeMixin_Emit, ScribeHandlerSchema, scribe_emits, scribe_handler
+from packages.tools.scribe import ScribeMixin_Handler, ScribeEmitSchema, ScribeMixin_Emit, ScribeHandlerSchema, scribe_emits, scribe_handler
 
 from colorama import Fore
 import colorama

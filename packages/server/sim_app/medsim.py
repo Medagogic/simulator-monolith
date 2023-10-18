@@ -5,7 +5,7 @@ from pydantic import BaseModel
 import socketio
 from packages.server.sim_app.chat import SessionMixin_Chat
 from packages.server.web_architecture.sessionrouter import Session, SessionRouter
-from packages.server.web_architecture.scribe.scribe import scribe_emits, scribe_handler
+from packages.tools.scribe import scribe_emits, scribe_handler
 
 
 class InterventionData(BaseModel):

@@ -1,9 +1,8 @@
 from __future__ import annotations
 from functools import wraps
 import inspect
-import json
 from typing import Any, Awaitable, Callable, Coroutine, Dict, List, Optional, Type, TypeVar, cast
-from packages.server.web_architecture.scribe.scribe_helpers import get_field_info, get_sio_data_type
+from packages.tools.scribe.src.scribe_helpers import get_field_info, get_sio_data_type
 from pydantic import BaseModel
 
 

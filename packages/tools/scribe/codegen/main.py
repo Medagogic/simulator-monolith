@@ -3,13 +3,12 @@ from typing import Dict, List
 from pydantic import BaseModel
 from packages.server.sim_app.medsim import Router_MedSim, Session_MedSim
 import json
-# get the location of this file
 import os
 from pathlib import Path
 import re
 
-from packages.server.web_architecture.scribe.scribe import ScribeEmitSchema
-from packages.server.web_architecture.scribe.scribe_helpers import get_field_info
+from packages.tools.scribe import ScribeEmitSchema
+from packages.tools.scribe.src.scribe_helpers import get_field_info
 
 this_file = Path(os.path.realpath(__file__))
 this_dir = this_file.parent
