@@ -1,0 +1,25 @@
+{
+    "properties": {
+        "message": {
+            "title": "Message",
+            "type": "string"
+        },
+        "timestamp": {
+            "title": "Timestamp",
+            "type": "string"
+        },
+        "npc_id": {
+            "title": "Npc Id",
+            "type": "string"
+        }
+    },
+    "required": [
+        "message",
+        "timestamp",
+        "npc_id"
+    ],
+    "title": "MessageFromNPC",
+    "type": "object",
+    "$id": "MessageFromNPC.schema.json",
+    "additionalProperties": false
+}

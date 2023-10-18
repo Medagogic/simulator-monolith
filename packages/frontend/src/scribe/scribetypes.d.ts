@@ -5,24 +5,60 @@
  * and run json-schema-to-typescript to regenerate this file.
  */
 
-export type Message = string;
+export type Event = string;
 export type Timestamp = string;
-export type Sender = string;
-export type Timestamp1 = number;
+export type NpcId = string | null;
+export type Message = string;
+export type Timestamp1 = string;
+export type NpcId1 = string;
+export type Timestamp2 = number;
 export type Value = number;
 export type Name = string;
+export type Interventions = string[];
+export type Message1 = string;
+export type Timestamp3 = string;
+export type TargetNpcId = string | null;
 
 export interface ScribeEvents {
-  chat_message: ChatMessage;
+  chat_event: ChatEvent;
+  chat_message: MessageFromNPC;
   patient_state: SimUpdateData;
+  __server_on_join_session?: {
+    session_id?: {
+      [k: string]: unknown;
+    };
+  };
+  __server_on_leave_session?: {};
+  __server_on_apply_interventions?: {
+    data?: InterventionData;
+  };
+  __server_on_chat_message?: {
+    data?: HumanMessage;
+    return?: {
+      [k: string]: unknown;
+    };
+  };
 }
-export interface ChatMessage {
-  message: Message;
+export interface ChatEvent {
+  event: Event;
   timestamp: Timestamp;
-  sender: Sender;
+  npc_id?: NpcId;
+}
+export interface MessageFromNPC {
+  message: Message;
+  timestamp: Timestamp1;
+  npc_id: NpcId1;
 }
 export interface SimUpdateData {
-  timestamp: Timestamp1;
+  timestamp: Timestamp2;
   value: Value;
   name: Name;
+}
+export interface InterventionData {
+  interventions: Interventions;
+}
+export interface HumanMessage {
+  message: Message1;
+  timestamp: Timestamp3;
+  target_npc_id?: TargetNpcId;
 }

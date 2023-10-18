@@ -1,0 +1,32 @@
+{
+    "properties": {
+        "event": {
+            "title": "Event",
+            "type": "string"
+        },
+        "timestamp": {
+            "title": "Timestamp",
+            "type": "string"
+        },
+        "npc_id": {
+            "anyOf": [
+                {
+                    "type": "string"
+                },
+                {
+                    "type": "null"
+                }
+            ],
+            "default": null,
+            "title": "Npc Id"
+        }
+    },
+    "required": [
+        "event",
+        "timestamp"
+    ],
+    "title": "ChatEvent",
+    "type": "object",
+    "$id": "ChatEvent.schema.json",
+    "additionalProperties": false
+}

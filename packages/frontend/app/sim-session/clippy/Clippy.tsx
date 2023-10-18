@@ -41,10 +41,9 @@ interface ClippyProps {
 
 const Clippy: React.FC<ClippyProps> = ({ onClick }) => {
     const [suggestions, setSuggestions] = useState(clippy.suggestions);
-    const sendMessage = useChatStore((state) => state.sendMessage);
+    // const sendMessage = useChatStore((state) => state.sendMessage);
 
     function handleClick(data: { description: string; command: string }) {
-        sendMessage(data.command);
         onClick(data);
         const updatedSuggestions = suggestions.filter((suggestion) => suggestion.command !== data.command);
         setSuggestions(updatedSuggestions);

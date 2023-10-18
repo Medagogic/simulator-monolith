@@ -11,6 +11,7 @@ import AttachmentList from '../sim-session/AttachmentList/AttachmentList';
 import {DefaultApi, Configuration} from "@/src/api"
 import { SocketProvider, useSocket } from '../socketio/SocketContext';
 import { ChatterIO } from './ChatterIO';
+import { ChatEvent, HumanMessage, MessageFromNPC } from "@/src/scribe/scribetypes"
 
 const api_config = new Configuration({basePath: process.env.API_HOST})
 const api = new DefaultApi(api_config)
@@ -18,7 +19,6 @@ const api = new DefaultApi(api_config)
 const ChatterBox: React.FC = () => {
   const messages = useChatStore((state) => state.messages);
   const currentMessage = useChatStore((state) => state.currentMessage);
-  const sendMessage = useChatStore((state) => state.sendMessage);
   const setCurrentMessage = useChatStore((state) => state.setCurrentMessage); // Assuming you have this in your store
   
   const [showAttachments, setShowAttachments] = useState(false);
@@ -40,22 +40,45 @@ const ChatterBox: React.FC = () => {
     setShowAttachments(!showAttachments);
   }
 
-
-  function message_type(message: ChatStoreMessage): string {
-    return message.sender === 'system' ? 'system' : 'text';
-  }
-
   function message_list(): any[] {
-    return messages.map((message, index) => ({
-      position: message.sender === 'user' ? 'right' : 'left',
-      type: message_type(message),
-      title: message.sender,
-      text: message.text,
-    }));
+    return messages.map((chatStoreMessage) => {
+      let position: 'right' | 'left';
+      let title: string;
+      let text: string;
+  
+      switch (chatStoreMessage.type) {
+        case 'human':
+          position = 'right'; // Assuming 'human' type messages are 'user' sent.
+          title = 'User'; // This is an assumption. Replace with actual data if available.
+          const human = chatStoreMessage.message as HumanMessage;
+          text = human.message; // Assuming 'message' field holds the text in 'HumanMessage'.
+          break;
+        case 'npc':
+          position = 'left';
+          const npc = chatStoreMessage.message as MessageFromNPC;
+          title = npc.npc_id; // Assuming NPC's id should be displayed as title.
+          text = npc.message;
+          break;
+        case 'event':
+          position = 'left'; // Adjust if 'event' messages have different display logic.
+          title = 'Event'; // This is a placeholder. Perhaps events have special titles?
+          const evt = chatStoreMessage.message as ChatEvent;
+          text = evt.event;
+          break;
+        default:
+          throw new Error('Unsupported message type');
+      }
+  
+      return {
+        position,
+        type: "text",
+        title,
+        text,
+      };
+    });
   }
 
   function send_message() {
-    sendMessage(currentMessage);
     chatterio!.sendMessage(currentMessage);
     setCurrentMessage("");
   }

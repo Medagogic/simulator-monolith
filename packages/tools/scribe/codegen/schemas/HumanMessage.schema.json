@@ -1,0 +1,32 @@
+{
+    "properties": {
+        "message": {
+            "title": "Message",
+            "type": "string"
+        },
+        "timestamp": {
+            "title": "Timestamp",
+            "type": "string"
+        },
+        "target_npc_id": {
+            "anyOf": [
+                {
+                    "type": "string"
+                },
+                {
+                    "type": "null"
+                }
+            ],
+            "default": null,
+            "title": "Target Npc Id"
+        }
+    },
+    "required": [
+        "message",
+        "timestamp"
+    ],
+    "title": "HumanMessage",
+    "type": "object",
+    "$id": "HumanMessage.schema.json",
+    "additionalProperties": false
+}

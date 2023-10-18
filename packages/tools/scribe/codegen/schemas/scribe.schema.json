@@ -3,15 +3,54 @@
     "$schema": "http://json-schema.org/schema#",
     "type": "object",
     "properties": {
+        "chat_event": {
+            "$ref": "schemas/ChatEvent.schema.json"
+        },
         "chat_message": {
-            "$ref": "schemas/ChatMessage.schema.json"
+            "$ref": "schemas/MessageFromNPC.schema.json"
         },
         "patient_state": {
             "$ref": "schemas/SimUpdateData.schema.json"
+        },
+        "__server_on_join_session": {
+            "type": "object",
+            "properties": {
+                "session_id": {
+                    "type": "object"
+                }
+            },
+            "additionalProperties": false
+        },
+        "__server_on_leave_session": {
+            "type": "object",
+            "properties": {},
+            "additionalProperties": false
+        },
+        "__server_on_apply_interventions": {
+            "type": "object",
+            "properties": {
+                "data": {
+                    "$ref": "schemas/InterventionData.schema.json"
+                }
+            },
+            "additionalProperties": false
+        },
+        "__server_on_chat_message": {
+            "type": "object",
+            "properties": {
+                "data": {
+                    "$ref": "schemas/HumanMessage.schema.json"
+                },
+                "return": {
+                    "type": "object"
+                }
+            },
+            "additionalProperties": false
         }
     },
     "additionalProperties": false,
     "required": [
+        "chat_event",
         "chat_message",
         "patient_state"
     ]

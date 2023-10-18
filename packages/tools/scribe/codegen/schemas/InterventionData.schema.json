@@ -1,0 +1,18 @@
+{
+    "properties": {
+        "interventions": {
+            "items": {
+                "type": "string"
+            },
+            "title": "Interventions",
+            "type": "array"
+        }
+    },
+    "required": [
+        "interventions"
+    ],
+    "title": "InterventionData",
+    "type": "object",
+    "$id": "InterventionData.schema.json",
+    "additionalProperties": false
+}
