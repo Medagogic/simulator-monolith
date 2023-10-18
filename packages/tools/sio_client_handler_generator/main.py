@@ -1,38 +1,38 @@
 from typing import Dict, List
 
 from pydantic import BaseModel
-from packages.server.sim_app.sessionrouter import SimSessionRouter, SimSession
+from packages.server.sim_app.medsim import Router_MedSim, Session_MedSim
 import json
 # get the location of this file
 import os
 from pathlib import Path
 import re
 
-from packages.server.web_architecture.sio_typing.sio_api_emitters import SIOEmitSchema
-from packages.server.web_architecture.sio_typing.sio_api_handlers import get_field_info
+from packages.server.web_architecture.sio_typing.scribe import ScribeEmitSchema
+from packages.server.web_architecture.sio_typing.scribe_helpers import get_field_info
 
 this_file = Path(os.path.realpath(__file__))
 this_dir = this_file.parent
 schema_dir = f"{this_dir}/schemas"
 generated_dir = f"{this_dir}/generated"
 
-event_datas: List[SIOEmitSchema] = SimSessionRouter.get_emitted_events(SimSession)
+event_datas: List[ScribeEmitSchema] = Router_MedSim.scribe_get_all_emitted_events(Session_MedSim)
 
 schema_properties: Dict[str, Dict] = {}
 
 for event_data in event_datas:
-    if event_data.real_type is not None and issubclass(event_data.real_type, BaseModel):
-        schema = event_data.real_type.model_json_schema()
+    if event_data.data_type is not None and issubclass(event_data.data_type, BaseModel):
+        schema = event_data.data_type.model_json_schema()
         filename = f"{schema['title']}.schema.json"
         schema["$id"] = filename
         schema["additionalProperties"] = False
         with open(f"{schema_dir}/{filename}", "w") as f:
             json.dump(schema, f, indent=4)
-        schema_properties[event_data.event_name] = {"$ref": f"schemas/{filename}"}
+        schema_properties[event_data.emits_event] = {"$ref": f"schemas/{filename}"}
     else:
-        schema_properties[event_data.event_name] = get_field_info(event_data.data_schema)
+        schema_properties[event_data.emits_event] = get_field_info(event_data.data_schema)
 
-required_fields = [event_data.event_name for event_data in event_datas]
+required_fields = [event_data.emits_event for event_data in event_datas]
 
 schema_dict = {
     "$id": "SIO Events",

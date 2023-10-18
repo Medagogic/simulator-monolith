@@ -1,16 +1,12 @@
 from __future__ import annotations
 from functools import wraps
-import inspect
-import json
 import sys
 import traceback
 from fastapi import APIRouter, FastAPI, Depends, HTTPException
-from typing import Any, Callable, Dict, Generic, List, Protocol, Tuple, Type, TypeVar, get_args, get_type_hints
+from typing import Any, Callable, Dict, Generic, List, Optional, Protocol, Type, TypeVar
 import human_id
-from pydantic import BaseModel
 import socketio
-from packages.server.web_architecture.sio_typing.sio_api_handlers import generate_socketio_openapi_schema
-from packages.server.web_architecture.sio_typing.sio_api_emitters import SIOEmitSchema, SIOEmitter, emits
+from packages.server.web_architecture.sio_typing.scribe import ScribeMixin_Handler, ScribeEmitSchema, ScribeMixin_Emit, ScribeHandlerSchema, scribe_emits, scribe_handler
 
 from colorama import Fore
 import colorama
@@ -18,21 +14,48 @@ import colorama
 colorama.init(autoreset=True)
 
 
-class Session(metaclass=SIOEmitter):
-    SIO_EVENT_HANDLERS: Dict = {}
+from abc import ABC, abstractmethod, abstractproperty
+
+class SessionBase(ABC):
+    def __init__(self, session_id: str, sio: socketio.AsyncServer):
+        pass
+
+    @abstractproperty
+    def session_id(self) -> str:
+        pass
+
+    @abstractproperty
+    def sio(self) -> str:
+        pass
+
+    @abstractmethod
+    def emit(self, event_name: str, data: Any) -> None:
+        pass
+
+
+class Session(SessionBase, ScribeMixin_Emit, ScribeMixin_Handler):
+    # SIO_EVENT_HANDLERS: Dict = {}
 
     def __init__(self, session_id: str, sio: socketio.AsyncServer):
-        self.session_id = session_id
-        self.sio = sio
+        self._session_id = session_id
+        self._sio = sio
 
-    @classmethod
-    def sio_handler(cls, func):
-        @wraps(func)
-        async def wrapper(self: Session, sid, *args, **kwargs):
-            return await func(self, sid, *args, **kwargs)
+    @property
+    def session_id(self) -> str:
+        return self._session_id
+    
+    @property
+    def sio(self) -> socketio.AsyncServer:
+        return self._sio
+
+    # @classmethod
+    # def sio_handler(cls, func):
+    #     @wraps(func)
+    #     async def wrapper(self: Session, sid, *args, **kwargs):
+    #         return await func(self, sid, *args, **kwargs)
         
-        cls.SIO_EVENT_HANDLERS[func.__name__] = wrapper
-        return wrapper
+    #     cls.SIO_EVENT_HANDLERS[func.__name__] = wrapper
+    #     return wrapper
     
     def emit(self, event_name: str, data: Any) -> None:
         self.sio.emit(event_name, data, room=self.session_id, namespace="/session")
@@ -45,7 +68,7 @@ class SessionRouterProtocol(Protocol):
 
 
 T = TypeVar('T', bound=Session)
-class SessionRouter(socketio.AsyncNamespace, Generic[T], metaclass=SIOEmitter):
+class SessionRouter(socketio.AsyncNamespace, Generic[T], ScribeMixin_Emit, ScribeMixin_Handler):
     def __init__(self, app: FastAPI, sio: socketio.AsyncServer, session_cls: Type[T]=None) -> None: # type: ignore
         super().__init__(namespace="/session")
         self.sio = sio
@@ -64,19 +87,14 @@ class SessionRouter(socketio.AsyncNamespace, Generic[T], metaclass=SIOEmitter):
 
 
     @classmethod
-    def get_sio_handler_schema(cls, session_cls: Type[T]):
-        members = inspect.getmembers(cls)
-        cls_methods = [member for member in members if member[0].startswith('on_') and inspect.isfunction(member[1])]
-        session_methods = [(k, v) for k, v in session_cls.SIO_EVENT_HANDLERS.items()]
-        all_handlers: List[Tuple[str, Callable]] = cls_methods + session_methods
-
-        schema = generate_socketio_openapi_schema(all_handlers)
-        return schema
+    def scribe_get_all_handled_events(cls, session_cls: Type[ScribeMixin_Handler]):
+        handled_events: List[ScribeHandlerSchema] = cls.scribe_get_handler_schema() + session_cls.scribe_get_handler_schema()
+        return handled_events
 
     
     @classmethod
-    def get_emitted_events(cls, session_cls: Type[T]) -> List[SIOEmitSchema]:
-        emitted_events: List[SIOEmitSchema] = cls.SIO_EMIT_DATA + session_cls.SIO_EMIT_DATA # type: ignore
+    def scribe_get_all_emitted_events(cls, session_cls: Type[ScribeMixin_Emit]) -> List[ScribeEmitSchema]:
+        emitted_events: List[ScribeEmitSchema] = cls.scribe_get_emit_schema() + session_cls.scribe_get_emit_schema()
         return emitted_events
 
 
@@ -88,24 +106,29 @@ class SessionRouter(socketio.AsyncNamespace, Generic[T], metaclass=SIOEmitter):
         else:
             raise ValueError("Session already exists")
         
-    async def trigger_event(self, event, sid, *args):
+    @staticmethod
+    async def __trigger_event_on_session(session: T, event: str, func: Callable, sid: str, *args) -> Any:
+        try:
+            return await func(session, sid, *args)
+        except Exception as e:
+            sys.stderr.write(f"{Fore.YELLOW}SIO SESSION ERROR: {event}{args}\nSee traceback:\n")
+            traceback.print_exc(file=sys.stderr)
+            raise e
+        
+    async def trigger_event(self, event: str, sid: str, *args) -> Any:
+        if event.startswith("on_"):
+            print(f"{Fore.RED}SCRIBE ERROR: Event name '{event}' cannot start with 'on_'")
+
         handler_name = f"on_{event}"
         if not hasattr(self, handler_name):
             session = self.get_session_for_sid(sid)
-            if handler_name in session.SIO_EVENT_HANDLERS:
-                func = session.SIO_EVENT_HANDLERS[handler_name]
-                if func is not None:
-                    try:
-                        return await func(session, sid, *args)
-                    except Exception as e:
-                        sys.stderr.write(f"{Fore.YELLOW}SIO SESSION ERROR: {event}{args}\nSee traceback:\n")
-                        traceback.print_exc(file=sys.stderr)
-                        raise e
+            func = session.scribe_get_handler(handler_name)
+            if func is not None:
+                return await self.__trigger_event_on_session(session, event, func, sid, *args)
 
-            print(f"{Fore.YELLOW}SIO ERROR: {event} not found")
-            return
-
-        return await super().trigger_event(event, sid, *args)
+            print(f"{Fore.YELLOW}SCRIBE ERROR: {event} not found")
+        else:
+            return await super().trigger_event(event, sid, *args)
 
     def get_session(self, session_id: str) -> T:
         session = self.existing_sessions.get(session_id)
@@ -142,6 +165,7 @@ class SessionRouter(socketio.AsyncNamespace, Generic[T], metaclass=SIOEmitter):
         # print(f"Client {sid} disconnected.")
         pass
 
+    @scribe_handler
     async def on_join_session(self, sid, session_id: str):
         current_rooms = self.sio.rooms(sid, namespace=self.namespace)
         for room in current_rooms[1:]:
@@ -151,6 +175,7 @@ class SessionRouter(socketio.AsyncNamespace, Generic[T], metaclass=SIOEmitter):
         print(f"Client {sid} joined session {session_id}.")
         self.sio.enter_room(sid, session_id, namespace=self.namespace)
 
+    @scribe_handler
     async def on_leave_session(self, sid, data):
         current_rooms = self.sio.rooms(sid, namespace=self.namespace)
         for room in current_rooms[1:]:
@@ -169,7 +194,7 @@ class SessionRouter(socketio.AsyncNamespace, Generic[T], metaclass=SIOEmitter):
         return self.existing_sessions[room_id]
     
 
-async def test_setup(router_class: Type[SessionRouter] = SessionRouter):
+async def setup_router_for_test(router_class: Type[SessionRouter] = SessionRouter):
     import uvicorn
     from fastapi import FastAPI
     import asyncio
@@ -202,8 +227,53 @@ async def test_setup(router_class: Type[SessionRouter] = SessionRouter):
 if __name__ == "__main__":
     import asyncio
 
-    async def main():
-        # SessionRouter.get_sio_handler_schema(Session)
-        print(SessionRouter.get_emitted_events(Session))
+    class TestSession(Session):
+        @scribe_emits("test_event_from_session", str)
+        def somefunc(self):
+            pass
 
-    asyncio.run(main())
+        @scribe_handler
+        async def on_test_session(self, sid, data):
+            print(f"Session: {sid}, {data}")
+
+    class TestRouter(SessionRouter[TestSession]):
+        def __init__(self, app, sio):
+            super().__init__(app=app, sio=sio, session_cls=TestSession)
+
+        @scribe_emits("test_event_from_router", float)
+        def somefunc(self):
+            pass
+
+        @scribe_handler
+        async def on_test_router(self, sid, data: str):
+            print(f"Router: {data} from {sid}")
+
+        @scribe_handler
+        async def poop(self, sid, arse):
+            print("hmm")
+
+    async def test_scribe():
+        for e in TestRouter.scribe_get_all_emitted_events(TestSession):
+            print(e)
+
+        for h in TestRouter.scribe_get_all_handled_events(TestSession):
+            print(h)
+
+
+    async def test_routing():
+        await test_scribe()
+
+        server, server_task, session_router, test_client = await setup_router_for_test(router_class=TestRouter)
+
+        await asyncio.sleep(1) 
+
+        await test_client.emit("test_router", "Hello, world!", namespace="/session")
+        await test_client.emit("test_session", "Hello, world!", namespace="/session")
+
+        await asyncio.sleep(1) 
+
+        await test_client.disconnect()
+        await server.shutdown()
+
+
+    asyncio.run(test_routing())
