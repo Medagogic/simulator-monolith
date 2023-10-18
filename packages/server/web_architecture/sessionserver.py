@@ -7,6 +7,7 @@ import socketio
 import json
 import asyncio
 from fastapi.middleware.cors import CORSMiddleware
+from packages.server.lib.launch_config import LaunchConfig
 from web_architecture.static_api import StaticAPI
 from packages.server.web_architecture.sessionrouter import SessionRouter
 from fastapi.staticfiles import StaticFiles
@@ -28,17 +29,7 @@ class SessionServer:
             allow_headers=["*"]
         )
 
-        self.app.mount("/_next/static", StaticFiles(directory="packages/frontend/out/_next/static"), name="static")
-        def serve_index(full_path: Request):
-            # Hacky as fuuuuck
-            path = full_path.path_params['full_path']
-            filename = {
-                "sim-session": "sim-session.html",
-                "": "index.html",
-                "favicon.ico": "favicon.ico",
-            }[path]
-            return FileResponse(f"packages/frontend/out/{filename}")
-        self.app.add_route("/{full_path:path}", serve_index, methods=["GET"])
+        self.__setup_serve_next_app()
 
         self.sio = socketio.AsyncServer(async_mode="asgi", cors_allowed_origins="*")
         self.socket_app = socketio.ASGIApp(self.sio, socketio_path="/")
@@ -58,6 +49,27 @@ class SessionServer:
         async def connect(sid, env):
             print(f"SIO client connection at / - {sid}")
             await self.sio.emit("response", {"content": "Hello world"}, room=sid)
+
+    
+    def __setup_serve_next_app(self) -> None:
+        if LaunchConfig.noFrontend():
+            print(f"Running with no frontend server")
+            return
+        
+        self.app.mount("/_next/static", StaticFiles(directory="packages/frontend/out/_next/static"), name="static")
+        def serve_index(full_path: Request):
+            # Hacky as fuuuuck
+            path = full_path.path_params['full_path']
+            filenames = {
+                "sim-session": "sim-session.html",
+                "": "index.html",
+            }
+            if path in filenames:
+                filename = filenames[path]
+            else:
+                filename = path
+            return FileResponse(f"packages/frontend/out/{filename}")
+        self.app.add_route("/{full_path:path}", serve_index, methods=["GET"])
 
 
     async def save_api_json(self):
