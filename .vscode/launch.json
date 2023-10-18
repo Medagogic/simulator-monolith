@@ -1,0 +1,47 @@
+{
+    // Use IntelliSense to learn about possible attributes.
+    // Hover to view descriptions of existing attributes.
+    // For more information, visit: https://go.microsoft.com/fwlink/?linkid=830387
+    "version": "0.2.0",
+    "configurations": [
+        {
+            "name": "Python: Current File",
+            "type": "python",
+            "request": "launch",
+            "program": "${file}",
+            "console": "integratedTerminal",
+            "justMyCode": true,
+            "env": {"PYTHONPATH": "${workspaceFolder}"}
+        },
+        {
+            "name": "FastAPI: Dev Mode with --no-frontend",
+            "type": "python",
+            "request": "launch",
+            "program": "${workspaceFolder}/packages/server/main.py",
+            "console": "integratedTerminal",
+            "args": ["--no-frontend"],
+            "justMyCode": true,
+            "env": {"PYTHONPATH": "${workspaceFolder}"},
+        },
+        {
+            "name": "Start NextJS dev server",
+            "type": "node",
+            "request": "launch",
+            "cwd": "${workspaceFolder}/packages/frontend",
+            "runtimeExecutable": "npm",
+            "runtimeArgs": [
+                "run",
+                "dev"
+            ],
+            "console": "integratedTerminal",
+            "autoAttachChildProcesses": false
+        }
+    ],
+    "compounds": [
+        {
+            "name": "Full Stack: Frontend & Backend",
+            "configurations": ["FastAPI: Dev Mode with --no-frontend", "Start NextJS dev server"],
+            "stopAll": true,
+        }
+    ]
+}

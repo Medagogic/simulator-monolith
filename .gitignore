@@ -16,7 +16,6 @@ build/
 .pytest_cache/
 .idea/
 docs/_build/
-.vscode
 __pycache__/
 logs/
 gcloud_credentials.json
