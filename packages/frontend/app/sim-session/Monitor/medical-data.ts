@@ -1,4 +1,4 @@
-{
+export const dummyDataSet ={
     "ecg": [
      81,
      83,

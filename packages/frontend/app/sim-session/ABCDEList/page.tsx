@@ -1,8 +1,8 @@
-import { FullABCDE, FullVitalSigns } from "@/src/api";
+import { ExerciseCreationABCDE, ExerciseCreationVitalSigns } from "@/src/api";
 import ABCDEList from "./ABCDEList";
 
 
-const vitalSignsData: FullVitalSigns = {
+const vitalSignsData: ExerciseCreationVitalSigns = {
   temperature: '38.6 °C',
   heartRate: '75 bpm',
   respiratoryRate: '16 bpm',
@@ -12,7 +12,7 @@ const vitalSignsData: FullVitalSigns = {
   capillaryRefill: '<2 seconds',
 };
 
-const abcdeData: FullABCDE = {
+const abcdeData: ExerciseCreationABCDE = {
   a: 'Description for A',
   b: 'Description for B',
   c: 'Description for C',

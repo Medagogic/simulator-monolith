@@ -4,10 +4,10 @@
 import React, { use, useState } from 'react';
 import { Button, Input, MessageList } from 'react-chat-elements';
 import 'react-chat-elements/dist/main.css';
-import "./ChatterBox.css";
+import "app/chatter/ChatterBox.css"
 import { useChatStore, Message } from './ChatStore';
-import AttachmentList from '../sim-session/AttachmentList/AttachmentList';
 import { FiPaperclip } from 'react-icons/fi';
+import AttachmentList from '../sim-session/AttachmentList/AttachmentList';
 
 const ChatterBox: React.FC = () => {
   const messages = useChatStore((state) => state.messages);
@@ -52,8 +52,8 @@ const ChatterBox: React.FC = () => {
   }
 
   return (
-    <div className="chat-page bg-gray-700 relative">
-      <header className="chat-header">
+    <div className={`chatPage bg-gray-700 relative`}>
+      <header>
       </header>
 
       <button 
@@ -64,9 +64,9 @@ const ChatterBox: React.FC = () => {
         <FiPaperclip size={18} title="Recieved documents"/> {/* Icon for the button */}
       </button>
 
-      <div className="chat-box flex-grow">
+      <div className="flex-grow">
         <MessageList
-          className={'message-list'}
+          className="messageList"
           lockable={true}
           toBottomHeight={'100%'}
           dataSource={message_list()}
@@ -74,7 +74,7 @@ const ChatterBox: React.FC = () => {
         />
       </div>
 
-      <footer className="chat-footer">
+      <footer>
         {/* ... any footer content, perhaps a text input and send button for new messages */}
         <Input
           value={currentMessage}

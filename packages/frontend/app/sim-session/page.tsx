@@ -3,7 +3,7 @@
 import React, { useEffect } from 'react';
 import { StaffDefinition } from './StaffCard';
 import VitalSignsDisplay from './VitalSignsDisplay';
-import { FullABCDE, FullVitalSigns } from '@/src/api';
+import { ExerciseCreationABCDE, ExerciseCreationVitalSigns, VitalSigns } from '@/src/api';
 import ChatterBox from '../chatter/page';
 import "./page.css"
 import Clippy from './clippy/Clippy';
@@ -25,7 +25,7 @@ const staffData: StaffDefinition[] = [
   { name: 'Jane Doe', role: 'Nurse' },
 ];
 
-const vitalSigns: FullVitalSigns = {
+const vitalSignsForABCDEList: ExerciseCreationVitalSigns = {
   temperature: '38.6 °C',
   heartRate: '75 bpm',
   respiratoryRate: '16 bpm',
@@ -35,7 +35,17 @@ const vitalSigns: FullVitalSigns = {
   capillaryRefill: '<2 seconds'
 };
 
-const abcdeData: FullABCDE = {
+const vitalSignsForDisplay: VitalSigns = {
+  temperature: 38.6,
+  heartRate: 75,
+  respiratoryRate: 16,
+  bloodPressure: { systolic: 120, diastolic: 80 },
+  bloodGlucose: 90,
+  oxygenSaturation: 98,
+  capillaryRefill: 2
+};
+
+const abcdeData: ExerciseCreationABCDE = {
   a: 'Airway patent.',
   b: 'Laboured breathing, right chest pain.',
   c: 'Tachycardic.',
@@ -100,12 +110,12 @@ const SimSessionPage: React.FC = () => {
 
       <div style={{ "width": "100%", "height": "100%" }} className='flex flex-row'>
         <div className='flex flex-col flex-auto gap-2 m-2' style={{ "width": "100%" }}>
-          <VitalSignsDisplay vitalSigns={vitalSigns} />
+          <VitalSignsDisplay vitalSigns={vitalSignsForDisplay} />
           {/* <EmergencyRoomVisualization staff={staffData} /> */}
           <PatientVisualization />
           <div className="flex gap-2">
             <div className="flex-auto">
-              <ABCDEList abcdeData={abcdeData} vitalSigns={vitalSigns} />
+              <ABCDEList abcdeData={abcdeData} vitalSigns={vitalSignsForABCDEList} />
             </div>
           </div>
 

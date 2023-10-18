@@ -3,7 +3,7 @@
 import React, { useEffect } from 'react';
 import ChatterBox from './ChatterBox';
 import "./page.css"
-import { useChatStore } from '../chatter/ChatStore';
+import { useChatStore } from './ChatStore';
 
 
 const ChatterboxTestPage: React.FC = () => {

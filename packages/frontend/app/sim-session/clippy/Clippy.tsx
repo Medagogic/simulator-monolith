@@ -1,10 +1,24 @@
 "use client";
 
 import React, { useState } from 'react';
-import mockData from "./mock.json";
 import { useChatStore } from '@/app/chatter/ChatStore';
 
-const clippy = mockData;
+const clippy = {
+    "suggestions": [
+        {
+            "description": "Introduce yourself to the team",
+            "command": "Hi, I'm your team lead. Let's start by introducing ourselves."
+        },
+        {
+            "description": "Start by assessing the airway",
+            "command": "Nurse, please assess the airway patency."
+        },
+        {
+            "description": "Prepare IV fluids",
+            "command": "Let's prepare IV fluids please."
+        }
+    ]
+}
 
 interface SuggestionProps {
     data: { description: string; command: string };

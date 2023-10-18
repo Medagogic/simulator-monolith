@@ -115,7 +115,7 @@ const InitialParametersForm: FC<InitialParametersFormProps> = ({ onSubmit, defau
 
                     <div>
                         <label htmlFor="description" className="block text-sm font-medium text-gray-700">
-                            Patient's Initial Condition <span className="text-red-500">*</span>
+                            Patient&apos;s Initial Condition <span className="text-red-500">*</span>
                         </label>
                         <small className="text-red-500">Required</small>
 

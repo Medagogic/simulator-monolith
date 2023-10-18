@@ -5,9 +5,8 @@ import InitialParametersForm, { generateDefaultData, InitialParametersFormState 
 import { motion, AnimatePresence } from 'framer-motion';
 import InitialGenerationLoader from './InitialGenerationLoader';
 import ExerciseReview from './ExerciseReview';
-import { GeneratedExerciseData } from './ExerciseTypes';
 import { useExerciseStore } from './ExerciseStore';
-import { DefaultApi, Configuration, ExerciseCreationParams, PatientBasicInfo, ErrorContext } from "../../src/api";
+import { DefaultApi, Configuration, ExerciseCreationParams, ExerciseCreationPatientBasicInfo, ErrorContext } from "@/src/api";
 
 
 enum FormStage {
@@ -41,7 +40,7 @@ const FormContainer: React.FC = () => {
 
         // await new Promise(resolve => setTimeout(resolve, 3000)); // 2 seconds delay
 
-        const basicInfo: PatientBasicInfo = {
+        const basicInfo: ExerciseCreationPatientBasicInfo = {
             age: data.age,
             weight: `${data.weight} kg`,
             height: `${data.height} cm`,

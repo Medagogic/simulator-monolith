@@ -1,4 +1,4 @@
-import { FullVitalSigns } from "@/src/api";
+import { ExerciseCreationVitalSigns } from "@/src/api";
 import { ReactNode } from "react";
 import "./ABCDECards.css";
 
@@ -37,7 +37,7 @@ const VitalSignItem: React.FC<VitalSignProps> = ({ label, value, color = "text-w
     );
 };
 
-export const ACard: React.FC<{ description: string; vitalSigns: FullVitalSigns }> = ({ description, vitalSigns }) => {
+export const ACard: React.FC<{ description: string; vitalSigns: ExerciseCreationVitalSigns }> = ({ description, vitalSigns }) => {
     return (
         <CardContainer title="A" description={description}>
         </CardContainer>
@@ -45,7 +45,7 @@ export const ACard: React.FC<{ description: string; vitalSigns: FullVitalSigns }
 };
 
 
-export const BCard: React.FC<{ description: string; vitalSigns: FullVitalSigns }> = ({ description, vitalSigns }) => {
+export const BCard: React.FC<{ description: string; vitalSigns: ExerciseCreationVitalSigns }> = ({ description, vitalSigns }) => {
     return (
         <CardContainer title="B" description={description}>
             <div className="vitals-chips-container">
@@ -56,7 +56,7 @@ export const BCard: React.FC<{ description: string; vitalSigns: FullVitalSigns }
     );
 };
 
-export const CCard: React.FC<{ description: string; vitalSigns: FullVitalSigns }> = ({ description, vitalSigns }) => {
+export const CCard: React.FC<{ description: string; vitalSigns: ExerciseCreationVitalSigns }> = ({ description, vitalSigns }) => {
     return (
         <CardContainer title="C" description={description}>
             <div className="vitals-chips-container">
@@ -68,7 +68,7 @@ export const CCard: React.FC<{ description: string; vitalSigns: FullVitalSigns }
     );
 };
 
-export const DCard: React.FC<{ description: string; vitalSigns: FullVitalSigns }> = ({ description, vitalSigns }) => {
+export const DCard: React.FC<{ description: string; vitalSigns: ExerciseCreationVitalSigns }> = ({ description, vitalSigns }) => {
     return (
         <CardContainer title="D" description={description}>
             <div className="vitals-chips-container">
@@ -78,7 +78,7 @@ export const DCard: React.FC<{ description: string; vitalSigns: FullVitalSigns }
     );
 };
 
-export const ECard: React.FC<{ description: string; vitalSigns: FullVitalSigns }> = ({ description, vitalSigns }) => {
+export const ECard: React.FC<{ description: string; vitalSigns: ExerciseCreationVitalSigns }> = ({ description, vitalSigns }) => {
     return (
         <CardContainer title="E" description={description}>
             <div className="vitals-chips-container">

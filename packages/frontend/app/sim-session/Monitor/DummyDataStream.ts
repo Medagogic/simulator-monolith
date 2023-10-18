@@ -1,7 +1,5 @@
 import { Observable } from 'rxjs';
-
-// Assuming dummyData is an array of numbers and the path is correctly specified
-const dummyDataSet = require('./medical-data.json');
+import {dummyDataSet} from "./medical-data"
 
 type dataKey = 'ecg' | 'bloodPressure' | 'bloodVolume' | 'bloodOxygenation';
 

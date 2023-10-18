@@ -1,13 +1,13 @@
 // /components/ABCDEList.tsx
-import { FullABCDE, FullVitalSigns } from '@/src/api';
+import { ExerciseCreationABCDE, ExerciseCreationVitalSigns } from '@/src/api';
 import { FC } from 'react';
 import { ACard, BCard, CCard, DCard, ECard } from './ABCDECards';
 import "./ABCDEList.css"
 
 
 interface ABCDEListProps {
-  abcdeData: FullABCDE;
-  vitalSigns: FullVitalSigns;
+  abcdeData: ExerciseCreationABCDE;
+  vitalSigns: ExerciseCreationVitalSigns;
 }
 
 const ABCDEList: FC<ABCDEListProps> = ({ abcdeData, vitalSigns }) => {

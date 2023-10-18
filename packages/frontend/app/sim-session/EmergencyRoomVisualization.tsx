@@ -1,6 +1,6 @@
 import React from 'react';
 import StaffCard, {StaffDefinition} from './StaffCard';
-import BedVisualization from './PatientVisualization';
+import PatientVisualization from './Patient/PatientVisualization';
 import "./EmergencyRoomVisualization.css"
 
 type EmergencyRoomVisualizationProps = {
@@ -14,7 +14,7 @@ const EmergencyRoomVisualization: React.FC<EmergencyRoomVisualizationProps> = ({
     return (
         <div className="relative bg-gray-200 p-4 emergency-room-container" style={{"width": "100%", "height": "100%"}} >
             <div className="absolute inset-0 flex items-center justify-center">
-                <BedVisualization/>
+                <PatientVisualization/>
             </div>
             {/* Staff Positioning */}
             {anesthetist && <div className="absolute top-0 left-1/4 w-1/2 flex justify-center">
