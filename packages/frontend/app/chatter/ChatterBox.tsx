@@ -10,7 +10,7 @@ import { FiPaperclip } from 'react-icons/fi';
 import AttachmentList from '../sim-session/AttachmentList/AttachmentList';
 import {DefaultApi, Configuration} from "@/src/api"
 import { SocketProvider, useSocket } from '../socketio/SocketContext';
-import { ChatterIO } from './ChatterIO';
+import { ChatterIO } from '../socketio/ChatterIO';
 import { ChatEvent, HumanMessage, MessageFromNPC } from "@/src/scribe/scribetypes"
 
 const api_config = new Configuration({basePath: process.env.API_HOST})

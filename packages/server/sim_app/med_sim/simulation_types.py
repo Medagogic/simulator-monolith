@@ -76,7 +76,7 @@ class VitalSigns(BaseModel):
             f"- Temperature: {self.temperature:0.1f}°C",
             f"- Heart Rate: {self.heart_rate:0.0f} bpm",
             f"- Respiratory Rate: {self.respiratory_rate:0.0f} breaths/min",
-            f"- Blood Pressure: {self.blood_pressure[Vitals.SYSTOLIC]:0.1f}/{self.blood_pressure[Vitals.DIASTOLIC]:0.1f} mmHg",
+            f"- Blood Pressure: {self.blood_pressure.systolic:0.1f}/{self.blood_pressure.diastolic:0.1f} mmHg",
             f"- Blood Glucose: {self.blood_glucose:0.0f} mg/dL",
             f"- Oxygen Saturation: {self.oxygen_saturation:0.1f}%",
             f"- Capillary Refill: {self.capillary_refill:0.0f} seconds"

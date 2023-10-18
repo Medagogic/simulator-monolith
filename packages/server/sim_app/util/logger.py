@@ -7,16 +7,34 @@ import sys
 import dotenv
 
 
-dotenv.load_dotenv()
-GCLOUD_KEY_JSON = os.getenv("GCLOUD_KEY_JSON")
-if not GCLOUD_KEY_JSON:
-    raise ValueError("GCLOUD_KEY_JSON is not set")
-GCLOUD_KEY_JSON = GCLOUD_KEY_JSON.replace("\n", "\\n")
-credentials_dict = json.loads(GCLOUD_KEY_JSON)
+# def setup_gcloud_logging():
+#     dotenv.load_dotenv()
+#     GCLOUD_KEY_JSON = os.getenv("GCLOUD_KEY_JSON")
+#     if not GCLOUD_KEY_JSON:
+#         raise ValueError("GCLOUD_KEY_JSON is not set")
+#     GCLOUD_KEY_JSON = GCLOUD_KEY_JSON.replace("\n", "\\n")
+#     credentials_dict = json.loads(GCLOUD_KEY_JSON)
 
-import google.cloud.logging
-client = google.cloud.logging.Client.from_service_account_info(credentials_dict)
-client.setup_logging()
+#     import google.cloud.logging
+#     client = google.cloud.logging.Client.from_service_account_info(credentials_dict)
+#     # client.setup_logging()
+
+#     from google.cloud.logging.handlers import CloudLoggingHandler
+#     # Create a CloudLoggingHandler instance
+#     handler = CloudLoggingHandler(client)
+#     google.cloud.logging.handlers.setup_logging(handler, log_level=logging.DEBUG) # Set your desired log level
+
+#     # Create a standard library logging handler that streams to stdout
+#     stdout_handler = logging.StreamHandler()
+#     stdout_handler.setLevel(logging.DEBUG)
+
+#     # Get the root logger
+#     root_logger = logging.getLogger()
+#     root_logger.setLevel(logging.DEBUG)
+
+#     # Add both handlers to the root logger
+#     root_logger.addHandler(handler)
+#     root_logger.addHandler(stdout_handler)
 
 
 def get_logger(name=None, level=logging.WARNING) -> logging.Logger:
@@ -32,7 +50,7 @@ def get_logger(name=None, level=logging.WARNING) -> logging.Logger:
     if logger.handlers:
         return logger
 
-    handler = logging.StreamHandler(sys.stdout)
+    handler = logging.StreamHandler() #sys.stdout)
     formatter = logging.Formatter(
         '%(asctime)s %(name)-12s %(levelname)-8s %(message)s', datefmt='%Y-%m-%d %H:%M:%S')
     handler.setFormatter(formatter)

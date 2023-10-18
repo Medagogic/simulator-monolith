@@ -1,0 +1,87 @@
+{
+    "$defs": {
+        "BloodPressureModel": {
+            "properties": {
+                "systolic": {
+                    "title": "Systolic",
+                    "type": "number"
+                },
+                "diastolic": {
+                    "title": "Diastolic",
+                    "type": "number"
+                }
+            },
+            "required": [
+                "systolic",
+                "diastolic"
+            ],
+            "title": "BloodPressureModel",
+            "type": "object"
+        }
+    },
+    "example": {
+        "blood_glucose": 5.5,
+        "blood_pressure": {
+            "diastolic": 80,
+            "systolic": 120
+        },
+        "capillary_refill": 2,
+        "heart_rate": 75,
+        "oxygen_saturation": 98,
+        "respiratory_rate": 16,
+        "temperature": 38.6
+    },
+    "properties": {
+        "temperature": {
+            "description": "The body temperature in degrees Celsius or Fahrenheit",
+            "title": "Temperature",
+            "type": "number"
+        },
+        "heart_rate": {
+            "description": "The heart rate in beats per minute",
+            "title": "Heart Rate",
+            "type": "number"
+        },
+        "respiratory_rate": {
+            "description": "The number of breaths taken per minute",
+            "title": "Respiratory Rate",
+            "type": "number"
+        },
+        "blood_pressure": {
+            "allOf": [
+                {
+                    "$ref": "#/$defs/BloodPressureModel"
+                }
+            ],
+            "description": "Blood pressure measurements"
+        },
+        "blood_glucose": {
+            "description": "The blood glucose level",
+            "title": "Blood Glucose",
+            "type": "number"
+        },
+        "oxygen_saturation": {
+            "description": "The oxygen saturation in percentage",
+            "title": "Oxygen Saturation",
+            "type": "number"
+        },
+        "capillary_refill": {
+            "description": "The capillary refill time in seconds",
+            "title": "Capillary Refill",
+            "type": "number"
+        }
+    },
+    "required": [
+        "temperature",
+        "heart_rate",
+        "respiratory_rate",
+        "blood_pressure",
+        "blood_glucose",
+        "oxygen_saturation",
+        "capillary_refill"
+    ],
+    "title": "VitalSigns",
+    "type": "object",
+    "$id": "VitalSigns.schema.json",
+    "additionalProperties": false
+}

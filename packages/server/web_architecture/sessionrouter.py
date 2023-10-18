@@ -204,7 +204,7 @@ async def setup_router_for_test(router_class: Type[SessionRouter] = SessionRoute
     app = FastAPI()
     app_asgi = socketio.ASGIApp(sio, app)
 
-    config = uvicorn.Config(app_asgi, host="0.0.0.0", port=8000, log_level="info")
+    config = uvicorn.Config(app_asgi, host="0.0.0.0", port=8000, log_level="debug")
     server = uvicorn.Server(config)
 
     server_task = asyncio.create_task(server.serve())

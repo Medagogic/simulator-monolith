@@ -1,6 +1,6 @@
 import { ScribeClient, EmitEvent } from "@/src/scribe/ScribeClient";
-import { ChatEvent, HumanMessage, MessageFromNPC } from "@/src/scribe/scribetypes";
-import { useChatStore, ChatStoreMessage } from "./ChatStore";
+import { ChatEvent, HumanMessage, MessageFromNPC, VitalSigns } from "@/src/scribe/scribetypes";
+import { useChatStore, ChatStoreMessage } from "../chatter/ChatStore";
 
 export class ChatterIO extends ScribeClient {
     on_chat_message(data: MessageFromNPC) {
@@ -33,5 +33,9 @@ export class ChatterIO extends ScribeClient {
             type: "human"
         });
         this.socket.emit(EmitEvent.CHAT_MESSAGE, m);
+    }
+
+    on_patient_vitals_update(data: VitalSigns): void {
+        console.log("on_patient_vitals_update", data);
     }
 }

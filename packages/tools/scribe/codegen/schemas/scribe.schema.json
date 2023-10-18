@@ -9,8 +9,8 @@
         "chat_message": {
             "$ref": "schemas/MessageFromNPC.schema.json"
         },
-        "patient_state": {
-            "$ref": "schemas/SimUpdateData.schema.json"
+        "patient_vitals_update": {
+            "$ref": "schemas/VitalSigns.schema.json"
         },
         "__server_on_join_session": {
             "type": "object",
@@ -52,6 +52,6 @@
     "required": [
         "chat_event",
         "chat_message",
-        "patient_state"
+        "patient_vitals_update"
     ]
 }

@@ -2,7 +2,7 @@
 "use client"
 
 import { create } from 'zustand';
-import { ChatterIO } from './ChatterIO';
+import { ChatterIO } from '../socketio/ChatterIO';
 import { MessageFromNPC, ChatEvent, HumanMessage } from "@/src/scribe/scribetypes";
 
 export type ChatStoreMessage = {

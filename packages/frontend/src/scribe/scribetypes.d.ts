@@ -11,18 +11,41 @@ export type NpcId = string | null;
 export type Message = string;
 export type Timestamp1 = string;
 export type NpcId1 = string;
-export type Timestamp2 = number;
-export type Value = number;
-export type Name = string;
+/**
+ * The body temperature in degrees Celsius or Fahrenheit
+ */
+export type Temperature = number;
+/**
+ * The heart rate in beats per minute
+ */
+export type HeartRate = number;
+/**
+ * The number of breaths taken per minute
+ */
+export type RespiratoryRate = number;
+export type Systolic = number;
+export type Diastolic = number;
+/**
+ * The blood glucose level
+ */
+export type BloodGlucose = number;
+/**
+ * The oxygen saturation in percentage
+ */
+export type OxygenSaturation = number;
+/**
+ * The capillary refill time in seconds
+ */
+export type CapillaryRefill = number;
 export type Interventions = string[];
 export type Message1 = string;
-export type Timestamp3 = string;
+export type Timestamp2 = string;
 export type TargetNpcId = string | null;
 
 export interface ScribeEvents {
   chat_event: ChatEvent;
   chat_message: MessageFromNPC;
-  patient_state: SimUpdateData;
+  patient_vitals_update: VitalSigns;
   __server_on_join_session?: {
     session_id?: {
       [k: string]: unknown;
@@ -49,16 +72,28 @@ export interface MessageFromNPC {
   timestamp: Timestamp1;
   npc_id: NpcId1;
 }
-export interface SimUpdateData {
-  timestamp: Timestamp2;
-  value: Value;
-  name: Name;
+export interface VitalSigns {
+  temperature: Temperature;
+  heart_rate: HeartRate;
+  respiratory_rate: RespiratoryRate;
+  /**
+   * Blood pressure measurements
+   */
+  blood_pressure: BloodPressureModel;
+  blood_glucose: BloodGlucose;
+  oxygen_saturation: OxygenSaturation;
+  capillary_refill: CapillaryRefill;
+}
+export interface BloodPressureModel {
+  systolic: Systolic;
+  diastolic: Diastolic;
+  [k: string]: unknown;
 }
 export interface InterventionData {
   interventions: Interventions;
 }
 export interface HumanMessage {
   message: Message1;
-  timestamp: Timestamp3;
+  timestamp: Timestamp2;
   target_npc_id?: TargetNpcId;
 }

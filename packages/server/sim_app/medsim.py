@@ -4,8 +4,11 @@ from fastapi import Depends
 from pydantic import BaseModel
 import socketio
 from packages.server.sim_app.chat import SessionMixin_Chat
+from packages.server.sim_app.med_sim.runner import MedsimRunner
+from packages.server.sim_app.med_sim.simulation_types import VitalSigns
 from packages.server.web_architecture.sessionrouter import Session, SessionRouter
 from packages.tools.scribe import scribe_emits, scribe_handler
+import asyncio
 
 
 class InterventionData(BaseModel):
@@ -24,12 +27,34 @@ class SimUpdateData(BaseModel):
 
 
 class Session_MedSim(Session, SessionMixin_Chat):
-    def get_vitals(self) -> TestVitals:
-        return TestVitals(heart_rate=100, blood_pressure=120, temperature=38.6)
+    def __init__(self, session_id: str, sio: socketio.AsyncServer):
+        super().__init__(session_id=session_id, sio=sio)
+
+        print("???")
+
+        self.medsim_runner = MedsimRunner()
+
+        self.emit_vitals_loop()
+
+
+    @scribe_emits("patient_vitals_update", VitalSigns)
+    def emit_vitals_loop(self):
+        if hasattr(self, "emit_vitals_loop_task"):
+            return
+
+        async def _loop() -> None:
+            while True:
+                vitals: VitalSigns = self.medsim_runner.get_vitals()
+                await self.emit("patient_vitals_update", vitals)
+                await asyncio.sleep(1)
+
+        task = asyncio.create_task(_loop())
+        setattr(self, "emit_vitals_loop_task", task)
     
-    @scribe_emits("patient_state", SimUpdateData)
-    async def emit_patient_state(self, timestamp: float, value: float, name: str):
-        await self.emit("patient_state", SimUpdateData(timestamp=timestamp, value=value, name=name))
+
+    def get_vitals(self) -> VitalSigns:
+        return self.medsim_runner.get_vitals()
+    
 
     @scribe_handler
     async def on_apply_interventions(self, sid, data: InterventionData):
@@ -60,17 +85,16 @@ if __name__ == "__main__":
             print(h)
 
     async def run_test():
-        await test_docs()
+        # await test_docs()
         print("\n")
 
         server, server_task, session_router, test_client = await setup_router_for_test(router_class=Router_MedSim)
-        await asyncio.sleep(1) 
+        await asyncio.sleep(2) 
 
-        await test_client.emit('apply_interventions', InterventionData(interventions=["test1", "test2"]).model_dump(), namespace="/session")
+        # await test_client.emit('apply_interventions', InterventionData(interventions=["test1", "test2"]).model_dump(), namespace="/session")
 
         await asyncio.sleep(1)
         await test_client.disconnect()
         await server.shutdown()
-
 
     asyncio.run(run_test())
