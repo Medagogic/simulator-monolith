@@ -8,6 +8,10 @@ import "app/chatter/ChatterBox.css"
 import { useChatStore, Message } from './ChatStore';
 import { FiPaperclip } from 'react-icons/fi';
 import AttachmentList from '../sim-session/AttachmentList/AttachmentList';
+import {DefaultApi, Configuration} from "@/src/api"
+
+const api_config = new Configuration({basePath: process.env.API_HOST})
+const api = new DefaultApi(api_config)
 
 const ChatterBox: React.FC = () => {
   const messages = useChatStore((state) => state.messages);
