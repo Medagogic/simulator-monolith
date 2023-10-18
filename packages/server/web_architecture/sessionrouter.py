@@ -40,6 +40,7 @@ class Session(AbstractSession, ScribeMixin_Emit, ScribeMixin_Handler):
     def __init__(self, session_id: str, sio: socketio.AsyncServer):
         self._session_id = session_id
         self._sio = sio
+        self.init_sio_handlers()
 
     @property
     def session_id(self) -> str:
@@ -78,6 +79,8 @@ class SessionRouter(socketio.AsyncNamespace, Generic[T], ScribeMixin_Emit, Scrib
         self.app.include_router(self.router)
 
         self.sio.register_namespace(self)
+
+        self.init_sio_handlers()
 
 
     @classmethod
@@ -177,15 +180,18 @@ class SessionRouter(socketio.AsyncNamespace, Generic[T], ScribeMixin_Emit, Scrib
             self.sio.leave_room(sid, room, namespace=self.namespace)
 
     def get_session_for_sid(self, sid) -> T:
-        rooms = self.sio.rooms(sid, namespace=self.namespace)
-        if len(rooms) <= 1:
+        user_rooms = self.sio.rooms(sid, namespace=self.namespace)
+        if len(user_rooms) <= 1:
             raise Exception(f"{sid} is not in a session")
-        room_id = rooms[1]
-        
-        if room_id not in self.existing_sessions:
-            raise Exception(f"Session {room_id} not found")
+    
+        for room_id in user_rooms:
+            if room_id in self.existing_sessions:
+                return self.existing_sessions[room_id]
+            
+        print(f"{room_id} not in {self.existing_sessions}")
+        raise Exception(f"Session {room_id} not found")
 
-        return self.existing_sessions[room_id]
+        
     
 
 async def setup_router_for_test(router_class: Type[SessionRouter] = SessionRouter):

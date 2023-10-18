@@ -8,7 +8,7 @@ import json
 import asyncio
 from fastapi.middleware.cors import CORSMiddleware
 from packages.server.lib.launch_config import LaunchConfig
-from web_architecture.static_api import StaticAPI
+from packages.server.web_architecture.static_api import StaticAPI
 from packages.server.web_architecture.sessionrouter import SessionRouter
 from fastapi.staticfiles import StaticFiles
 
@@ -17,7 +17,7 @@ from fastapi.staticfiles import StaticFiles
 class SessionServer:
     def __init__(self, session_handler_class: Type[SessionRouter], static_api_class: StaticAPI = None):
         main_routes = [
-            APIRoute("/save_docs", endpoint=self.save_api_json, methods=["POST"])
+            
         ]
 
         self.app = FastAPI(routes=main_routes)  # type: ignore
@@ -31,7 +31,7 @@ class SessionServer:
 
         self.__setup_serve_next_app()
 
-        self.sio = socketio.AsyncServer(async_mode="asgi", cors_allowed_origins="*")
+        self.sio = socketio.AsyncServer(async_mode="asgi", cors_allowed_origins=[]) # FastAPI handles CORS
         self.socket_app = socketio.ASGIApp(self.sio, socketio_path="/")
 
         self.app.mount("/socket.io", self.socket_app)  # Here we mount socket app to main fastapi app
@@ -41,14 +41,11 @@ class SessionServer:
 
         self.session_manager = session_handler_class(app=self.app, sio=self.sio)
 
-        asyncio.create_task(self.save_api_json())
-
         # SocketIO test events
         # Define socket.io connection event handler
         @self.sio.on("connect")
         async def connect(sid, env):
             print(f"SIO client connection at / - {sid}")
-            await self.sio.emit("response", {"content": "Hello world"}, room=sid)
 
     
     def __setup_serve_next_app(self) -> None:
@@ -71,21 +68,6 @@ class SessionServer:
             return FileResponse(f"packages/frontend/out/{filename}")
         self.app.add_route("/{full_path:path}", serve_index, methods=["GET"])
 
-
-    async def save_api_json(self):
-        with open("openapi.json", "w") as file:
-            json.dump(self.app.openapi(), file, indent=4)
-
-        # print("Saved API JSON")
-
-        # sio_docs = {}
-        # with open("socketio.json", "w") as file:
-        #     for namespace, sio_handler in self.sio.namespace_handlers.items():
-        #         if isinstance(sio_handler, WebHandler_Base):
-        #             doc = type(sio_handler).generate_doc()
-        #             sio_docs[namespace] = doc
-
-        #     json.dump(sio_docs, file, indent=4)
 
 
 def gunicorn():

@@ -2,8 +2,8 @@ from __future__ import annotations
 from fastapi import APIRouter
 
 from packages.server.sim_app.exercise_creation.imported.simulation_types_old import Vitals
-from sim_app.exercise_creation.exercise_creation_types import ExerciseCreationParams, GeneratedExerciseData, ExerciseCreationVitalSigns, ExerciseCreationABCDE, ExerciseCreationFutureState
-from gpt.gpt_api import gpt, GPTMessage, MODEL_GPT4
+from packages.server.sim_app.exercise_creation.exercise_creation_types import ExerciseCreationParams, GeneratedExerciseData, ExerciseCreationVitalSigns, ExerciseCreationABCDE, ExerciseCreationFutureState
+from packages.server.gpt.gpt_api import gpt, GPTMessage, MODEL_GPT4
 import asyncio
 
 
@@ -142,8 +142,8 @@ async def generate_exercise(patient_info: str, simulation_instructions: str="N/A
 
 
 
-from web_architecture.static_api import StaticAPIHandler
-from sim_app.exercise_creation.imported.markdownexercise import MarkdownExercise
+from packages.server.web_architecture.static_api import StaticAPIHandler
+from packages.server.sim_app.exercise_creation.imported.markdownexercise import MarkdownExercise
 
 class ExerciseCreatorAPI(StaticAPIHandler):
     def __init__(self, router: APIRouter):

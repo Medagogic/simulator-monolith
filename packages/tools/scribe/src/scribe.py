@@ -112,6 +112,7 @@ class ScribeMixin_Emit:
         cls.__find_tagged_emit_methods()
         return cls.__SIO_EMIT_DATA
     
+    
 
 class ScribeMixin_Handler:
     __SIO_HANDLER_DATA: List[ScribeHandlerSchema] = []
@@ -136,6 +137,9 @@ class ScribeMixin_Handler:
     @classmethod
     def scribe_get_handler(cls, event_name: str) -> Optional[Callable]:
         return cls.__SCRIBE_HANDLERS_BY_EVENT.get(event_name, None)
+    
+    def init_sio_handlers(self):
+        self.__find_tagged_handler_methods()
 
 
 if __name__ == "__main__":

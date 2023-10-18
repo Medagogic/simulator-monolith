@@ -3,26 +3,28 @@
 
 import { create } from 'zustand';
 import { io } from 'socket.io-client';
+import { ChatterIO } from './ChatterIO';
+import { useSocket } from '../socketio/SocketContext';
+import { useEffect } from 'react';
 
-
-export type Message = {
+export type ChatStoreMessage = {
   text: string;
-  sender: 'user' | 'system' | 'assistant';
+  sender: string;
   date: Date;
 };
 
 
 type ChatState = {
-  messages: Message[];
+  messages: ChatStoreMessage[];
   currentMessage: string;
   setCurrentMessage: (message: string) => void;
   isTyping: boolean;
-  initializeSocket: (namespace: string) => void;
-  addMessage: (message: Message) => void;
+  // initializeSocket: () => void;
+  addMessage: (message: ChatStoreMessage) => void;
   setIsTyping: (status: boolean) => void;
   sendMessage: (message: string) => void;
-  socket?: any;
   attachments: any[];
+  chatterio?: ChatterIO;
 };
 
 export const useChatStore = create<ChatState>((set, get) => {
@@ -31,27 +33,6 @@ export const useChatStore = create<ChatState>((set, get) => {
     currentMessage: '',
     isTyping: false,
     attachments: [],
-    initializeSocket: (namespace) => {
-      const socket = io(`ws://127.0.0.1/${namespace}`);
-
-      socket.on('receiveMessage', (message) => {
-        set((state) => ({ messages: [...state.messages, message] }));
-      });
-
-      socket
-        .on("connect", () => {
-          console.log("SOCKET CONNECTED!", socket.id);
-          // Update the socket in the global state when connected
-          set({ socket });
-        })
-        .on("disconnect", () => {
-          console.log("SOCKET DISCONNECTED!");
-          // Set socket to null in the global state when disconnected
-          set({ socket: null });
-        });
-
-      set({ socket });
-    },
     setCurrentMessage: (message) => {
       set({ currentMessage: message });
     },
@@ -63,21 +44,17 @@ export const useChatStore = create<ChatState>((set, get) => {
     },
     sendMessage: (messageText: string) => {
       console.log('sending message', messageText);
-    
-      const { socket, addMessage } = get();
-    
-      const message: Message = {
+
+      const { addMessage } = get();
+
+      const message: ChatStoreMessage = {
         text: messageText,
         sender: 'user',
         date: new Date(),
       };
-    
+
       // Call the addMessage function to add the message to the state
       addMessage(message);
-    
-      if (socket) {
-        socket.emit('newMessage', messageText);
-      }
     }
   }
 });

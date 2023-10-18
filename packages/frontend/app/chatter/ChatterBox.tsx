@@ -1,14 +1,16 @@
 // ChatterBox.tsx
 "use client"
 
-import React, { use, useState } from 'react';
+import React, { use, useEffect, useState } from 'react';
 import { Button, Input, MessageList } from 'react-chat-elements';
 import 'react-chat-elements/dist/main.css';
 import "app/chatter/ChatterBox.css"
-import { useChatStore, Message } from './ChatStore';
+import { useChatStore, ChatStoreMessage } from './ChatStore';
 import { FiPaperclip } from 'react-icons/fi';
 import AttachmentList from '../sim-session/AttachmentList/AttachmentList';
 import {DefaultApi, Configuration} from "@/src/api"
+import { SocketProvider, useSocket } from '../socketio/SocketContext';
+import { ChatterIO } from './ChatterIO';
 
 const api_config = new Configuration({basePath: process.env.API_HOST})
 const api = new DefaultApi(api_config)
@@ -21,13 +23,25 @@ const ChatterBox: React.FC = () => {
   
   const [showAttachments, setShowAttachments] = useState(false);
   const attachments = useChatStore((state) => state.attachments); // Retrieve attachments from your store
+  const [chatterio, setChatterio] = useState<ChatterIO | null>(null);
+
+  const socket = useSocket();
+  useEffect(() => {
+    if (socket) {
+      socket.on("connect", () => {
+        console.log("ChatterBox: socket connected");
+      });
+      const newChatterio = new ChatterIO(socket);
+      setChatterio(newChatterio);
+    }
+  }, [socket]);
 
   function toggleAttachments() {
     setShowAttachments(!showAttachments);
   }
 
 
-  function message_type(message: Message): string {
+  function message_type(message: ChatStoreMessage): string {
     return message.sender === 'system' ? 'system' : 'text';
   }
 
@@ -42,6 +56,7 @@ const ChatterBox: React.FC = () => {
 
   function send_message() {
     sendMessage(currentMessage);
+    chatterio!.sendMessage(currentMessage);
     setCurrentMessage("");
   }
 

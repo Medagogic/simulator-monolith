@@ -3,20 +3,15 @@
 import React, { useEffect } from 'react';
 import ChatterBox from './ChatterBox';
 import "./page.css"
-import { useChatStore } from './ChatStore';
+import { SocketProvider } from '../socketio/SocketContext';
 
 
 const ChatterboxTestPage: React.FC = () => {
-  const namespace = "desired_namespace"; 
-  const initializeSocket = useChatStore((state) => state.initializeSocket);
-
-  useEffect(() => {
-    initializeSocket(namespace);
-  }, [namespace, initializeSocket]);
-  
   return (
     <div style={{ width: "100%", height: "100%" }} className='flex flex-col base'>
-      <ChatterBox/>
+      <SocketProvider session_id='default-session'>
+        <ChatterBox/>
+      </SocketProvider>
     </div>
   );
 }

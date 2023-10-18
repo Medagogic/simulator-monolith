@@ -14,6 +14,7 @@ import { useChatStore } from '../chatter/ChatStore';
 import { ActionLog, ActionLogEntry, ActionType } from './ActionLog/ActionLog';
 import TimeDisplay from './TimeDisplay/TimeDisplay';
 import { Objective, ObjectivesList } from './ObjectivesList/ObjectivesList';
+import { SocketProvider } from '../socketio/SocketContext';
 
 
 
@@ -68,13 +69,6 @@ const objectives: Objective[] = [
 ];
 
 const SimSessionPage: React.FC = () => {
-  const namespace = "desired_namespace";
-  const initializeSocket = useChatStore((state) => state.initializeSocket);
-
-  useEffect(() => {
-    initializeSocket(namespace);
-  }, [namespace, initializeSocket]);
-
   function handleClippySuggestion(data: { description: string, command: string }) {
     console.log(data.command);
   }
@@ -126,7 +120,9 @@ const SimSessionPage: React.FC = () => {
           </div>
           <div className="flex-auto flex gap-2">
             <div className="flex-auto">
-              <ChatterBox />
+              <SocketProvider session_id='default-session'>
+                <ChatterBox />
+              </SocketProvider>
             </div>
             <div className="flex-shrink">
               <StaffList staffData={getStaffData()} />
