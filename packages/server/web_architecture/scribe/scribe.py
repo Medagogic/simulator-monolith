@@ -144,7 +144,7 @@ if __name__ == "__main__":
         name: str
         age: int
 
-    class SessionRouter(ScribeMixin_Emit, ScribeMixin_Handler):
+    class TestEmitterHandler(ScribeMixin_Emit, ScribeMixin_Handler):
         @scribe_emits("test_event", Dict[str, str])
         def test_func(self):
             self.emit("test_event", {"test_param": "test_value"})
@@ -160,8 +160,8 @@ if __name__ == "__main__":
         def emit(self, event: str, params: Any) -> None:
             pass
 
-    for e in SessionRouter.scribe_get_emit_schema():
+    for e in TestEmitterHandler.scribe_get_emit_schema():
         print(f"EMIT: {e.emits_event} - {e.data_type}")
 
-    for h in SessionRouter.scribe_get_handler_schema():
+    for h in TestEmitterHandler.scribe_get_handler_schema():
         print(f"HANDLER: {h.handler_name} - {h.data_type}")

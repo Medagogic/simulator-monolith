@@ -8,8 +8,8 @@ import os
 from pathlib import Path
 import re
 
-from packages.server.web_architecture.sio_typing.scribe import ScribeEmitSchema
-from packages.server.web_architecture.sio_typing.scribe_helpers import get_field_info
+from packages.server.web_architecture.scribe.scribe import ScribeEmitSchema
+from packages.server.web_architecture.scribe.scribe_helpers import get_field_info
 
 this_file = Path(os.path.realpath(__file__))
 this_dir = this_file.parent
