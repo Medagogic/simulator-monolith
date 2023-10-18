@@ -64,7 +64,7 @@ class SessionServer:
         with open("openapi.json", "w") as file:
             json.dump(self.app.openapi(), file, indent=4)
 
-        print("Saved API JSON")
+        # print("Saved API JSON")
 
         # sio_docs = {}
         # with open("socketio.json", "w") as file:
