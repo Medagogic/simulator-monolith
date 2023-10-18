@@ -1,6 +1,7 @@
 from typing import Type
+from fastapi.responses import FileResponse
 import uvicorn
-from fastapi import FastAPI
+from fastapi import FastAPI, Request
 from fastapi.routing import APIRoute
 import socketio
 import json
@@ -8,6 +9,8 @@ import asyncio
 from fastapi.middleware.cors import CORSMiddleware
 from web_architecture.static_api import StaticAPI
 from packages.server.web_architecture.sessionrouter import SessionRouter
+from fastapi.staticfiles import StaticFiles
+
 
 
 class SessionServer:
@@ -24,6 +27,18 @@ class SessionServer:
             allow_methods=["*"],
             allow_headers=["*"]
         )
+
+        self.app.mount("/_next/static", StaticFiles(directory="packages/frontend/out/_next/static"), name="static")
+        def serve_index(full_path: Request):
+            # Hacky as fuuuuck
+            path = full_path.path_params['full_path']
+            filename = {
+                "sim-session": "sim-session.html",
+                "": "index.html",
+                "favicon.ico": "favicon.ico",
+            }[path]
+            return FileResponse(f"packages/frontend/out/{filename}")
+        self.app.add_route("/{full_path:path}", serve_index, methods=["GET"])
 
         self.sio = socketio.AsyncServer(async_mode="asgi", cors_allowed_origins="*")
         self.socket_app = socketio.ASGIApp(self.sio, socketio_path="/")
