@@ -9,5 +9,9 @@ type PatientStore = {
 export const usePatientStore = create<PatientStore>((set, get) => ({
     vitals: null,
 
-    setVitals: (vitals) => set({ vitals }),
+    setVitals: (vitals) => {
+        set((state) => 
+            ({ vitals: vitals })
+        );
+    },
 }));

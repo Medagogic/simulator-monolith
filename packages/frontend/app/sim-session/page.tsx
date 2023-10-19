@@ -15,6 +15,7 @@ import { ActionLog, ActionLogEntry } from './ActionLog/ActionLog';
 import TimeDisplay from './TimeDisplay/TimeDisplay';
 import { Objective, ObjectivesList } from './ObjectivesList/ObjectivesList';
 import { SocketProvider } from '../socketio/SocketContext';
+import PatientMonitor from './Monitor/PatientMonitor';
 
 
 
@@ -85,59 +86,60 @@ const SimSessionPage: React.FC = () => {
   }
 
   return (
-    <div style={{ width: "100%", height: "100%" }} className='flex flex-col base'>
-      <div className='toolbar' style={{ maxWidth: "100%", display: 'flex', flexDirection: 'row', alignItems: 'center', justifyContent: 'space-between' }}>
-        <div style={{ flex: 1 }}>
-          Medagogic Simulator
+    <SocketProvider session_id='default-session'>
+      <div style={{ width: "100%", height: "100%" }} className='flex flex-col base'>
+        <div className='toolbar' style={{ maxWidth: "100%", display: 'flex', flexDirection: 'row', alignItems: 'center', justifyContent: 'space-between' }}>
+          <div style={{ flex: 1 }}>
+            Medagogic Simulator
+          </div>
+
+          <div style={{ display: 'flex', justifyContent: 'center', position: 'absolute', left: 0, right: 0 }}>
+            <TimeDisplay />
+          </div>
+
+          <div style={{ flex: 1, display: 'flex', justifyContent: 'flex-end' }}>
+            <h1 className="text-white">
+
+            </h1>
+          </div>
         </div>
 
-        <div style={{ display: 'flex', justifyContent: 'center', position: 'absolute', left: 0, right: 0 }}>
-          <TimeDisplay />
-        </div>
-
-        <div style={{ flex: 1, display: 'flex', justifyContent: 'flex-end' }}>
-          <h1 className="text-white">
-
-          </h1>
-        </div>
-      </div>
-
-      <div style={{ "width": "100%", "height": "100%" }} className='flex flex-row'>
-        <div className='flex flex-col flex-auto gap-2 m-2' style={{ "width": "100%" }}>
-          <VitalSignsDisplay vitalSigns={vitalSignsForDisplay} />
-          {/* <EmergencyRoomVisualization staff={staffData} /> */}
-          <PatientVisualization />
-          <div className="flex gap-2">
-            <div className="flex-auto">
-              <ABCDEList abcdeData={abcdeData} vitalSigns={vitalSignsForABCDEList} />
+        <div style={{ "width": "100%", "height": "100%" }} className='flex flex-row'>
+          <div className='flex flex-col flex-auto gap-2 m-2' style={{ "width": "100%" }}>
+            {/* <VitalSignsDisplay debugVitalSigns={vitalSignsForDisplay} /> */}
+            <PatientVisualization />
+            {/* <ABCDEList abcdeData={abcdeData} vitalSigns={vitalSignsForABCDEList} /> */}
+            <div className="flex gap-2">
+              <div className="flex-auto">
+                {/* <ABCDEList abcdeData={abcdeData} vitalSigns={vitalSignsForABCDEList} /> */}
+                <PatientMonitor />
+              </div>
             </div>
-          </div>
 
-        </div>
-        <div className='flex-auto m-2 flex flex-col gap-2' style={{ "width": "100%" }}>
-          <div>
-            <ActionLog logs={actionLogs} />
           </div>
-          <div className="flex-auto flex gap-2">
-            <div className="flex-auto">
-              <SocketProvider session_id='default-session'>
+          <div className='flex-auto m-2 flex flex-col gap-2' style={{ "width": "100%" }}>
+            <div>
+              <ActionLog logs={actionLogs} />
+            </div>
+            <div className="flex-auto flex gap-2">
+              <div className="flex-auto">
                 <ChatterBox />
-              </SocketProvider>
+              </div>
+              <div className="flex-shrink">
+                <StaffList staffData={getStaffData()} />
+              </div>
             </div>
-            <div className="flex-shrink">
-              <StaffList staffData={getStaffData()} />
-            </div>
-          </div>
 
-        </div>
-        <div className='flex-auto m-2 flex flex-col justify-between' style={{ "width": "50%" }}>
-          <ObjectivesList objectives={objectives} />
-          <div className="self-end w-full"> {/* this line is changed */}
-            <Clippy onClick={(data) => { handleClippySuggestion(data) }} />
+          </div>
+          <div className='flex-auto m-2 flex flex-col justify-between' style={{ "width": "50%" }}>
+            <ObjectivesList objectives={objectives} />
+            <div className="self-end w-full"> {/* this line is changed */}
+              <Clippy onClick={(data) => { handleClippySuggestion(data) }} />
+            </div>
           </div>
         </div>
       </div>
-    </div>
+    </SocketProvider>
   );
 }
 

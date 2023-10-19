@@ -76,9 +76,6 @@ export interface VitalSigns {
   temperature: Temperature;
   heart_rate: HeartRate;
   respiratory_rate: RespiratoryRate;
-  /**
-   * Blood pressure measurements
-   */
   blood_pressure: BloodPressureModel;
   blood_glucose: BloodGlucose;
   oxygen_saturation: OxygenSaturation;

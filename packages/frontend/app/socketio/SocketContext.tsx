@@ -3,10 +3,12 @@
 import { EmitEvent } from "@/src/scribe/ScribeClient";
 import React, { createContext, useContext, useEffect, useState, ReactNode } from "react";
 import { io, Socket } from "socket.io-client";
+import { PatientIO } from "./PatientIO";
 
 // Defining the context shape
 interface ISocketContext {
     socket: Socket | null;
+    patientIO: PatientIO | null;
 }
 
 const SocketContext = createContext<ISocketContext | null>(null);
@@ -18,6 +20,7 @@ interface SocketProviderProps {
 
 export const SocketProvider: React.FC<SocketProviderProps> = ({ session_id, children }) => {
     const [socket, setSocket] = useState<Socket | null>(null);
+    const [patientIO, setPatientIO] = useState<PatientIO | null>(null);
     let connecting = false;
 
     useEffect(() => {
@@ -26,6 +29,7 @@ export const SocketProvider: React.FC<SocketProviderProps> = ({ session_id, chil
             connecting = true;
             const socket_url = `http://localhost:5000/session`
             const newSocket = io(socket_url);
+            setPatientIO(new PatientIO(newSocket));
 
             newSocket.on("connect", () => {
                 console.log("Socket connected");
@@ -44,7 +48,7 @@ export const SocketProvider: React.FC<SocketProviderProps> = ({ session_id, chil
     }, [socket]);
 
     return (
-        <SocketContext.Provider value={{ socket:socket }}>
+        <SocketContext.Provider value={{ socket:socket, patientIO:patientIO }}>
             {children}
         </SocketContext.Provider>
     );
@@ -58,4 +62,14 @@ export const useSocket = (): Socket | null => {
     }
 
     return context.socket;
+};
+
+export const usePatientIO = (): PatientIO | null => {
+    const context = useContext(SocketContext);
+
+    if (!context) {
+        throw new Error("useSocket must be used within a SocketProvider");
+    }
+
+    return context.patientIO;
 };

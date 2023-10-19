@@ -1,23 +1,26 @@
 "use client"
 
 import React from 'react';
-import { createDummyDataStream } from './DummyDataStream';
-import SmoothieGraph from './Monitor';
+import PatientMonitor from './PatientMonitor';
+import { VitalSigns } from '@/src/scribe/scribetypes';
 
-const LiveGraphContainer = () => {
-  const ecg = createDummyDataStream('ecg');
-  const bloodOxygenation = createDummyDataStream('bloodOxygenation')
-  const bloodPressure = createDummyDataStream('bloodPressure');
-  const bloodVolume = createDummyDataStream('bloodVolume');
+const PatientMonitorTestPage = () => {
+
+  const vitalSignsForDisplay: VitalSigns = {
+    temperature: 38.6,
+    heart_rate: 75,
+    respiratory_rate: 16,
+    blood_pressure: { systolic: 120, diastolic: 80 },
+    blood_glucose: 90,
+    oxygen_saturation: 98,
+    capillary_refill: 2
+  };
 
   return (
-    <div className='bg-black text-white font-mono'>
-      <SmoothieGraph dataStream={ecg} width={400} height={200} color="#ff0000" />
-      <SmoothieGraph dataStream={bloodOxygenation} width={400} height={200} color="#0000ff" />
-      <SmoothieGraph dataStream={bloodPressure} width={400} height={200} color="#00ff00" />
-      <SmoothieGraph dataStream={bloodVolume} width={400} height={200} color="#fff" />
+    <div className='flex justify-center' style={{top: "10rem", position: "relative"}}>
+      <PatientMonitor/>
     </div>
   );
 };
 
-export default LiveGraphContainer;
+export default PatientMonitorTestPage;

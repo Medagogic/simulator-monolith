@@ -35,7 +35,7 @@ export class ChatterIO extends ScribeClient {
         this.socket.emit(EmitEvent.CHAT_MESSAGE, m);
     }
 
-    on_patient_vitals_update(data: VitalSigns): void {
-        console.log("on_patient_vitals_update", data);
-    }
+    // on_patient_vitals_update(data: VitalSigns): void {
+    //     console.log("on_patient_vitals_update", data);
+    // }
 }

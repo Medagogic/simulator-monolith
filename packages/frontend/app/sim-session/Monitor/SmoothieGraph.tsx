@@ -7,9 +7,10 @@ interface SmoothieGraphProps {
   width: number;
   height: number;
   color?: string; // Optional prop to customize the line color
+  millisPerPixel?: number;
 }
 
-const SmoothieGraph: React.FC<SmoothieGraphProps> = ({ dataStream, width, height, color = '#ff0000' }) => {
+const SmoothieGraph: React.FC<SmoothieGraphProps> = ({ dataStream, width, height, color = '#ff0000', millisPerPixel=20 }) => {
   const canvasRef = useRef<HTMLCanvasElement>(null);
   let smoothieInstance: Smoothie.SmoothieChart | null = null;
   let line: Smoothie.TimeSeries = new Smoothie.TimeSeries();
@@ -17,19 +18,21 @@ const SmoothieGraph: React.FC<SmoothieGraphProps> = ({ dataStream, width, height
   useEffect(() => {
     if (canvasRef.current) {
       smoothieInstance = new Smoothie.SmoothieChart({
-        millisPerPixel: 20,
+        millisPerPixel: millisPerPixel,
         maxValueScale: 1.1,
         minValueScale: 1.1,
         grid: {
           verticalSections: 0,
-          strokeStyle: "#ffffff22"
+          strokeStyle: "#ffffff00"
         },
         labels: {
           disabled: true,
         },
+        limitFPS: 30,
+        responsive: false,
       });
-      smoothieInstance.streamTo(canvasRef.current);
-      smoothieInstance.addTimeSeries(line, {strokeStyle: color, lineWidth: 2, interpolation: 'bezier'});
+      smoothieInstance.streamTo(canvasRef.current, 0);
+      smoothieInstance.addTimeSeries(line, {strokeStyle: color, lineWidth: 2});
     }
 
     return () => {
@@ -56,7 +59,7 @@ const SmoothieGraph: React.FC<SmoothieGraphProps> = ({ dataStream, width, height
 
   return (
     <div>
-      <canvas ref={canvasRef} width={width} height={height} />
+      <canvas ref={canvasRef} width={width} height={height} style={{width: "100%"}}/>
     </div>
   );
 };
