@@ -5,7 +5,7 @@
 
 # Architecture Decision Records
 - We use ADRs to document decisions made during development
-- See [adr/0001-use-ADR.md](adr/0001-use-ADR.md) for more info
+- See [docs/adr/0001-use-ADR.md](docs/adr/0001-use-ADR.md) for more info
 
 # Backend
 - Set up a virtual env and install requirements.txt
