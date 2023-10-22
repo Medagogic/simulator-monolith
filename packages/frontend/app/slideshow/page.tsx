@@ -1,45 +1,43 @@
 "use client"
 import React, { useState } from 'react';
-import slide1 from './slides/1.svg';
-import slide2 from './slides/2.svg';
-import slide3 from './slides/3.svg';
-import slide4 from './slides/4.svg';
+import DragDropPage from "./DragDropPage"
 
-const SlidePage: React.FC = () => {
-  const slides = [slide1, slide2, slide3, slide4];
-  const [currentSlide, setCurrentSlide] = useState(0);
+const SlideshowPage: React.FC = () => {
+    const [draggingComplete, setDraggingComplete] = useState(false);
+    const [generatingExercise, setGeneratingExercise] = useState(false);
+    const [finishedGenerating, setFinishedGenerating] = useState(false);
 
-  const handleForwardClick = () => {
-    setCurrentSlide((prevSlide) => (prevSlide + 1) % slides.length);
-  };
+    const handleFileDropped = () => {
+        setDraggingComplete(true);
 
-  const handleBackClick = () => {
-    setCurrentSlide((prevSlide) => (prevSlide - 1 + slides.length) % slides.length);
-  };
+        const fade_gap = 500;
+        
+        setTimeout(() => {
+            setGeneratingExercise(true);
 
-  return (
-    <div className="h-screen w-screen flex items-center justify-center bg-gray-700">
-      <div
-        className="absolute left-0 w-1/4 h-full cursor-pointer z-10"
-        onClick={handleBackClick}
-        style={{ cursor: 'w-resize' }}
-      ></div>
-      <div
-        className="absolute right-0 w-3/4 h-full cursor-pointer z-10"
-        onClick={handleForwardClick}
-      ></div>
-      {slides.map((slide, index) => (
-        <img
-          key={index}
-          src={slide.src}
-          alt={`Slide ${index + 1}`}
-          className={`absolute w-full h-full transition-all ease duration-300 ${
-            currentSlide === index ? 'opacity-100' : 'opacity-0'
-          }`}
-        />
-      ))}
-    </div>
-  );
+            setTimeout(() => {
+                setGeneratingExercise(false);
+                
+                setTimeout(() => {
+                    setFinishedGenerating(true);
+                }, fade_gap);
+            }, 2000)
+        }, fade_gap);
+    };
+
+    return (
+        <div className="h-screen w-screen flex items-center justify-center bg-gray-700">
+            <div className={`${draggingComplete ? 'opacity-0' : 'opacity-100'} transition-opacity duration-500`}>
+                <DragDropPage onFileProcessedCallback={handleFileDropped} />
+            </div>
+            <div className={`${generatingExercise ? 'opacity-100' : 'opacity-0'} absolute transition-opacity duration-500 text-white text-xl`}>
+                Generating exercise...
+            </div>
+            <div className={`${finishedGenerating ? 'opacity-100' : 'opacity-0'} absolute transition-opacity duration-500 text-white text-xl`}>
+                Exercise generated!
+            </div>
+        </div>
+    );
 };
 
-export default SlidePage;
+export default SlideshowPage;
