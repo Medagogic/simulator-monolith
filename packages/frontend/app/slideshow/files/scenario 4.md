@@ -1,5 +1,8 @@
 **Scenario 4: School-Aged Child with Previous Brain Injury (continued)**
 
+- **Age**: 8 years
+- **Weight**: 25 kg
+- **Allergies**: None
 - **ABCDE status**: Airway clear, Breathing regular, Circulation stable, Disability (focal seizure with secondary generalization), Exposure (scar on the scalp from a previous trauma).
 - **Medical Description**: The child, with a history of traumatic brain injury a year ago, now presents with new-onset seizures.
 - **Condition/Cause**: Post-Traumatic Epilepsy (PTE)
