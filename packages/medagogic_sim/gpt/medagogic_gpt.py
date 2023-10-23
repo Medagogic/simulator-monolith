@@ -21,7 +21,7 @@ def UserMessage(content: str) -> GPTMessage:
     return {"role": "user", "content": content}
 
 
-async def gpt(messages: List[GPTMessage], model=MODEL_GPT4, max_tokens=500, temperature=TEMPERATURE, top_p=TOP_P, show_usage=False, presence_penalty=0, frequency_penalty=0):
+async def gpt(messages: List[GPTMessage], model=MODEL_GPT4, max_tokens=500, temperature=TEMPERATURE, top_p=TOP_P, show_usage=False, presence_penalty=0, frequency_penalty=0) -> str:
     kwargs = {
         "model": model,
         "messages": messages,

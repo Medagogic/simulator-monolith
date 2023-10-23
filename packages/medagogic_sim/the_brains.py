@@ -10,7 +10,7 @@ if TYPE_CHECKING:
     from packages.medagogic_sim.context_for_brains import ContextForBrains
 
 import asyncio
-from packages.medagogic_sim.gpt.medagogic_gpt import MODEL_GPT4, gpt, UserMessage, SystemMessage, GPTMessage
+from packages.medagogic_sim.gpt.medagogic_gpt import MODEL_GPT35, MODEL_GPT4, gpt, UserMessage, SystemMessage, GPTMessage
 from packages.medagogic_sim.exercise.device_definitions import DEVICE_CONFIG
 from rx.subject import Subject
 from packages.medagogic_sim.actions_for_brains import ActionDatabase, TaskCall
@@ -25,6 +25,7 @@ class RightBrainDecision(Enum):
     YES = "YES"
     NO = "NO"
     MORE_INFO = "MORE INFO"
+    NOT_A_COMMAND = "NOT A COMMAND"
 
 class RightBrainResponse(BaseModel):
     decision: RightBrainDecision = RightBrainDecision.NONE
@@ -209,6 +210,25 @@ class LeftBrain(BrainBase):
         response = await gpt(messages, self.model+"-0613", temperature=self.temperature, show_usage=self.show_usage)
 
         return LeftBrainResponse(dialog=response)
+    
+
+class PersonalityBrain:
+    async def generate_response(self, input_text: str, who_am_i: str) -> str:
+        messages: List[GPTMessage] = [
+            SystemMessage(content=f"""
+You are:
+{who_am_i}
+
+This is a virtual simulated training environment in an emergency room setting. Reply to the user. Be brief and concise. Do not repeat the user's input, they know the context. You are a medical professional in a high-stress acture care emergency room scenario. This is a training simulation, so you can't do anything wrong. Be as realistic as possible. You do not need to include any context in your response, the user already knows the context. Use "Telegraphic Style", where you focus on the most crucial words and omit articles, conjunctions, or other "filler" elements where possible. Telegraphic style: Uses essential words, omits filler, concise, clear.
+""".strip()
+            ),
+            UserMessage(content=input_text)
+        ]
+
+        response = await gpt(messages, MODEL_GPT4, temperature=0.1, show_usage=False)
+
+        return response
+
 
 
 class NPCBrain:
@@ -217,14 +237,34 @@ class NPCBrain:
 
         self.right_brain = RightBrain(context, model=model, action_db=context.action_db, temperature=temperature)
         self.left_brain = LeftBrain(context, model=model, action_db=context.action_db, temperature=temperature)
+        self.personality_brain = PersonalityBrain()
 
         self.on_error = Subject()
         self.on_dialog = Subject()
         self.on_actions = Subject()
 
-    async def process_user_input(self, command_text: str) -> RightBrainDecision:
+
+    async def is_instruction(self, command_text: str) -> bool:
+        prompt = f"""
+Is the following an instruction, command, or request for an action to be performed?
+"{command_text}"
+If yes, reply with "YES"
+If no, reply with "NO"
+Do not include any other text in your response.
+        """
+        response = await gpt([UserMessage(content=prompt)], model=MODEL_GPT35, temperature=0)
+        return response.strip().upper() == "YES"
+    
+
+    async def process_user_input(self, command_text: str, who_am_i: str) -> RightBrainDecision:
         if command_text.strip() == "":
             raise ValueError("User input is empty")
+        
+        is_instruction = await self.is_instruction(command_text)
+        if not is_instruction:
+            dialog = await self.personality_brain.generate_response(command_text, who_am_i)
+            self.on_dialog.on_next(dialog)
+            return RightBrainDecision.NOT_A_COMMAND
 
         start_time = time.time()
 

@@ -59,7 +59,7 @@ class MedicalNPC():
         self.__try_start_next_task()
 
     async def process_input(self, user_input: str) -> None:
-        await self.brain.process_user_input(user_input)
+        await self.brain.process_user_input(user_input, self.markdown_summary())
 
     def markdown_summary(self) -> str:
         name = self.definition.name
