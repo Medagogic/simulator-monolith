@@ -1,9 +1,11 @@
 from __future__ import annotations
+from datetime import datetime
 from typing import List
 from fastapi import Depends
 from pydantic import BaseModel
 import socketio
-from packages.server.sim_app.chat import SessionMixin_Chat
+import packages.medagogic_sim.iomanager as iomanager
+from packages.server.sim_app.chat import ChatEvent, HumanMessage, MessageFromNPC
 from packages.medagogic_sim.main import MedagogicSimulator, VitalSigns
 from packages.server.web_architecture.sessionrouter import Session, SessionRouter
 from packages.tools.scribe import scribe_emits, scribe_handler
@@ -25,13 +27,38 @@ class SimUpdateData(BaseModel):
 
 
 
-class Session_MedSim(Session, SessionMixin_Chat):
+class Session_MedSim(Session):
     def __init__(self, session_id: str, sio: socketio.AsyncServer):
         super().__init__(session_id=session_id, sio=sio)
 
         self.medsim = MedagogicSimulator()
 
+        self.medsim.context.iomanager.on_npc_speak.subscribe(self.handle_on_npc_speak)
+
         self.emit_vitals_loop()
+
+    # CHAT
+    def handle_on_npc_speak(self, data: iomanager.NPCSpeech) -> None:
+        m = MessageFromNPC(
+            message=data.text,
+            timestamp=datetime.now().isoformat(),
+            npc_id=data.npc_id,
+        )
+        asyncio.create_task(self.emit_chat_message(m))
+
+    @scribe_handler
+    async def on_chat_message(self, sid, data: HumanMessage) -> None:
+        print(f"Client {sid} sent message {data} in {self.session_id}")
+        await self.medsim.process_user_input(data["message"])
+
+    @scribe_emits("chat_message", MessageFromNPC)
+    async def emit_chat_message(self, data: MessageFromNPC) -> None:
+        await self.emit("chat_message", data)
+
+    @scribe_emits("chat_event", ChatEvent)
+    async def emit_chat_event(self, data: ChatEvent) -> None:
+        await self.emit("chat_event", data)
+    # END CHAT
 
 
     @scribe_emits("patient_vitals_update", VitalSigns)

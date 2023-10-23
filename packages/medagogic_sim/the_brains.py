@@ -83,23 +83,27 @@ class BrainBase:
 class RightBrain(BrainBase):
     async def do_check(self, check_text: str) -> RightBrainResponse:
         system_message = f"""
-Decide wether the user's input is possible based on the current simulation state.
+Decide wether the user's request is possible based on the current simulation state.
 
-In your explanations, you are to roleplay as a doctor in the simulation. Stay in character as a medical professional in a high-stress acture care emergency room scenario. This is a training simulation, so you can't do anything wrong. Be as realistic as possible. Be concise, and use proper medical terminology. It is best to mirror the user's input for good closed-loop communication. Do not explain medical concepts or reasoning to the user, they are a trained medical professional. You are to only explain why the user's input is not possible, or what additional information is required. Be short. Be concise. Be realistic.
+In your explanations, you are to roleplay as a doctor in the simulation. Stay in character as a medical professional in a high-stress acture care emergency room scenario. This is a training simulation, so you can't do anything wrong. Be as realistic as possible. Be concise, and use proper medical terminology. It is best to mirror the user's input for good closed-loop communication. Do not explain medical concepts or reasoning to the user, they are a trained medical professional. You are to only explain why the user's input is not possible, or what additional information is required. Be short. Be concise. Be realistic. Use "Telegraphic Style", where you focus on the most crucial words and omit articles, conjunctions, or other "filler" elements where possible. Telegraphic style: Uses essential words, omits filler, concise, clear.
 
 Your response must be one of the following:
 YES
 MORE INFO
 NO
+NONE
 
 If YES:
     - Provide a comma separated list of actions to perform
 
 If MORE INFO:
-    - Also provide a brief description of what additional information is required
+    - Provide a brief description of what additional information is required
 
 If NO:
     - Provide a brief explanation of why the action is not possible
+
+If NONE:
+    - State that there is no instruction
 
 For example:
 
@@ -136,6 +140,11 @@ NO: We don't have IV access yet.
 Example 7: User input is possible due to order of actions
 ```
 YES: Obtain IV access (right arm), Administer medication (normal saline, 500mL, IV)
+```
+
+Example 8: User input is not an instruction
+```
+NONE: No instruction.
 ```
 
 - NOTE: You may re-order the actions if this will help the requirements be filled better.
@@ -200,7 +209,6 @@ class LeftBrain(BrainBase):
         response = await gpt(messages, self.model+"-0613", temperature=self.temperature, show_usage=self.show_usage)
 
         return LeftBrainResponse(dialog=response)
-
 
 
 class NPCBrain:

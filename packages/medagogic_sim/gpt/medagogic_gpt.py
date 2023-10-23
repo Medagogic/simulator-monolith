@@ -62,7 +62,7 @@ async def gpt_streamed_lines(messages: List[GPTMessage], model=MODEL_GPT4, max_t
 
     current_line = ""
     async for response in response_stream:
-        delta = json.loads(str(response.choices[0].delta))
+        delta = response["choices"][0]["delta"]
         if "finish_reason" in delta:
             finish_reason = delta["finish_reason"]
             if finish_reason:

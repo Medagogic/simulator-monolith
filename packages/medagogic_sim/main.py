@@ -30,7 +30,7 @@ if __name__ == "__main__":
         # await npc_manager.process_dialog(input_dialog)
 
         simulator = MedagogicSimulator()
-        await simulator.process_user_input("check the airway and perform a chin lift if needed")
+        await simulator.process_user_input("Hello team")
 
         while True:
             await asyncio.sleep(1)
