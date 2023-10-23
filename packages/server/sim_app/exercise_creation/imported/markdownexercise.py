@@ -4,7 +4,7 @@ from typing import Any, Dict, Final, List, Optional
 import markdown_to_json
 
 
-from packages.server.sim_app.med_sim.simulation_types import ABCDE, BasicInfo, TimedValue, VitalSigns, Vitals, abcde_list_to_dict, parse_abcde_list, parse_vital_signs_list, parse_basic_info_list, vitals_list_to_dict
+from packages.medagogic_sim.exercise.simulation_types import ABCDE, BasicInfo, TimedValue, VitalSigns, Vitals, abcde_list_to_dict, parse_abcde_list, parse_vital_signs_list, parse_basic_info_list, vitals_list_to_dict
 
 
 HEADER_EVENTS: Final = "Future Events"

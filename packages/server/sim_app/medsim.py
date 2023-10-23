@@ -4,8 +4,7 @@ from fastapi import Depends
 from pydantic import BaseModel
 import socketio
 from packages.server.sim_app.chat import SessionMixin_Chat
-from packages.server.sim_app.med_sim.runner import MedsimRunner
-from packages.server.sim_app.med_sim.simulation_types import VitalSigns
+from packages.medagogic_sim.main import MedagogicSimulator, VitalSigns
 from packages.server.web_architecture.sessionrouter import Session, SessionRouter
 from packages.tools.scribe import scribe_emits, scribe_handler
 import asyncio
@@ -30,9 +29,7 @@ class Session_MedSim(Session, SessionMixin_Chat):
     def __init__(self, session_id: str, sio: socketio.AsyncServer):
         super().__init__(session_id=session_id, sio=sio)
 
-        print("???")
-
-        self.medsim_runner = MedsimRunner()
+        self.medsim = MedagogicSimulator()
 
         self.emit_vitals_loop()
 
@@ -44,7 +41,7 @@ class Session_MedSim(Session, SessionMixin_Chat):
 
         async def _loop() -> None:
             while True:
-                vitals: VitalSigns = self.medsim_runner.get_vitals()
+                vitals: VitalSigns = self.get_vitals()
                 await self.emit("patient_vitals_update", vitals)
                 await asyncio.sleep(1)
 
@@ -53,7 +50,7 @@ class Session_MedSim(Session, SessionMixin_Chat):
     
 
     def get_vitals(self) -> VitalSigns:
-        return self.medsim_runner.get_vitals()
+        return self.medsim.get_vitals()
     
 
     @scribe_handler
