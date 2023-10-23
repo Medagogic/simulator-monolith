@@ -61,14 +61,10 @@ INPUT:
         ]
 
         temperature = 0
-        top_p = 1
-        presence_penalty = 1
-        frequency_penalty = 1
 
         routed_dialogs: List[Dialog] = []
 
-        async for line in gpt_streamed_lines(messages, model=self.model+"-0613", max_tokens=200, temperature=temperature, top_p=top_p, show_usage=False, presence_penalty=presence_penalty, frequency_penalty=frequency_penalty):
-            logger.debug(f"Response line: {line}")
+        async for line in gpt_streamed_lines(messages, model=self.model+"-0613", max_tokens=200, temperature=temperature):
             if not line.startswith("//"):
                 routed_dialog = self.parse_routed_dialog(input_dialog, line) 
                 if routed_dialog:

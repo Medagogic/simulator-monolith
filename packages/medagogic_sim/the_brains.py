@@ -162,7 +162,7 @@ NONE: No instruction.
             UserMessage(content=check_text)
         ]
 
-        response = await gpt(messages, self.model+"-0613", temperature=self.temperature, show_usage=self.show_usage)
+        response = await gpt(messages, self.model+"-0613", temperature=self.temperature)
 
         a, b = response.split(":", 1)
 
@@ -194,7 +194,7 @@ class LeftBrain(BrainBase):
             UserMessage(content=user_input)
         ]
 
-        response = await gpt(messages, self.model+"-0613", temperature=self.temperature, show_usage=self.show_usage)
+        response = await gpt(messages, self.model+"-0613", temperature=self.temperature)
 
         return LeftBrainResponse(dialog=response)
     
@@ -207,25 +207,32 @@ class LeftBrain(BrainBase):
             UserMessage(content=user_input)
         ]
 
-        response = await gpt(messages, self.model+"-0613", temperature=self.temperature, show_usage=self.show_usage)
+        response = await gpt(messages, self.model+"-0613", temperature=self.temperature)
 
         return LeftBrainResponse(dialog=response)
     
 
 class PersonalityBrain:
+    def __init__(self, context: ContextForBrains) -> None:
+        self.context = context
+
     async def generate_response(self, input_text: str, who_am_i: str) -> str:
         messages: List[GPTMessage] = [
             SystemMessage(content=f"""
+{self.context.simulation.getExercise().to_markdown(include_progression=False)}
+
 You are:
 {who_am_i}
 
 This is a virtual simulated training environment in an emergency room setting. Reply to the user. Be brief and concise. Do not repeat the user's input, they know the context. You are a medical professional in a high-stress acture care emergency room scenario. This is a training simulation, so you can't do anything wrong. Be as realistic as possible. You do not need to include any context in your response, the user already knows the context. Use "Telegraphic Style", where you focus on the most crucial words and omit articles, conjunctions, or other "filler" elements where possible. Telegraphic style: Uses essential words, omits filler, concise, clear.
-""".strip()
+
+Stay in character in your response. The user is in the Team Lead role in this emergency scenario, reply appropriately. This is the first message in the simulation.
+""".strip() 
             ),
             UserMessage(content=input_text)
         ]
 
-        response = await gpt(messages, MODEL_GPT4, temperature=0.1, show_usage=False)
+        response = await gpt(messages, MODEL_GPT4+"-0613", temperature=0)
 
         return response
 
@@ -237,7 +244,7 @@ class NPCBrain:
 
         self.right_brain = RightBrain(context, model=model, action_db=context.action_db, temperature=temperature)
         self.left_brain = LeftBrain(context, model=model, action_db=context.action_db, temperature=temperature)
-        self.personality_brain = PersonalityBrain()
+        self.personality_brain = PersonalityBrain(context)
 
         self.on_error = Subject()
         self.on_dialog = Subject()

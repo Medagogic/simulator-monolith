@@ -36,6 +36,12 @@ def configure_cached_openai(directory=None):
         context_len=999999
     )
 
+    def pre_embedding_func(queries, *args, **kwargs):
+        print(queries, args, kwargs)
+        r = concat_all_queries(queries, *args, **kwargs)
+        print(r)
+        return r
+
     cache.init(
         config=config,
         pre_embedding_func=concat_all_queries,
@@ -43,3 +49,8 @@ def configure_cached_openai(directory=None):
         data_manager=data_manager,
     )
     cache.set_openai_key()
+
+    def hit_cache_callback(data):
+        print(f"Hit cache: {data}")
+
+    data_manager.hit_cache_callback = hit_cache_callback

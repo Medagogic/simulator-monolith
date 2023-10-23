@@ -21,17 +21,13 @@ def UserMessage(content: str) -> GPTMessage:
     return {"role": "user", "content": content}
 
 
-async def gpt(messages: List[GPTMessage], model=MODEL_GPT4, max_tokens=500, temperature=TEMPERATURE, top_p=TOP_P, show_usage=False, presence_penalty=0, frequency_penalty=0) -> str:
+async def gpt(messages: List[GPTMessage], model=MODEL_GPT4, max_tokens=500, temperature=TEMPERATURE) -> str:
     kwargs = {
         "model": model,
         "messages": messages,
         "max_tokens": max_tokens,
         "n": 1,
-        "top_p": top_p,
-        "stop": None,
         "temperature": temperature,
-        "presence_penalty": presence_penalty,
-        "frequency_penalty": frequency_penalty,
     }
     response = await openai.ChatCompletion.acreate(**kwargs)
 
@@ -39,18 +35,14 @@ async def gpt(messages: List[GPTMessage], model=MODEL_GPT4, max_tokens=500, temp
 
 
 @retry(wait=wait_fixed(1))
-async def gpt_streamed_lines(messages: List[GPTMessage], model=MODEL_GPT4, max_tokens=500, temperature=TEMPERATURE, top_p=TOP_P, show_usage=False, presence_penalty=0, frequency_penalty=0):
+async def gpt_streamed_lines(messages: List[GPTMessage], model=MODEL_GPT4, max_tokens=500, temperature=TEMPERATURE):
     try:
         response_stream = await openai.ChatCompletion.acreate(
                     model=model,
                     messages=messages,
                     max_tokens=max_tokens,
                     n=1,
-                    top_p=top_p,
-                    stop=None,
                     temperature=temperature,
-                    presence_penalty=presence_penalty,
-                    frequency_penalty=frequency_penalty,
                     stream=True
                 )
     except Exception as e:
