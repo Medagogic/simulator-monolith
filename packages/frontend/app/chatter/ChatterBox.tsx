@@ -63,7 +63,7 @@ const ChatterBox: React.FC = () => {
         position,
         type: type,
         title,
-        text,
+        text
       };
     });
   }
