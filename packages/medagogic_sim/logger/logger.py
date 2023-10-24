@@ -25,6 +25,8 @@ def prompt_toolkit_logging_handler(record):
     timestamp = record.asctime
     logger_name = record.name
     message = record.message
+    filename = record.filename
+    lineno = record.lineno
     
     if level == 'DEBUG':
         level_color, message_color = 'ansigreen', '#222222'
@@ -37,9 +39,12 @@ def prompt_toolkit_logging_handler(record):
     else:
         level_color, message_color = 'ansiwhite', 'ansiwhite'
     
+    filename_text = f"[{filename}@{lineno}]"
+
     formatted_record = [
-        ('ansiwhite', f"{timestamp} {logger_name} "),
-        (level_color, f"{level} "),
+        ('ansiwhite', f"{timestamp} "),
+        ('#aaaaaa', f"{filename_text:21.21} "),
+        (level_color, f"{level:8} "),
         (message_color, f"{message}")
     ]
         
@@ -48,18 +53,14 @@ def prompt_toolkit_logging_handler(record):
 class CustomHandler(logging.Handler):
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)
-        formatter = logging.Formatter('%(asctime)s %(name)-12s %(levelname)-8s %(message)s', datefmt='%Y-%m-%d %H:%M:%S')
-        self.setFormatter(formatter)
+        self.formatter = logging.Formatter('%(filename)s %(lineno)d %(asctime)s %(name)-12s %(levelname)-8s %(message)s', datefmt='%H:%M:%S')
+        self.setFormatter(self.formatter)
     
     def emit(self, record):
-        self.format(record)
+        self.formatter.format(record)
         prompt_toolkit_logging_handler(record)
 
 
-logging.basicConfig(
-    format='%(asctime)s %(name)-12s %(levelname)-8s %(message)s', 
-    datefmt='%Y-%m-%d %H:%M:%S',
-    handlers=[CustomHandler()])
 
 def get_logger(name=None, level=logging.WARNING) -> logging.Logger:
     if name is None:
@@ -67,9 +68,13 @@ def get_logger(name=None, level=logging.WARNING) -> logging.Logger:
         caller_frame = inspect.currentframe().f_back    # type: ignore
         caller_filename = caller_frame.f_globals['__file__']    # type: ignore
         name = os.path.splitext(os.path.basename(caller_filename))[0]
-        
+
+    root_logger = logging.getLogger()
+    root_logger.handlers = [CustomHandler()]
+
     logger = logging.getLogger(name)
     logger.setLevel(level)
+    logger.handlers = []
 
     return logger
 
@@ -78,7 +83,7 @@ def get_logger(name=None, level=logging.WARNING) -> logging.Logger:
 if __name__ == "__main__":
     import asyncio
     import time
-    from packages.medagogic_sim.gpt import MODEL_GPT4, gpt, UserMessage, SystemMessage
+
     logger = get_logger(level=logging.DEBUG)
 
     async def main():

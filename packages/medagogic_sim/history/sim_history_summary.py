@@ -3,7 +3,7 @@ import asyncio
 from packages.medagogic_sim.gpt.medagogic_gpt import gpt, MODEL_GPT35, UserMessage
 
 if TYPE_CHECKING:
-    from packages.medagogic_sim.history.sim_history import ChatMessage, HistoryLog, Event, EventTypes, Intervention, Assessment
+    from packages.medagogic_sim.history.sim_history import Evt_ChatMessage, HistoryLog, Event, EventTypes, Evt_CompletedIntervention, Evt_Assessment
 
 class HistoryCondenser:
     @staticmethod
@@ -32,13 +32,13 @@ Remember to prioritize more recent events for detailed representation while redu
     
 if __name__ == "__main__":
     async def test_history_condenser():
-        from packages.medagogic_sim.history.sim_history import ChatMessage, HistoryLog, Event, EventTypes, Intervention, Assessment
+        from packages.medagogic_sim.history.sim_history import Evt_ChatMessage, HistoryLog, Event, EventTypes, Evt_CompletedIntervention, Evt_Assessment
 
         # Create a HistoryLog and populate it with some events
         history_log = HistoryLog()
-        history_log.add_event(ChatMessage(name="Team Lead", content="Hello, world"))
-        history_log.add_event(Assessment(npc_name="Dr Johnson", content="Assessed airway, found no obstructions"))
-        history_log.add_event(Intervention(npc_name="Dr Johnson", content="Started giving oxygen"))
+        history_log.add_event(Evt_ChatMessage(name="Team Lead", content="Hello, world"))
+        history_log.add_event(Evt_Assessment(npc_name="Dr Johnson", content="Assessed airway, found no obstructions"))
+        history_log.add_event(Evt_CompletedIntervention(npc_name="Dr Johnson", content="Started giving oxygen"))
 
         # Get a condensed history summary
         summary = await HistoryCondenser.get_summary(history_log, last_n=1)

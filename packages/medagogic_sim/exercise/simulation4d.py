@@ -14,7 +14,7 @@ from rx.subject import Subject
 from packages.medagogic_sim.gpt import MODEL_GPT4, gpt, UserMessage, SystemMessage, GPTMessage
 from packages.medagogic_sim.exercise.markdownexercise import HEADER_EVENTS, MarkdownExercise, VitalSigns, VitalSignsInterpolation
 from packages.medagogic_sim.exercise.simulation_types import Vitals, abcde_list_to_dict, vitals_list_to_dict
-from packages.medagogic_sim.history.sim_history import Intervention
+from packages.medagogic_sim.history.sim_history import Evt_CompletedIntervention
 from packages.medagogic_sim.logger.logger import get_logger, logging
 from packages.medagogic_sim.exercise.exercise_loader import read_exercise
 
@@ -299,7 +299,9 @@ class LeafyBlossom(IBlackBoxSimulation):
         try:
             updated_exercise = self.apply_update_markdown(updated_exercise, future_state_update_markdown, future_state=True)
         except Exception as e:
-            logger.log(logging.ERROR, f"Error applying future state update: {e}")
+            logger.error(f"Error applying future state update: {e}")
+            log_error_with_traceback(e)
+            logger.error(future_state_update_markdown)
         
         update_log = SimulationUpdateLog(
             previous_exercise=self.exercise,
@@ -314,9 +316,9 @@ class LeafyBlossom(IBlackBoxSimulation):
 
         logger.info(f"Finished processing updates: {updates_cache}")
 
-        for update in updates_cache:
-            # self.intervention_tracker.recordEvent(self.simulationTimeSeconds, update)
-            self.history_log.add_event(Intervention(npc_name="", content=update))
+        # for update in updates_cache:
+        #     # self.intervention_tracker.recordEvent(self.simulationTimeSeconds, update)
+        #     self.history_log.add_event(Intervention(npc_name="", content=update))
 
         for pending_reciept in reciepts:
             pending_reciept.finish()
@@ -324,8 +326,8 @@ class LeafyBlossom(IBlackBoxSimulation):
 
     def get_state_markdown(self, exercise: MarkdownExercise, include_progression: bool) -> str:
         completed_interventions_text = "No significant events yet."
-        if len(self.history_log.get_filtered_log(filter_types=[Intervention])) > 0:
-            completed_interventions_text = self.history_log.get_markdown(filter_types=[Intervention])
+        if len(self.history_log.get_filtered_log(filter_types=[Evt_CompletedIntervention])) > 0:
+            completed_interventions_text = self.history_log.get_markdown(filter_types=[Evt_CompletedIntervention])
 
         markdown = f"""
 {exercise.to_markdown(include_progression=include_progression)}

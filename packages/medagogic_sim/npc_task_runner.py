@@ -5,6 +5,7 @@ from rx.subject import Subject
 from packages.medagogic_sim.exercise.simulation4d import SimulationUpdateReciept
 
 from packages.medagogic_sim.exercise.simulation_types import ActionType
+from packages.medagogic_sim.history.sim_history import Evt_StartTask, Evt_TaskConsequence
 
 if TYPE_CHECKING:
     from packages.medagogic_sim.actions_for_brains import TaskCall
@@ -31,6 +32,21 @@ class TaskRunner:
         self.update_receipt: SimulationUpdateReciept | None = None
         
 
+    def getStartingString(self) -> str:
+        params_str = ", ".join(self.task.call_data.params)
+        return f"{self.npc.definition.name} started action `{self.task.call_data.name} ({params_str})`"
+    
+
+    def getConsequenceString(self) -> str:
+        params_str = ", ".join(self.task.call_data.params)
+        return f"{self.npc.definition.name} finished `{self.task.call_data.name} ({params_str})`"
+
+
+    def getUpdateString(self) -> str:
+        params_str = ", ".join(self.task.call_data.params)
+        return f"{self.npc.definition.name} performed action: `{self.task.call_data.name} ({params_str})`"
+
+
     async def run(self) -> None:
         action_type: ActionType = ActionType.NONE
 
@@ -44,11 +60,12 @@ class TaskRunner:
             action_type = ActionType.OTHER
         else:
             raise Exception(f"Unknown task type {self.task.type}")
+        
+        self.context.history.add_event(Evt_StartTask(npc_name=self.npc.definition.name, content=self.getStartingString()))
 
         # First kickoff the sim update
         if action_type in [ActionType.INTERVENTION, ActionType.PREPARATION]:
-            params_str = ", ".join(self.task.call_data.params)
-            self.update_receipt = self.context.simulation.applyUpdate(f"{self.npc.definition.name} performed action: `{self.task.call_data.name} ({params_str})`")
+            self.update_receipt = self.context.simulation.applyUpdate(self.getUpdateString())
 
             self.update_receipt.on_new_immediate_state_generated.subscribe(self.__handle_current_state_recalculated)
             self.update_receipt.on_finished.subscribe(self.__handle_sim_update_finished)
@@ -126,6 +143,8 @@ What do you say? Max one sentence.
 
         response = await gpt(messages, model=MODEL_GPT4, max_tokens=100, temperature=0)
 
+        self.context.history.add_event(Evt_TaskConsequence(npc_name=self.npc.definition.name, content=self.getConsequenceString()))
+
         logger.info(f"Dialog: {response}")
         self.on_dialog.on_next(response)
 
@@ -161,6 +180,8 @@ What do you say? Max one sentence.
         ]
 
         response = await gpt(messages, model=MODEL_GPT4, max_tokens=100, temperature=0)
+
+        self.context.history.add_event(Evt_TaskConsequence(npc_name=self.npc.definition.name, content=self.getConsequenceString()))
 
         logger.info(f"Dialog: {response}")
         self.on_dialog.on_next(response)

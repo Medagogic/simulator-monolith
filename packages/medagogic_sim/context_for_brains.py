@@ -5,8 +5,8 @@ from packages.medagogic_sim.exercise.device_definitions import DeviceConfig
 from packages.medagogic_sim.exercise.exercise_loader import read_metadata
 from packages.medagogic_sim.exercise.simulation4d import LeafyBlossom
 from packages.medagogic_sim.actions_for_brains import ActionDatabase
-from packages.medagogic_sim.history.sim_history import HistoryLog
-from packages.medagogic_sim.iomanager import IOManager
+from packages.medagogic_sim.history.sim_history import Evt_ChatMessage, HistoryLog
+from packages.medagogic_sim.iomanager import IOManager, NPCSpeech
 
     
 
@@ -21,6 +21,11 @@ class ContextForBrains:
         self.iomanager = IOManager()
 
         self.simulation.on_alert.subscribe(self.iomanager.simulation_alert)
+
+        self.iomanager.on_npc_speak.subscribe(self.on_npc_speak)
+
+    def on_npc_speak(self, npc_speech: NPCSpeech):
+        self.history.add_event(Evt_ChatMessage(name=npc_speech.npc_name, content=npc_speech.text))
 
     # TODO: All of this
     @property
