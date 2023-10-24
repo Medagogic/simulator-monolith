@@ -7,7 +7,7 @@ import { ExerciseCreationABCDE, ExerciseCreationVitalSigns } from '@/src/api';
 import { VitalSigns } from '@/src/scribe/scribetypes';
 import ChatterBox from '../chatter/page';
 import "./page.css"
-import Clippy from './clippy/Clippy';
+import Clippy from './Clippy/Clippy';
 import ABCDEList from './ABCDEList/ABCDEList';
 import StaffList, { StaffMemberData } from './StaffList/StaffList';
 import PatientVisualization from './Patient/PatientVisualization';
