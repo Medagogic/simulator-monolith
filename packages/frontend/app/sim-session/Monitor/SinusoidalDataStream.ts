@@ -1,32 +1,64 @@
 import { Observable } from 'rxjs';
 
-export const createSinusoidalDataStream = (frequency: number = 1, skewFactor: number = 2) => {
-  // Ensure skewFactor is valid to avoid unexpected behavior
-  if (skewFactor < 1) {
-    throw new Error('skewFactor must be greater than or equal to 1');
+
+const fps = 30;
+const frameInterval = 1000 / fps;
+
+export class SinusoidalDataStream {
+  private dataStream: Observable<number[]>;
+  private currentBPM: number;
+  private currentlyConnected: boolean = false;
+  private time: number = 0;
+
+
+  constructor() {
+    this.currentBPM = 60;
+    this.dataStream = this.createDataStream();
   }
 
-  return new Observable<number[]>(subscriber => {
-    let time = 0;
-    const intervalPeriod = 100;
-    const angularFrequency = 2 * Math.PI * frequency;
+  public updateBpm(newBpm: number) {
+    this.currentBPM = newBpm;
+  }
 
-    const intervalId = setInterval(() => {
-      const phase = angularFrequency * time;
+  public setConnected(newConnected: boolean) {
+    this.currentlyConnected = newConnected;
+  }
 
-      const sineValueStandard = Math.sin(phase + 0.2);
+  public getDataStream(): Observable<number[]> {
+    return this.dataStream;
+  }
 
-      const sineValueSkewed = Math.sin(phase + (sineValueStandard * 0.1 * angularFrequency));
+  private createDataStream(): Observable<number[]> {
+    return new Observable<number[]>(subscriber => {
+      let index = 0;
 
-      // Emit the skewed sine value through the stream
-      subscriber.next([sineValueSkewed]);
+      const emitData = () => {
+        if (!this.currentlyConnected) {
+          return;
+        }
 
-      // Increment the time by a fraction, similar to before.
-      time += intervalPeriod / 1000;
+        const frequency = this.currentBPM / 60;
+        const angularFrequency = 2 * Math.PI * frequency;
 
-    }, intervalPeriod);
+        const phase = angularFrequency * this.time;
 
-    // Clear interval and end the data stream properly when it's no longer used
-    return () => clearInterval(intervalId);
-  });
-};
+        const sineValueStandard = Math.sin(phase);
+        const offset = (Math.cos(this.time / 0.37) + 1)* 0.02;
+
+        const sineValueSkewed = Math.sin(phase + (sineValueStandard * offset * angularFrequency));
+  
+        // Emit the skewed sine value through the stream
+        subscriber.next([sineValueSkewed]);
+  
+        // Increment the time by a fraction, similar to before.
+        this.time += (frameInterval / 1000) * (Math.random() * 0.1 + 0.95);
+      };
+
+      const intervalId = setInterval(emitData, frameInterval);
+
+      return () => {
+        clearInterval(intervalId);
+      };
+    });
+  }
+}
