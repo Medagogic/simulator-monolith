@@ -59,7 +59,7 @@ const SlideshowPage: React.FC = () => {
     return (
         <div className="h-screen w-screen flex items-center justify-center bg-gray-700">
             <div className={`${stateClassName(SlideshowState.Slideshow1)}`}>
-                <Slideshow onEnd={handleFirstSlidshowEnd}/>
+                <Slideshow onEnd={handleFirstSlidshowEnd} start_index={0} end_index={4}/>
             </div>
             <div className={`${stateClassName(SlideshowState.DragDropDocument)}`}>
                 <DragDropPage onFileProcessedCallback={handleFileDropped} />

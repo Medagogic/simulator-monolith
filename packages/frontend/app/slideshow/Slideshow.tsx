@@ -4,13 +4,30 @@ import slide1 from './slides/1.svg';
 import slide2 from './slides/2.svg';
 import slide3 from './slides/3.svg';
 import slide4 from './slides/4.svg';
+import slide5 from './slides/5.svg';
+import slide6 from './slides/6.svg';
+import slide7 from './slides/7.svg';
+import slide8 from './slides/8.svg';
+
+const all_slides: any[] = [
+  slide1,
+  slide2,
+  slide3,
+  slide4,
+  slide5,
+  slide6,
+  slide7,
+  slide8,
+];
 
 interface SlideshowProps {
+  start_index: number;
+  end_index: number;
   onEnd: () => void;
 }
 
-const Slideshow: React.FC<SlideshowProps> = ({ onEnd }) => {
-  const slides = [slide1, slide2, slide3, slide4];
+const Slideshow: React.FC<SlideshowProps> = ({ onEnd, start_index, end_index }) => {
+  const slides = all_slides.slice(start_index, end_index+1);
   const [currentSlide, setCurrentSlide] = useState(0);
 
   const handleForwardClick = () => {
@@ -28,7 +45,7 @@ const Slideshow: React.FC<SlideshowProps> = ({ onEnd }) => {
   };
 
   return (
-    <div className="h-screen w-screen flex items-center justify-center bg-gray-700">
+    <div className="h-screen w-screen flex items-center justify-center bg-gray-700 overflow-hidden relative">
       <div
         className="absolute left-0 w-1/4 h-full cursor-pointer z-10"
         onClick={handleBackClick}
@@ -43,7 +60,7 @@ const Slideshow: React.FC<SlideshowProps> = ({ onEnd }) => {
           key={index}
           src={slide.src}
           alt={`Slide ${index + 1}`}
-          className={`absolute w-full h-full transition-all ease duration-300 ${currentSlide === index ? 'opacity-100' : 'opacity-0'
+          className={`absolute w-full transition-all ease duration-300 ${currentSlide >= index ? 'opacity-100' : 'opacity-0'
             }`}
         />
       ))}

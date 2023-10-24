@@ -14,7 +14,7 @@
             "env": {"PYTHONPATH": "${workspaceFolder}"}
         },
         {
-            "name": "FastAPI: Dev Mode with --no-frontend",
+            "name": "SERVER: Dev Mode with --no-frontend",
             "type": "python",
             "request": "launch",
             "program": "${workspaceFolder}/packages/server/main.py",
@@ -24,7 +24,7 @@
             "env": {"PYTHONPATH": "${workspaceFolder}"},
         },
         {
-            "name": "Start NextJS dev server",
+            "name": "FRONTEND: Start NextJS dev server",
             "type": "node",
             "request": "launch",
             "cwd": "${workspaceFolder}/packages/frontend",
