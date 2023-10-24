@@ -110,7 +110,7 @@ class TaskRunner:
 
         sim_results = ""
         if update_comments:
-            sim_results = "\n# Simulation Results\n" + update_comments + "\n"
+            sim_results = "\n# Notes on Results\n" + update_comments + "\n"
 
         logger.info(f"Figuring out dialog for intervention: {self.task.call_data}")
 
@@ -125,15 +125,18 @@ What do you say? Max one sentence. Keep your response very brief, and in line wi
 """.strip()
         
         user_input = f"""
-# Your original instruction
-{self.task.full_input}
+# Updated Patient State After Your Action
+{updated_exercise.current_state.to_markdown()}
+
+{sim_results}
 
 # Completed action
 {self.task.call_data.name}
 
-{sim_results}
+# Your original instruction
+{self.task.full_input}
 
-What do you say? Max one sentence.
+What do you say to the Team Lead? Max one sentence. Be professional, concise, and in line with your character and the situation - a pediatric emergency room. The Team Lead is a senior doctor.
 """.strip()
 
         messages: List[GPTMessage] = [
@@ -145,7 +148,7 @@ What do you say? Max one sentence.
 
         self.context.history.add_event(Evt_TaskConsequence(npc_name=self.npc.definition.name, content=self.getConsequenceString()))
 
-        logger.info(f"Dialog: {response}")
+        logger.debug(f"Dialog: {response}")
         self.on_dialog.on_next(response)
 
 
@@ -183,12 +186,12 @@ What do you say? Max one sentence.
 
         self.context.history.add_event(Evt_TaskConsequence(npc_name=self.npc.definition.name, content=self.getConsequenceString()))
 
-        logger.info(f"Dialog: {response}")
+        logger.debug(f"Dialog: {response}")
         self.on_dialog.on_next(response)
 
 
     def __handle_sim_update_finished(self, none: Any) -> None:
-        logger.info(f"Oi my update has finished processing!")
+        logger.debug(f"M update has finished processing!")
 
 
 if __name__ == "__main__":
