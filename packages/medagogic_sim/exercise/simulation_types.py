@@ -236,7 +236,7 @@ def interpolate_values(value0: Union[float, BloodPressureModel], value1: Union[f
         raise TypeError("value0 and value1 must be compatible types")
     
     if isinstance(value0, BloodPressureModel):
-        value0 = value0.vitals_dict()
+        value0 = value0.vitals_dict()   # type: ignore
 
     if isinstance(value0, float):
         return value0 * (1 - t) + value1 * t    # type: ignore

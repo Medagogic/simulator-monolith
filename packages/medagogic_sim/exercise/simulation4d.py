@@ -84,7 +84,7 @@ class SimulationUpdateLog:
         for vitals_key, previous_value in previous_exercise.current_state.vital_signs.dict().items():
             new_value = updated_exercise.current_state.vital_signs.dict()[vitals_key]
             if new_value != previous_value:
-                vitals[vitals_key] = ValueDiff(old=previous_value, new=new_value)
+                vitals[vitals_key] = ValueDiff(old=previous_value, new=new_value)   # type: ignore
         
         for abcde_key, previous_value in previous_exercise.current_state.abcde.to_dict().items():
             new_value = updated_exercise.current_state.abcde.to_dict()[abcde_key]
@@ -386,7 +386,7 @@ Additionally, you may provide an **Alert** notification if a significant event h
         logger.info(f"Calculated new immediate state from updte: {update}")
 
         return NewCurrentStateResponse(
-            gpt_messages=messages,
+            gpt_messages=messages,  # type: ignore
             gpt_response=full_response,
             new_current_state_markdown=full_response.strip()
         )
@@ -452,7 +452,7 @@ First, provide a description of what you expect to happen as a result of the upd
         logger.info(f"Calculated new future state progression from update: {update}")
 
         return NewStateProgressionResponse(
-            gpt_messages=messages,
+            gpt_messages=messages,  # type: ignore
             gpt_response=full_response,
             new_state_progression_markdown=full_response.strip()
         )
