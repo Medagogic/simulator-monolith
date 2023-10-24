@@ -4,6 +4,8 @@ from typing import List
 from fastapi import Depends
 from pydantic import BaseModel
 import socketio
+from packages.medagogic_sim.exercise.markdownexercise import MarkdownExercise
+from packages.medagogic_sim.exercise.simulation_types import ActionType
 import packages.medagogic_sim.iomanager as iomanager
 from packages.server.sim_app.chat import ChatEvent, HumanMessage, MessageFromNPC
 from packages.medagogic_sim.main import MedagogicSimulator, VitalSigns
@@ -11,6 +13,8 @@ from packages.server.web_architecture.sessionrouter import Session, SessionRoute
 from packages.tools.scribe import scribe_emits, scribe_handler
 import asyncio
 
+from packages.medagogic_sim.logger.logger import get_logger, logging
+logger = get_logger(level=logging.INFO)
 
 class InterventionData(BaseModel):
     interventions: List[str]
@@ -60,6 +64,27 @@ class Session_MedSim(Session):
         await self.emit("chat_event", data)
     # END CHAT
 
+    @scribe_handler
+    async def on_direct_intervention(self, sid, function_call: str) -> None:
+        print(f"Client {sid} called on_direct_intervention `{function_call}` in {self.session_id}")
+        task = self.medsim.context.action_db.get_action_from_call(function_call, function_call)
+        if task.type == "intervention":
+            params_str = ", ".join(task.call_data.params)
+            receipt = self.medsim.context.simulation.applyUpdate(f"Dr Whoopie performed action: `{task.call_data.name} ({params_str})`")
+
+            receipt.on_new_immediate_state_generated.subscribe(self.direct_intervention_current_state_recalculated)
+            receipt.on_finished.subscribe(self.direct_intervention_finished)
+        else:
+            raise Exception(f"Task {task} is not an intervention")
+    
+    def direct_intervention_current_state_recalculated(self, data):
+        exercise, comments = data
+        logger.info(f"Current state recalculated: {exercise}")
+        logger.info(f"Comments: {comments}")
+
+    def direct_intervention_finished(self, null):
+        exercise = self.medsim.context.simulation.exercise
+        logger.info(f"Finished direct intervention: {exercise}")
 
     @scribe_emits("patient_vitals_update", VitalSigns)
     def emit_vitals_loop(self):

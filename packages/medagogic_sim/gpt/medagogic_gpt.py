@@ -10,7 +10,6 @@ configure_cached_openai()
 MODEL_GPT4 = "gpt-4"
 MODEL_GPT35 = "gpt-3.5-turbo"
 TEMPERATURE = 0.1    # 0 = predictable, 2 = chaotic
-TOP_P = 1
 
 GPTMessage = TypedDict("GPTMessage", {"role": str, "content": str})
 
@@ -34,23 +33,15 @@ async def gpt(messages: List[GPTMessage], model=MODEL_GPT4, max_tokens=500, temp
     return response["choices"][0]["message"]["content"]
 
 
-@retry(wait=wait_fixed(1))
 async def gpt_streamed_lines(messages: List[GPTMessage], model=MODEL_GPT4, max_tokens=500, temperature=TEMPERATURE):
-    try:
-        response_stream = await openai.ChatCompletion.acreate(
-                    model=model,
-                    messages=messages,
-                    max_tokens=max_tokens,
-                    n=1,
-                    temperature=temperature,
-                    stream=True
-                )
-    except Exception as e:
-        with open("gpt_error.json", "w") as f:
-            json.dump(messages, f, indent=4)
-        print(f"GPT error: {e}")
-        print(f"Input context dumped to gpt_error.json")
-        raise e
+    response_stream = await openai.ChatCompletion.acreate(
+                model=model,
+                messages=messages,
+                max_tokens=max_tokens,
+                n=1,
+                temperature=temperature,
+                stream=True
+            )
 
     current_line = ""
     async for response in response_stream:

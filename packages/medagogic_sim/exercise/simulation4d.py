@@ -1,6 +1,7 @@
 from __future__ import annotations
 import datetime
 import os
+import traceback
 from typing import TYPE_CHECKING
 from pydantic import BaseModel
 from abc import ABC, abstractmethod, abstractproperty
@@ -23,6 +24,10 @@ if TYPE_CHECKING:
 
 logger = get_logger(level=logging.INFO)
 
+def log_error_with_traceback(e):
+    tb_str = traceback.format_exception(etype=type(e), value=e, tb=e.__traceback__)
+    tb_str = ''.join(tb_str)
+    logging.error(f"Error processing updates: {e}\n{tb_str}")
 
 class SimulationUpdateReciept:
     id: str
@@ -202,7 +207,10 @@ class LeafyBlossom(IBlackBoxSimulation):
     async def __loop(self):
         while not self.finished:
             if len(self.pending_updates) > 0:
-                await self.process_updates()
+                try:
+                    await self.process_updates()
+                except Exception as e:
+                    log_error_with_traceback(e)
             else:
                 await asyncio.sleep(1)
                 
@@ -368,8 +376,12 @@ Additionally, you may provide an **Alert** notification if a significant event h
         """
         logger.info(f"Calculating new immediate state from update: {update}")
 
-        messages = [SystemMessage(prompt), UserMessage(update)]
-        full_response = await gpt(messages, model=MODEL_GPT4+"-0613", max_tokens=1000, temperature=0, top_p=1)
+        try:
+            messages = [SystemMessage(prompt), UserMessage(update)]
+            full_response = await gpt(messages, model=MODEL_GPT4+"-0613", max_tokens=1000, temperature=0)
+        except Exception as e:
+            logger.error(f"Error calculating new immediate state from update: {e}")
+            raise e
 
         logger.info(f"Calculated new immediate state from updte: {update}")
 
@@ -435,7 +447,7 @@ First, provide a description of what you expect to happen as a result of the upd
         logger.info(f"Calculating new future state from update: {update}")
 
         messages = [SystemMessage(prompt), UserMessage(content=update)]
-        full_response = await gpt(messages, model=MODEL_GPT4+"-0613", max_tokens=1000, temperature=0, top_p=1)
+        full_response = await gpt(messages, model=MODEL_GPT4+"-0613", max_tokens=1000, temperature=0)
 
         logger.info(f"Calculated new future state progression from update: {update}")
 
