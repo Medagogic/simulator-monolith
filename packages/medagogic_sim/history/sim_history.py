@@ -64,7 +64,7 @@ class HistoryLog:
         self.log.append(event)
 
         for m in self.log[-10:]:
-            logger.info(f"LOG: {str(m)}")
+            logger.debug(f"LOG: {str(m)}")
 
         if self.current_task and not self.current_task.done():
             self.current_task.cancel()
