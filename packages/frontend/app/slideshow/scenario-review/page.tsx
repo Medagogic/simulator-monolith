@@ -18,11 +18,14 @@ const ScenarioReviewPage: React.FC = () => {
   return (
     <div className="h-screen w-screen flex bg-gray-700 text-white relative">
       <div className="w-1/4 h-full overflow-y-auto bg-gray-600 p-4">
+        <div className='text-lg font-semibold'>
+          Generated Scenarios
+        </div>
         <ul>
           {scenarios.map((scenario, index) => (
             <li 
               key={index} 
-              className={`cursor-pointer p-2 m-2 rounded ${selectedScenario && selectedScenario.name === scenario.name ? 'bg-gray-500' : 'hover:bg-gray-500'}`}
+              className={`text-sm cursor-pointer p-2 m-2 rounded ${selectedScenario && selectedScenario.name === scenario.name ? 'bg-gray-500' : 'hover:bg-gray-500'}`}
               onClick={() => handleScenarioClick(scenario)}
             >
               {scenario.name}
@@ -30,7 +33,7 @@ const ScenarioReviewPage: React.FC = () => {
           ))}
         </ul>
       </div>
-      <div className="w-3/4 h-full flex items-center justify-center">
+      <div className="w-3/4 h-full flex justify-center">
       {selectedScenario ? (
           <ScenarioInfo
             name={selectedScenario.name}

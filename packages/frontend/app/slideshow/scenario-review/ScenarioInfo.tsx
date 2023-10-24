@@ -114,7 +114,7 @@ const ScenarioInfo: React.FC<ScenarioInfoProps> = (scenario: ScenarioInfoProps) 
       <div className="grid grid-cols-1 gap-4 mt-4">
         {Object.entries(scenario.info).map(([label, value], index) => (
           <div key={index} className="flex">
-            <span className="font-semibold mr-2 w-36">{label}:</span>
+            <span className="font-semibold mr-2 w-36 shrink-0">{label}:</span>
             <span>{value}</span>
           </div>
         ))}

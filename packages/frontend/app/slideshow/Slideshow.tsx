@@ -5,16 +5,26 @@ import slide2 from './slides/2.svg';
 import slide3 from './slides/3.svg';
 import slide4 from './slides/4.svg';
 
-const Slideshow: React.FC = () => {
+interface SlideshowProps {
+  onEnd: () => void;
+}
+
+const Slideshow: React.FC<SlideshowProps> = ({ onEnd }) => {
   const slides = [slide1, slide2, slide3, slide4];
   const [currentSlide, setCurrentSlide] = useState(0);
 
   const handleForwardClick = () => {
-    setCurrentSlide((prevSlide) => (prevSlide + 1) % slides.length);
+    const new_slide = currentSlide + 1;
+    if (new_slide >= slides.length) {
+      onEnd();
+    } else {
+      setCurrentSlide(new_slide);
+    }
   };
 
   const handleBackClick = () => {
-    setCurrentSlide((prevSlide) => (prevSlide - 1 + slides.length) % slides.length);
+    const new_slide = Math.max(currentSlide - 1, 0);
+    setCurrentSlide(new_slide);
   };
 
   return (
@@ -33,9 +43,8 @@ const Slideshow: React.FC = () => {
           key={index}
           src={slide.src}
           alt={`Slide ${index + 1}`}
-          className={`absolute w-full h-full transition-all ease duration-300 ${
-            currentSlide === index ? 'opacity-100' : 'opacity-0'
-          }`}
+          className={`absolute w-full h-full transition-all ease duration-300 ${currentSlide === index ? 'opacity-100' : 'opacity-0'
+            }`}
         />
       ))}
     </div>
