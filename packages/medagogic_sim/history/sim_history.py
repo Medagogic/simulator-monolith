@@ -3,44 +3,45 @@ from pydantic import BaseModel
 from typing import List, Optional, Union, Type
 from packages.medagogic_sim.history.sim_history_summary import HistoryCondenser
 from packages.medagogic_sim.logger.logger import get_logger, logging
+from rx.subject import Subject
 
 logger = get_logger(level=logging.INFO)
 
-class Event(BaseModel):
+class HistoryEvent(BaseModel):
     timestamp: float = None # type: ignore
 
     def __str__(self):
         return "Generic event"
 
-class Evt_ChatMessage(Event):
+class Evt_ChatMessage(HistoryEvent):
     name: str
     content: str
 
     def __str__(self):
         return f"{self.name}: {self.content}"
 
-class Evt_Assessment(Event):
+class Evt_Assessment(HistoryEvent):
     npc_name: str
     content: str
 
     def __str__(self):
         return f"{self.npc_name}: {self.content}"
 
-class Evt_StartTask(Event):
+class Evt_StartTask(HistoryEvent):
     npc_name: str
     content: str
 
     def __str__(self):
         return f"{self.npc_name}: {self.content}"
     
-class Evt_TaskConsequence(Event):
+class Evt_TaskConsequence(HistoryEvent):
     npc_name: str
     content: str
 
     def __str__(self):
         return f"{self.npc_name}: {self.content}"
 
-class Evt_CompletedIntervention(Event):
+class Evt_CompletedIntervention(HistoryEvent):
     npc_name: str
     content: str
 
@@ -56,6 +57,8 @@ class HistoryLog:
         self.cached_history: str = "- This is the start of the simulation. Nothing has happened yet, there has been no communication from the team lead, etc."
         self.current_task: Optional[asyncio.Task] = None
 
+        self.on_new_event: Subject = Subject()
+
     def get_time(self) -> float:
         return 0.0
 
@@ -70,7 +73,9 @@ class HistoryLog:
             self.current_task.cancel()
         self.current_task = asyncio.create_task(self.get_latest_summary())
 
-    def get_filtered_log(self, filter_types: List[Type[Event]] = []) -> List[EventTypes]:
+        self.on_new_event.on_next(event)
+
+    def get_filtered_log(self, filter_types: List[Type[HistoryEvent]] = []) -> List[EventTypes]:
         if filter_types:
             return [event for event in self.log[:] if any(isinstance(event, t) for t in filter_types)]
         return self.log
@@ -85,15 +90,15 @@ class HistoryLog:
         else:
             return f"{seconds} seconds ago"
 
-    def get_markdown(self, filter_types: List[Type[Event]] = [], last_n: int=0) -> str:
+    def get_markdown(self, filter_types: List[Type[HistoryEvent]] = [], last_n: int=0) -> str:
         markdown = ""
         for event in self.get_filtered_log(filter_types)[-last_n:]:
             markdown += f"- {event} @ {self.relative_time_string(event.timestamp)}\n"
         return markdown
     
-    async def get_latest_summary(self, filter_types: List[Type[Event]] = [], last_n: int=0) -> str:
+    async def get_latest_summary(self, filter_types: List[Type[HistoryEvent]] = [], last_n: int=0) -> str:
 
-        async def get_summary(filter_types: List[Type[Event]] = [], last_n=0) -> str:
+        async def get_summary(filter_types: List[Type[HistoryEvent]] = [], last_n=0) -> str:
             if len(self.get_filtered_log(filter_types=filter_types)) == 0:
                 return "- This is the start of the simulation. Nothing has happened yet, there has been no communication from the team lead, etc."
             return await HistoryCondenser.condense_history(self.get_markdown(filter_types=filter_types, last_n=last_n))

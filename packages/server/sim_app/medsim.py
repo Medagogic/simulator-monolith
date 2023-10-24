@@ -6,6 +6,7 @@ from pydantic import BaseModel
 import socketio
 from packages.medagogic_sim.exercise.markdownexercise import MarkdownExercise
 from packages.medagogic_sim.exercise.simulation_types import ActionType
+from packages.medagogic_sim.history.sim_history import Evt_Assessment, Evt_CompletedIntervention, Evt_StartTask, Evt_TaskConsequence, HistoryEvent
 import packages.medagogic_sim.iomanager as iomanager
 from packages.server.sim_app.chat import ChatEvent, HumanMessage, MessageFromNPC
 from packages.medagogic_sim.main import MedagogicSimulator, VitalSigns
@@ -29,6 +30,13 @@ class SimUpdateData(BaseModel):
     value: float
     name: str
 
+class CombatLogElement(BaseModel):
+    timestamp: float
+    npc_name: str
+    content: str
+
+class CombatLogUpdateData(BaseModel):
+    log: List[CombatLogElement]
 
 
 class Session_MedSim(Session):
@@ -39,8 +47,27 @@ class Session_MedSim(Session):
 
         self.medsim.context.iomanager.on_npc_speak.subscribe(self.handle_on_npc_speak)
         self.medsim.context.iomanager.on_npc_action.subscribe(self.handle_on_npc_action)
+        self.medsim.context.history.on_new_event.subscribe(self.handle_on_new_history_event)
 
         self.emit_vitals_loop()
+
+    @scribe_emits("combatlog_update", CombatLogUpdateData)
+    def handle_on_new_history_event(self, event: HistoryEvent) -> None:
+        full_combat_log = self.medsim.context.history.get_filtered_log(filter_types=[
+            Evt_Assessment,
+            Evt_StartTask,
+            Evt_TaskConsequence,
+            Evt_CompletedIntervention
+        ])
+
+        data = CombatLogUpdateData(
+            log = [CombatLogElement(
+                timestamp=e.timestamp,
+                npc_name=e.npc_name,
+                content=e.content
+            ) for e in full_combat_log]
+        )
+        asyncio.create_task(self.emit("combatlog_update", data))
 
     # CHAT
     def handle_on_npc_speak(self, data: iomanager.NPCSpeech) -> None:

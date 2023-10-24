@@ -12,6 +12,9 @@
         "patient_vitals_update": {
             "$ref": "schemas/VitalSigns.schema.json"
         },
+        "combatlog_update": {
+            "$ref": "schemas/CombatLogUpdateData.schema.json"
+        },
         "__server_on_join_session": {
             "type": "object",
             "properties": {
@@ -64,6 +67,7 @@
     "required": [
         "chat_event",
         "chat_message",
-        "patient_vitals_update"
+        "patient_vitals_update",
+        "combatlog_update"
     ]
 }

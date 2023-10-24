@@ -3,7 +3,7 @@ import asyncio
 from packages.medagogic_sim.gpt.medagogic_gpt import gpt, MODEL_GPT35, UserMessage
 
 if TYPE_CHECKING:
-    from packages.medagogic_sim.history.sim_history import Evt_ChatMessage, HistoryLog, Event, EventTypes, Evt_CompletedIntervention, Evt_Assessment
+    from packages.medagogic_sim.history.sim_history import Evt_ChatMessage, HistoryLog, HistoryEvent, EventTypes, Evt_CompletedIntervention, Evt_Assessment
 
 class HistoryCondenser:
     @staticmethod
@@ -32,7 +32,7 @@ Remember to prioritize more recent events for detailed representation while redu
     
 if __name__ == "__main__":
     async def test_history_condenser():
-        from packages.medagogic_sim.history.sim_history import Evt_ChatMessage, HistoryLog, Event, EventTypes, Evt_CompletedIntervention, Evt_Assessment
+        from packages.medagogic_sim.history.sim_history import Evt_ChatMessage, HistoryLog, HistoryEvent, EventTypes, Evt_CompletedIntervention, Evt_Assessment
 
         # Create a HistoryLog and populate it with some events
         history_log = HistoryLog()

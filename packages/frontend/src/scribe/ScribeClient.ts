@@ -22,18 +22,20 @@ function subscribe(obj: ScribeClient, event: string, callback?: (data: any) => v
     }
 }
 
-import { ChatEvent, MessageFromNPC, VitalSigns } from "./scribetypes";
+import { ChatEvent, MessageFromNPC, VitalSigns, CombatLogUpdateData } from "./scribetypes";
 
 export abstract class ScribeClient {
     socket: Socket;
     on_chat_event?(data: ChatEvent): void;
     on_chat_message?(data: MessageFromNPC): void;
     on_patient_vitals_update?(data: VitalSigns): void;
+    on_combatlog_update?(data: CombatLogUpdateData): void;
 
     constructor(socket: Socket) {
         this.socket = socket;
         subscribe(this, "chat_event", this.on_chat_event);
         subscribe(this, "chat_message", this.on_chat_message);
         subscribe(this, "patient_vitals_update", this.on_patient_vitals_update);
+        subscribe(this, "combatlog_update", this.on_combatlog_update);
     }
 }

@@ -37,15 +37,20 @@ export type OxygenSaturation = number;
  * The capillary refill time in seconds
  */
 export type CapillaryRefill = number;
+export type Timestamp2 = number;
+export type NpcName = string;
+export type Content = string;
+export type Log = CombatLogElement[];
 export type Interventions = string[];
 export type Message1 = string;
-export type Timestamp2 = string;
+export type Timestamp3 = string;
 export type TargetNpcId = string | null;
 
 export interface ScribeEvents {
   chat_event: ChatEvent;
   chat_message: MessageFromNPC;
   patient_vitals_update: VitalSigns;
+  combatlog_update: CombatLogUpdateData;
   __server_on_join_session?: {
     session_id?: {
       [k: string]: unknown;
@@ -97,11 +102,20 @@ export interface BloodPressureModel {
   diastolic: Diastolic;
   [k: string]: unknown;
 }
+export interface CombatLogUpdateData {
+  log: Log;
+}
+export interface CombatLogElement {
+  timestamp: Timestamp2;
+  npc_name: NpcName;
+  content: Content;
+  [k: string]: unknown;
+}
 export interface InterventionData {
   interventions: Interventions;
 }
 export interface HumanMessage {
   message: Message1;
-  timestamp: Timestamp2;
+  timestamp: Timestamp3;
   target_npc_id?: TargetNpcId;
 }

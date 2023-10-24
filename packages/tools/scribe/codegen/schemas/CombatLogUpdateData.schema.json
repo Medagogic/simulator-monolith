@@ -1,0 +1,43 @@
+{
+    "$defs": {
+        "CombatLogElement": {
+            "properties": {
+                "timestamp": {
+                    "title": "Timestamp",
+                    "type": "number"
+                },
+                "npc_name": {
+                    "title": "Npc Name",
+                    "type": "string"
+                },
+                "content": {
+                    "title": "Content",
+                    "type": "string"
+                }
+            },
+            "required": [
+                "timestamp",
+                "npc_name",
+                "content"
+            ],
+            "title": "CombatLogElement",
+            "type": "object"
+        }
+    },
+    "properties": {
+        "log": {
+            "items": {
+                "$ref": "#/$defs/CombatLogElement"
+            },
+            "title": "Log",
+            "type": "array"
+        }
+    },
+    "required": [
+        "log"
+    ],
+    "title": "CombatLogUpdateData",
+    "type": "object",
+    "$id": "CombatLogUpdateData.schema.json",
+    "additionalProperties": false
+}
