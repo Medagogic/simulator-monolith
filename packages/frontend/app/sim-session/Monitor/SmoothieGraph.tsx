@@ -29,7 +29,6 @@ const SmoothieGraph: React.FC<SmoothieGraphProps> = ({ dataStream, width, height
           disabled: true,
         },
         limitFPS: 30,
-        responsive: false,
       });
       smoothieInstance.streamTo(canvasRef.current, 0);
       smoothieInstance.addTimeSeries(line, {strokeStyle: color, lineWidth: 2});
@@ -58,9 +57,7 @@ const SmoothieGraph: React.FC<SmoothieGraphProps> = ({ dataStream, width, height
   }, []); 
 
   return (
-    <div>
-      <canvas ref={canvasRef} width={width} height={height} style={{width: "100%"}}/>
-    </div>
+      <canvas ref={canvasRef} width={width} height={height}/>
   );
 };
 

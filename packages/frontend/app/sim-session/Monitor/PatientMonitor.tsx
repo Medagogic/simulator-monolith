@@ -18,8 +18,8 @@ const PatientMonitor: React.FC = () => {
   const [datastream_breath, setDatastream_breath] = useState(createSinusoidalDataStream());
   const [datastream_spo2, setDatastream_spo2] = useState<DummyDataStream>(new DummyDataStream('bloodPressure'));
 
-  const chartWidth = 400;
-  const chartHeight = 100;
+  const chartWidth = 420;
+  const chartHeight = 80;
 
   useEffect(() => {
     if (vitalSigns) {
@@ -64,17 +64,18 @@ const PatientMonitor: React.FC = () => {
     }
   }
 
+  const fast_millis_per_pixel = 10;
+  const slow_millis_per_pixel = 25;
 
   return (
-    <div>
-      <div className='bg-black text-white flex flex-row leading-none'>
+      <div className='bg-black text-white flex flex-row leading-none' style={{height: "320px"}}>
         <div className='flex flex-col flex-grow'>
-          <SmoothieGraph dataStream={datastream_ecg.getDataStream()} width={chartWidth} height={chartHeight} color="#00ff00" millisPerPixel={5} />
-          <SmoothieGraph dataStream={datastream_bp.getDataStream()} width={chartWidth} height={chartHeight} color="#ff0000" millisPerPixel={5} />
-          <SmoothieGraph dataStream={datastream_breath} width={chartWidth} height={chartHeight} color="#ffff00" millisPerPixel={15} />
-          <SmoothieGraph dataStream={datastream_spo2.getDataStream()} width={chartWidth} height={chartHeight} color="#00ffff" millisPerPixel={5} />
+          <SmoothieGraph dataStream={datastream_ecg.getDataStream()} width={chartWidth} height={chartHeight} color="#00ff00" millisPerPixel={fast_millis_per_pixel} />
+          <SmoothieGraph dataStream={datastream_bp.getDataStream()} width={chartWidth} height={chartHeight} color="#ff0000" millisPerPixel={fast_millis_per_pixel} />
+          <SmoothieGraph dataStream={datastream_breath} width={chartWidth} height={chartHeight} color="#ffff00" millisPerPixel={slow_millis_per_pixel} />
+          <SmoothieGraph dataStream={datastream_spo2.getDataStream()} width={chartWidth} height={chartHeight} color="#00ffff" millisPerPixel={fast_millis_per_pixel} />
         </div>
-        <div className='flex flex-col w-48 gap-2 p-2'>
+        <div className='flex flex-col w-48 gap-2 p-2' style={{transformOrigin: "top left", transform: "scale(0.8)"}}>
           <div className='flex flex-col' style={{ color: "#00ff00" }}>
             <div className='flex place-content-between'>
               <div className='font-bold'>
@@ -121,7 +122,6 @@ const PatientMonitor: React.FC = () => {
           </div>
         </div>
       </div>
-    </div>
   );
 };
 

@@ -105,18 +105,14 @@ const SimSessionPage: React.FC = () => {
         </div>
 
         <div style={{ "width": "100%", "height": "100%" }} className='flex flex-row'>
-          <div className='flex flex-col flex-auto gap-2 m-2' style={{ "width": "100%" }}>
+          <div className='flex flex-col flex-auto gap-2 m-2' style={{ width: "100%", height: "100%" }}>
             {/* <VitalSignsDisplay debugVitalSigns={vitalSignsForDisplay} /> */}
             <PatientVisualization />
             {/* <ABCDEList abcdeData={abcdeData} vitalSigns={vitalSignsForABCDEList} /> */}
-            <div className="flex gap-2">
-              <div className="flex-auto">
-                {/* <ABCDEList abcdeData={abcdeData} vitalSigns={vitalSignsForABCDEList} /> */}
-                <PatientMonitor />
-              </div>
-            </div>
+            <PatientMonitor />
 
           </div>
+          
           <div className='flex-auto m-2 flex flex-col gap-2' style={{ "width": "100%" }}>
             <div>
               <ActionLog logs={actionLogs} />
@@ -133,10 +129,11 @@ const SimSessionPage: React.FC = () => {
           </div>
           <div className='flex-auto m-2 flex flex-col justify-between' style={{ "width": "50%" }}>
             <ObjectivesList objectives={objectives} />
-            <div className="self-end w-full"> {/* this line is changed */}
+            <div className="self-end w-full">
               <Clippy onClick={(data) => { handleClippySuggestion(data) }} />
             </div>
           </div>
+          
         </div>
       </div>
     </SocketProvider>
