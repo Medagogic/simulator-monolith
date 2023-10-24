@@ -2,6 +2,7 @@
 
 import React, { useState } from 'react';
 import { useChatStore } from '@/app/chatter/ChatStore';
+import { useChatterIO } from '@/app/socketio/SocketContext';
 
 const clippy = {
     "suggestions": [
@@ -41,12 +42,19 @@ interface ClippyProps {
 
 const Clippy: React.FC<ClippyProps> = ({ onClick }) => {
     const [suggestions, setSuggestions] = useState(clippy.suggestions);
+    const chatterIO = useChatterIO();
     // const sendMessage = useChatStore((state) => state.sendMessage);
 
     function handleClick(data: { description: string; command: string }) {
         onClick(data);
         const updatedSuggestions = suggestions.filter((suggestion) => suggestion.command !== data.command);
         setSuggestions(updatedSuggestions);
+
+        if (chatterIO) {
+            chatterIO.sendMessage(data.command);
+        } else {
+            throw new Error("chatterIO is null");
+        }
     }
 
    return (
