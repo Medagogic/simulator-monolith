@@ -38,6 +38,7 @@ class Session_MedSim(Session):
         self.medsim = MedagogicSimulator()
 
         self.medsim.context.iomanager.on_npc_speak.subscribe(self.handle_on_npc_speak)
+        self.medsim.context.iomanager.on_npc_action.subscribe(self.handle_on_npc_action)
 
         self.emit_vitals_loop()
 
@@ -49,6 +50,14 @@ class Session_MedSim(Session):
             npc_id=data.npc_id,
         )
         asyncio.create_task(self.emit_chat_message(m))
+
+    def handle_on_npc_action(self, data: iomanager.NPCAction) -> None:
+        m = ChatEvent(
+            event=f"{data.npc_name}: {data.task_info}",
+            npc_id=data.npc_id,
+            timestamp=datetime.now().isoformat(),
+        )
+        asyncio.create_task(self.emit_chat_event(m))
 
     @scribe_handler
     async def on_chat_message(self, sid, data: HumanMessage) -> None:

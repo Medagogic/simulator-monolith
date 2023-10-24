@@ -11,7 +11,7 @@ export enum EmitEvent {
 	LEAVE_SESSION = "leave_session",
 	APPLY_INTERVENTIONS = "apply_interventions",
 	CHAT_MESSAGE = "chat_message",
-    DIRECT_INTERVENTION = "direct_intervention",
+	DIRECT_INTERVENTION = "direct_intervention",
 }
 
 function subscribe(obj: ScribeClient, event: string, callback?: (data: any) => void) {

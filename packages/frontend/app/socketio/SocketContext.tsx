@@ -20,36 +20,51 @@ interface SocketProviderProps {
     children: ReactNode;
 }
 
+interface ContextSingleton {
+    socket: Socket;
+    patientIO: PatientIO;
+    chatterIO: ChatterIO;
+    session_id: string | null;
+}
+
+let context_singleton: ContextSingleton | null = null;
+
+const getContextSingleton = () => {
+  if (context_singleton === null) {
+    const socket_url = `http://localhost:5000/session`;
+    const socket = io(socket_url);
+    const patientIO = new PatientIO(socket);
+    const chatterIO = new ChatterIO(socket);
+    context_singleton = { socket: socket, patientIO: patientIO, chatterIO: chatterIO, session_id: null };
+  }
+  return context_singleton;
+};
+
 export const SocketProvider: React.FC<SocketProviderProps> = ({ session_id, children }) => {
     const [socket, setSocket] = useState<Socket | null>(null);
     const [patientIO, setPatientIO] = useState<PatientIO | null>(null);
     const [chatterIO, setChatterIO] = useState<ChatterIO | null>(null);
-    let connecting = false;
 
     useEffect(() => {
-        if (!socket && typeof window !== "undefined" && !connecting) {
-            console.log("Connecting socket");
-            connecting = true;
-            const socket_url = `http://localhost:5000/session`
-            const newSocket = io(socket_url);
-            setPatientIO(new PatientIO(newSocket));
-            setChatterIO(new ChatterIO(newSocket));
+        if (typeof window !== "undefined") {
+            const contextSingleton = getContextSingleton();
 
-            newSocket.on("connect", () => {
-                console.log("Socket connected");
-                newSocket.emit(EmitEvent.JOIN_SESSION, session_id, () => {console.log(`Joined session ${session_id}`)});
-            });
+            setSocket(contextSingleton.socket);
+            setPatientIO(contextSingleton.patientIO);
+            setChatterIO(contextSingleton.chatterIO);
 
-            setSocket(newSocket);
+            if (contextSingleton.session_id != session_id) {
+                contextSingleton.session_id = session_id;
+                contextSingleton.socket!.on("connect", () => {
+                    console.log("Socket connected");
+                    contextSingleton.socket!.emit(EmitEvent.JOIN_SESSION, session_id, () => {console.log(`Joined session ${session_id}`)});
+                });
+            }
         }
 
         return () => {
-            if (socket) {
-                console.log("Disconnecting socket");
-                socket.disconnect();  // This will close the socket connection.
-            }
         };
-    }, [socket]);
+    }, []);
 
     return (
         <SocketContext.Provider value={{ socket:socket, patientIO:patientIO, chatterIO:chatterIO }}>

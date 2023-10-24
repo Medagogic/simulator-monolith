@@ -165,7 +165,7 @@ class ActionDatabase:
             action_call_data = self.__parse_call(action.name)
 
             if call_data.name.lower() == action_call_data.name.lower():
-                TaskCall.update_forward_refs()
+                TaskCall.model_rebuild()
                 task_call = TaskCall(**action.dict(), call_data=call_data, full_input=full_input)
                 return task_call
             

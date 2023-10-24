@@ -41,7 +41,7 @@ class MedicalNPC():
         self.add_actions(actions)
 
     def __handle_brain_error(self, error: str) -> None:
-        self.context.iomanager.npc_speak(self.id, self.definition.name, error)
+        self.context.iomanager.npc_speak(self.id, self.definition.name, f"error: {error}")
 
     def add_actions(self, actions):
         self.task_queue += actions
@@ -55,6 +55,7 @@ class MedicalNPC():
 
     async def perform_task(self, task: TaskCall) -> None:
         logger.info(f"Performing task: {task.call_data}")
+        self.context.iomanager.npc_start_action(self.id, self.definition.name, task)
         await self.actioner.perform_task(task)
         self.__try_start_next_task()
 
@@ -88,13 +89,15 @@ class MedicalNPC():
     
 if __name__ == "__main__":
     from packages.medagogic_sim.context_for_brains import ContextForBrains
+    from packages.medagogic_sim.npc_manager import NPCManager
 
     logger.setLevel(logging.DEBUG)
 
     async def main():
         context = ContextForBrains()
+        npc_manager = NPCManager(context)
 
-        npc = MedicalNPC(context)
+        npc = list(npc_manager.npcs.values())[0]
 
         await npc.process_input("check the airway and perform a chin lift if needed")
 

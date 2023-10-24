@@ -1,16 +1,15 @@
 // ChatterBox.tsx
 "use client"
 
-import React, { use, useEffect, useState } from 'react';
+import React, { useState } from 'react';
 import { Button, Input, MessageList } from 'react-chat-elements';
 import 'react-chat-elements/dist/main.css';
 import "app/chatter/ChatterBox.css"
-import { useChatStore, ChatStoreMessage } from './ChatStore';
+import { useChatStore } from './ChatStore';
 import { FiPaperclip } from 'react-icons/fi';
 import AttachmentList from '../sim-session/AttachmentList/AttachmentList';
 import {DefaultApi, Configuration} from "@/src/api"
-import { SocketProvider, useSocket } from '../socketio/SocketContext';
-import { ChatterIO } from '../socketio/ChatterIO';
+import { useChatterIO } from '../socketio/SocketContext';
 import { ChatEvent, HumanMessage, MessageFromNPC } from "@/src/scribe/scribetypes"
 
 const api_config = new Configuration({basePath: process.env.API_HOST})
@@ -23,18 +22,7 @@ const ChatterBox: React.FC = () => {
   
   const [showAttachments, setShowAttachments] = useState(false);
   const attachments = useChatStore((state) => state.attachments); // Retrieve attachments from your store
-  const [chatterio, setChatterio] = useState<ChatterIO | null>(null);
-
-  const socket = useSocket();
-  useEffect(() => {
-    if (socket) {
-      socket.on("connect", () => {
-        console.log("ChatterBox: socket connected");
-      });
-      const newChatterio = new ChatterIO(socket);
-      setChatterio(newChatterio);
-    }
-  }, [socket]);
+  const chatterIO = useChatterIO()!;
 
   function toggleAttachments() {
     setShowAttachments(!showAttachments);
@@ -42,9 +30,10 @@ const ChatterBox: React.FC = () => {
 
   function message_list(): any[] {
     return messages.map((chatStoreMessage) => {
-      let position: 'right' | 'left';
+      let position: 'right' | 'left' | 'center';
       let title: string;
       let text: string;
+      let type: string = "text";
   
       switch (chatStoreMessage.type) {
         case 'human':
@@ -60,10 +49,11 @@ const ChatterBox: React.FC = () => {
           text = npc.message;
           break;
         case 'event':
-          position = 'left'; // Adjust if 'event' messages have different display logic.
-          title = 'Event'; // This is a placeholder. Perhaps events have special titles?
+          position = 'center';
+          title = 'Event';
           const evt = chatStoreMessage.message as ChatEvent;
           text = evt.event;
+          type = "system";
           break;
         default:
           throw new Error('Unsupported message type');
@@ -71,7 +61,7 @@ const ChatterBox: React.FC = () => {
   
       return {
         position,
-        type: "text",
+        type: type,
         title,
         text,
       };
@@ -79,7 +69,7 @@ const ChatterBox: React.FC = () => {
   }
 
   function send_message() {
-    chatterio!.sendMessage(currentMessage);
+    chatterIO.sendMessage(currentMessage);
     setCurrentMessage("");
   }
 

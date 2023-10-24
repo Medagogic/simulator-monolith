@@ -61,6 +61,14 @@ export interface ScribeEvents {
       [k: string]: unknown;
     };
   };
+  __server_on_direct_intervention?: {
+    function_call?: {
+      [k: string]: unknown;
+    };
+    return?: {
+      [k: string]: unknown;
+    };
+  };
 }
 export interface ChatEvent {
   event: Event;
@@ -76,6 +84,9 @@ export interface VitalSigns {
   temperature: Temperature;
   heart_rate: HeartRate;
   respiratory_rate: RespiratoryRate;
+  /**
+   * Blood pressure measurements
+   */
   blood_pressure: BloodPressureModel;
   blood_glucose: BloodGlucose;
   oxygen_saturation: OxygenSaturation;

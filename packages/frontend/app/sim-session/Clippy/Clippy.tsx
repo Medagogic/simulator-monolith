@@ -43,7 +43,6 @@ interface ClippyProps {
 const Clippy: React.FC<ClippyProps> = ({ onClick }) => {
     const [suggestions, setSuggestions] = useState(clippy.suggestions);
     const chatterIO = useChatterIO();
-    // const sendMessage = useChatStore((state) => state.sendMessage);
 
     function handleClick(data: { description: string; command: string }) {
         onClick(data);

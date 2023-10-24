@@ -95,7 +95,7 @@ class TaskRunner:
         if update_comments:
             sim_results = "\n# Simulation Results\n" + update_comments + "\n"
 
-        logger.info(f"Figuring out dialog for intervention: {self.task.call_data} - {update_comments}")
+        logger.info(f"Figuring out dialog for intervention: {self.task.call_data}")
 
         prompt = f"""
 You are {self.npc.markdown_summary()} in a pediatric emergency training simulation.

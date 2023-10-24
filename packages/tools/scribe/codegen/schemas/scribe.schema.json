@@ -46,6 +46,18 @@
                 }
             },
             "additionalProperties": false
+        },
+        "__server_on_direct_intervention": {
+            "type": "object",
+            "properties": {
+                "function_call": {
+                    "type": "object"
+                },
+                "return": {
+                    "type": "object"
+                }
+            },
+            "additionalProperties": false
         }
     },
     "additionalProperties": false,
