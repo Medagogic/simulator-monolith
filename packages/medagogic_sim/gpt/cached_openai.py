@@ -9,7 +9,7 @@ from gptcache.adapter import openai
 
 from packages.medagogic_sim.logger.logger import get_logger, logging
 
-logger = get_logger(level=logging.DEBUG)
+logger = get_logger(level=logging.WARN)
 
 import dotenv
 

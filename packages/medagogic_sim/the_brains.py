@@ -8,6 +8,7 @@ from pydantic import BaseModel
 
 if TYPE_CHECKING:
     from packages.medagogic_sim.context_for_brains import ContextForBrains
+    from packages.medagogic_sim.npc import MedicalNPC
 
 import asyncio
 from packages.medagogic_sim.gpt.medagogic_gpt import MODEL_GPT35, MODEL_GPT4, gpt, UserMessage, SystemMessage, GPTMessage
@@ -17,7 +18,7 @@ from packages.medagogic_sim.actions_for_brains import ActionDatabase, TaskCall
 
 import logging
 from packages.medagogic_sim.logger.logger import get_logger
-logger = get_logger(level=logging.WARNING)
+logger = get_logger(level=logging.INFO)
 
 
 class RightBrainDecision(Enum):
@@ -95,7 +96,11 @@ NO
 NONE
 
 If YES:
-    - Provide a comma separated list of actions to perform
+    - Provide a comma separated list of actions to perform, as <action 1 name> (<parameter 1>, <parameter 2>, ...), <action 2 name> (<parameter 1>, <parameter 2>, ...), ...
+    - eg: `Obtain IV access (right arm), Administer medication (normal saline, 500mL, IV)`
+    - eg: `Give oxygen via non-rebreather mask (15L/min)`
+    - eg: `Assess airway`
+    - eg: `Prepare bolus, Chin lift`
 
 If MORE INFO:
     - Provide a brief description of what additional information is required
@@ -162,7 +167,7 @@ NONE: No instruction.
             UserMessage(content=check_text)
         ]
 
-        response = await gpt(messages, self.model+"-0613", temperature=self.temperature)
+        response = await gpt(messages, self.model, temperature=self.temperature)
 
         a, b = response.split(":", 1)
 
@@ -194,7 +199,7 @@ class LeftBrain(BrainBase):
             UserMessage(content=user_input)
         ]
 
-        response = await gpt(messages, self.model+"-0613", temperature=self.temperature)
+        response = await gpt(messages, self.model, temperature=self.temperature)
 
         return LeftBrainResponse(dialog=response)
     
@@ -207,7 +212,7 @@ class LeftBrain(BrainBase):
             UserMessage(content=user_input)
         ]
 
-        response = await gpt(messages, self.model+"-0613", temperature=self.temperature)
+        response = await gpt(messages, self.model, temperature=self.temperature)
 
         return LeftBrainResponse(dialog=response)
     
@@ -232,18 +237,20 @@ Stay in character in your response. The user is in the Team Lead role in this em
             UserMessage(content=input_text)
         ]
 
-        response = await gpt(messages, MODEL_GPT4+"-0613", temperature=0)
+        response = await gpt(messages, MODEL_GPT4, temperature=0)
 
         return response
 
 
 
 class NPCBrain:
-    def __init__(self, context: ContextForBrains, model: str=MODEL_GPT4, temperature: float=0) -> None:
+    def __init__(self, context: ContextForBrains, npc: MedicalNPC) -> None:
         self.context = context
+        self.npc = npc
 
-        self.right_brain = RightBrain(context, model=model, action_db=context.action_db, temperature=temperature)
-        self.left_brain = LeftBrain(context, model=model, action_db=context.action_db, temperature=temperature)
+        model: str=MODEL_GPT4
+        self.right_brain = RightBrain(context, model=model, action_db=context.action_db, temperature=0)
+        self.left_brain = LeftBrain(context, model=model, action_db=context.action_db, temperature=0)
         self.personality_brain = PersonalityBrain(context)
 
         self.on_error = Subject()
@@ -263,9 +270,11 @@ Do not include any other text in your response.
         return response.strip().upper() == "YES"
     
 
-    async def process_user_input(self, command_text: str, who_am_i: str) -> RightBrainDecision:
+    async def process_user_input(self, command_text: str) -> RightBrainDecision:
         if command_text.strip() == "":
             raise ValueError("User input is empty")
+        
+        who_am_i = self.npc.markdown_summary()
         
         is_instruction = await self.is_instruction(command_text)
         if not is_instruction:
@@ -287,37 +296,33 @@ Do not include any other text in your response.
         result_lb_moreinfo: LeftBrainResponse = results[2]
 
         if result_rb.decision == RightBrainDecision.YES:
-            # print("Dialog:", result_lb_yes.dialog)
             self.on_dialog.on_next(result_lb_yes.dialog)
 
             if result_rb.actions_list:
-                logger.info(f"Actions: {result_rb.actions_list}")
+                logger.debug(f"{command_text} -> {result_rb.actions_list}")
                 action_models = [self.context.action_db.get_action_from_call(action_call, command_text) for action_call in result_rb.actions_list]
                 self.on_actions.on_next(action_models)
         elif result_rb.decision == RightBrainDecision.MORE_INFO:
-            # print("Dialog:", result_lb_moreinfo.dialog)
             self.on_dialog.on_next(result_lb_moreinfo.dialog)
         else:
-            # print(f"ERROR: {result_rb.info}")
             self.on_error.on_next(result_rb.info)
 
-        print(f"Elapsed: {time.time() - start_time:.2f}s")
+        logger.debug(f"process_user_input took {time.time() - start_time:.2f}s for {command_text}")
 
         return result_rb.decision
     
 
 if __name__ == "__main__":
     from packages.medagogic_sim.context_for_brains import ContextForBrains
+    from packages.medagogic_sim.npc import get_test_npc
 
     logger.setLevel(logging.DEBUG)
 
     async def main() -> None:
         context = ContextForBrains()
 
-        model = MODEL_GPT4
-        temperature = 0.1
-
-        full_brain = NPCBrain(context, model=model, temperature=temperature)
+        npc = get_test_npc(context)
+        full_brain = npc.brain
 
         async def run_test(command_text: str, expected_result: RightBrainDecision, expected_actions: List[str]=[]) -> bool:
             nonlocal full_brain
@@ -343,47 +348,47 @@ if __name__ == "__main__":
             if len(recieved_actions) > 0:
                 actions = recieved_actions[0]
 
-            if result != expected_result:
-                print(f"TEST FAILED ({command_text}): Expected {expected_result}, got {result}")
-                print(error)
-                print(dialog)
-                print(actions)
+            results_match = str(result) == str(expected_result)
+
+            if not results_match: 
+                logger.error(f"TEST FAILED ({command_text}): Expected {expected_result}, got {result}")
                 return False
         
             if len(expected_actions) > 0 and not actions:
-                print(f"TEST FAILED ({command_text}): Expected {len(expected_actions)} actions, got none")
-                print(actions)
+                logger.error(f"TEST FAILED ({command_text}): Expected {len(expected_actions)} actions, got none")
                 return False
 
             if len(expected_actions) != len(actions):   # type: ignore
-                print(f"TEST FAILED ({command_text}): Expected {len(expected_actions)} actions, got {len(actions)}")    # type: ignore
-                print(actions)
+                logger.error(f"TEST FAILED ({command_text}): Expected {len(expected_actions)} actions, got {len(actions)}")    # type: ignore
+                if actions:
+                    logger.info([action.call_data for action in actions])
                 return False
             
             if actions:
+                logger.debug(f"ACTIONS: {[action.call_data for action in actions]}")
                 for i in range(len(expected_actions)):
                     if expected_actions[i] != actions[i].call_data.name:   # type: ignore
-                        print(f"TEST FAILED ({command_text}): Expected action `{expected_actions[i]}`, got `{actions[i].call_data.name}`")
-                        print(actions)
+                        logger.error(f"TEST FAILED ({command_text}): Expected action `{expected_actions[i]}`, got `{actions[i].call_data.name}`")
                         return False
                 
-            print(f"TEST PASSED ({command_text}): {dialog and dialog or error}")
+            logger.info(f"TEST PASSED ({command_text}): {dialog and dialog or error}")
             return True
 
 
         tests = [
-            run_test("Check airway and perform chin lift if necessary", RightBrainDecision.YES, ["Assess airway", "Chin lift"]),
+            # run_test("Chin lift", RightBrainDecision.YES, ["Chin lift"]),
+            # run_test("Check airway and perform chin lift if necessary", RightBrainDecision.YES, ["Assess airway", "Chin lift"]),
             # run_test("Give 0.3mg of epinephrine IV", RightBrainDecision.NO),
             # run_test("Get IV access and give 0.3mg epinephrine stat", RightBrainDecision.YES, ["Obtain IV access", "Administer medication"]),
             # run_test("Connect BP monitor", RightBrainDecision.YES, ["Connect BP monitor"]),
             # run_test("Start her on oxygen via non-rebreather mask at 15L/min and titrate to maintain SpO2 > 94%", RightBrainDecision.YES, ["Give oxygen via non-rebreather mask", "Titrate oxygen"]),
             # run_test("Let's get IV access", RightBrainDecision.YES, ["Obtain IV access"]),
-            # run_test("We need to prepare to amputate the patient's leg", RightBrainDecision.NO),
+            # # run_test("We need to prepare to amputate the patient's leg", RightBrainDecision.NO),
             # run_test("Obtain IO access, right tibia", RightBrainDecision.MORE_INFO),
-            # run_test("Start intubation, 4mm ET tube", RightBrainDecision.NO),
+            # # run_test("Start intubation, 4mm ET tube", RightBrainDecision.NO),
             # run_test("Start with assessing the airway and perform a chin lift if needed", RightBrainDecision.YES, ["Assess airway", "Chin lift"]),
-            # run_test("Give albuterol 2.5mg via nebulizer and monitor for improvement", RightBrainDecision.NO),  # No free airway
-            # run_test("Get IV access and give 0.3mg epinephrine stat, then monitor for improvement", RightBrainDecision.YES, ["Obtain IV access", "Administer medication", "Monitor for change"]),
+            # # run_test("Give albuterol 2.5mg via nebulizer and monitor for improvement", RightBrainDecision.NO),  # No free airway
+            run_test("Get IV access and give 0.3mg epinephrine stat, then monitor for improvement", RightBrainDecision.YES, ["Obtain IV access", "Administer medication", "Monitor for change"]),
             # run_test("Prepare bolus of 120 milliliters of ringers lactate", RightBrainDecision.YES, ["Prepare bolus"]),
             # run_test("Prepare bolus of 120 milliliters of ringers lactate and administer when IV access is established", RightBrainDecision.YES, ["Prepare bolus", "Wait", "Administer bolus"]),
             # run_test("Let's get a background history from his mother please", RightBrainDecision.YES, ["Talk to parent"]),

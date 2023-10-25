@@ -12,8 +12,18 @@ if TYPE_CHECKING:
 
 import logging
 from packages.medagogic_sim.logger.logger import get_logger
-logger = get_logger(level=logging.DEBUG)
+logger = get_logger(level=logging.INFO)
 
+
+def get_test_npc(context: ContextForBrains) -> MedicalNPC:
+    npc = MedicalNPC(context, definition=NPCDefinition(
+        name="Dr. Tester",
+        role="Senior Resident",
+        specialities=["Emergency Medicine", "Critical Care"],
+        years_of_experience=5
+    ), id="dr_tester")
+
+    return npc
 
 
 class MedicalNPC():
@@ -22,7 +32,7 @@ class MedicalNPC():
         self.definition = definition
         self.id = id
         
-        self.brain = NPCBrain(self.context)
+        self.brain = NPCBrain(self.context, self)
         self.brain.on_dialog.subscribe(self.__handle_brain_dialog)
         self.brain.on_actions.subscribe(self.__handle_brain_actions)
         self.brain.on_error.subscribe(self.__handle_brain_error)
@@ -37,7 +47,7 @@ class MedicalNPC():
         self.context.iomanager.npc_speak(self.id, self.definition.name, dialog)
 
     def __handle_brain_actions(self, actions: List[TaskCall]) -> None:
-        logger.info(f"New actions: {actions}")
+        logger.debug(f"New actions: {[action.call_data for action in actions]}")
         self.add_actions(actions)
 
     def __handle_brain_error(self, error: str) -> None:
@@ -60,7 +70,7 @@ class MedicalNPC():
         self.__try_start_next_task()
 
     async def process_input(self, user_input: str) -> None:
-        await self.brain.process_user_input(user_input, self.markdown_summary())
+        await self.brain.process_user_input(user_input)
 
     def markdown_summary(self) -> str:
         name = self.definition.name

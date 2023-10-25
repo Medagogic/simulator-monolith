@@ -4,6 +4,9 @@ from enum import Enum
 import re
 from typing import Any, Dict, Final, List, Optional, Union
 
+from packages.medagogic_sim.logger.logger import get_logger, logging
+logger = get_logger(level=logging.INFO)
+
 from pydantic import BaseModel, Field
 class Vitals(str, Enum):
     TEMPERATURE: Final = "temperature"
@@ -283,42 +286,48 @@ class TimedValue:
     
 
 def vitals_list_to_dict(vitals_list: List[str]) -> Dict[Vitals, TimedValue]:
-    vital_signs: Dict[Vitals, TimedValue] = {}
-    for item in vitals_list:
-        if "no change" in item.lower():
-            continue
+    try:
+        vital_signs: Dict[Vitals, TimedValue] = {}
+        for item in vitals_list:
+            if "no change" in item.lower():
+                continue
 
-        if "@" in item:
-            item_details, time = item.split("@")
-            item_details = item_details.strip()
-            time = time.strip()
-        else:
-            item_details = item
-            time = None
+            if "@" in item:
+                item_details, time = item.split("@")
+                item_details = item_details.strip()
+                time = time.strip()
+            else:
+                item_details = item
+                time = None
 
-        if "Temperature" in item_details:
-            value = float(item_details.replace("Temperature: ", "").replace("°C", "").strip())
-            vital_signs[Vitals.TEMPERATURE] = TimedValue(time, value)
-        elif "Heart Rate" in item_details:
-            value = float(re.findall(r'\d+', item_details)[0])
-            vital_signs[Vitals.HEART_RATE] = TimedValue(time, value)
-        elif "Respiratory Rate" in item_details:
-            value = float(re.findall(r'\d+', item_details)[0])
-            vital_signs[Vitals.RESPIRATORY_RATE] = TimedValue(time, value)
-        elif "Blood Pressure" in item_details:
-            bp = item_details.replace("Blood Pressure: ", "").replace("mmHg", "").strip().split("/")
-            value = {Vitals.SYSTOLIC: float(bp[0]), Vitals.DIASTOLIC: float(bp[1])}   # type: ignore
-            vital_signs[Vitals.BLOOD_PRESSURE] = TimedValue(time, value)
-        elif "Oxygen Saturation" in item_details:
-            value = float(re.findall(r'\d+', item_details)[0])
-            vital_signs[Vitals.OXYGEN_SATURATION] = TimedValue(time, value)
-        elif "Blood Glucose" in item_details:
-            value = float(re.findall(r'\d+', item_details)[0])
-            vital_signs[Vitals.BLOOD_GLUCOSE] = TimedValue(time, value)
-        elif "Capillary Refill" in item_details:
-            value = float(re.findall(r'\d+', item_details)[0])
-            vital_signs[Vitals.CAPILLARY_REFILL] = TimedValue(time, value)
-    return vital_signs
+            if "Temperature" in item_details:
+                value = float(item_details.replace("Temperature: ", "").replace("°C", "").strip())
+                vital_signs[Vitals.TEMPERATURE] = TimedValue(time, value)
+            elif "Heart Rate" in item_details:
+                value = float(re.findall(r'\d+', item_details)[0])
+                vital_signs[Vitals.HEART_RATE] = TimedValue(time, value)
+            elif "Respiratory Rate" in item_details:
+                value = float(re.findall(r'\d+', item_details)[0])
+                vital_signs[Vitals.RESPIRATORY_RATE] = TimedValue(time, value)
+            elif "Blood Pressure" in item_details:
+                bp = item_details.replace("Blood Pressure: ", "").replace("mmHg", "").strip().split("/")
+                value = {Vitals.SYSTOLIC: float(bp[0]), Vitals.DIASTOLIC: float(bp[1])}   # type: ignore
+                vital_signs[Vitals.BLOOD_PRESSURE] = TimedValue(time, value)
+            elif "Oxygen Saturation" in item_details:
+                value = float(re.findall(r'\d+', item_details)[0])
+                vital_signs[Vitals.OXYGEN_SATURATION] = TimedValue(time, value)
+            elif "Blood Glucose" in item_details:
+                value = float(re.findall(r'\d+', item_details)[0])
+                vital_signs[Vitals.BLOOD_GLUCOSE] = TimedValue(time, value)
+            elif "Capillary Refill" in item_details:
+                value = float(re.findall(r'\d+', item_details)[0])
+                vital_signs[Vitals.CAPILLARY_REFILL] = TimedValue(time, value)
+        return vital_signs
+    except Exception as e:
+        logger.error(f"Error parsing vitals list {vitals_list}")
+        logger.error(vitals_list)
+        raise e
+
 
 
 def parse_vital_signs_list(vital_signs_list: List[str]) -> "VitalSigns":

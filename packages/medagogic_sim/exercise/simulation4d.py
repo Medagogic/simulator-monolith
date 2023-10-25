@@ -370,17 +370,12 @@ YOU MUST PROVIDE A FULL DESCRIPTION OF THE CURRENT STATE FOR EACH SUB-SECTION YO
 First, provide a description of what happens as an immediate consequence, including any relevant simulation/patient information. Ensure that you aren't thinking too far into the future - this should only be the immediate consequences (as in, within a few seconds) of the update. Write this as definites (ie "will"), not "coulds" or "mights". Keep this as brief as possible while containing all your thoughts and reasoning. It might also be useful to include a mention of parameters which will not change. Prefix these lines with // to denote them as comments.
 
 Then, provide your updates. Use your description above when deciding on changes. This must match the format above, ie only giving the values.
-
-Additionally, you may provide an **Alert** notification if a significant event has occured following this update, for a doctor or nurse in the room to notice and react to. Do this in the following format:
-
-# Alert
-- The patient has begun to bleed from the nose.
         """
         logger.info(f"Calculating new immediate state from update: {update}")
 
         try:
             messages = [SystemMessage(prompt), UserMessage(update)]
-            full_response = await gpt(messages, model=MODEL_GPT4+"-0613", max_tokens=1000, temperature=0)
+            full_response = await gpt(messages, model=MODEL_GPT4, max_tokens=1000, temperature=0)
         except Exception as e:
             logger.error(f"Error calculating new immediate state from update: {e}")
             raise e
@@ -449,7 +444,7 @@ First, provide a description of what you expect to happen as a result of the upd
         logger.info(f"Calculating new future state from update: {update}")
 
         messages = [SystemMessage(prompt), UserMessage(content=update)]
-        full_response = await gpt(messages, model=MODEL_GPT4+"-0613", max_tokens=1000, temperature=0)
+        full_response = await gpt(messages, model=MODEL_GPT4, max_tokens=1000, temperature=0)
 
         logger.info(f"Calculated new future state progression from update: {update}")
 
@@ -463,17 +458,18 @@ First, provide a description of what you expect to happen as a result of the upd
 if __name__ == "__main__":
     DEBUG_LIVE_OUTPUT = False
     from packages.medagogic_sim.context_for_brains import ContextForBrains
+    from packages.medagogic_sim.npc_manager import NPCManager
+    from packages.medagogic_sim.the_brains import RightBrainDecision
     import asyncio
 
-    async def main():
+    async def main() -> None:
         context = ContextForBrains()
         sim: LeafyBlossom = context.simulation
 
-        sim.applyUpdate("Dr Johnson started oxygen at 15l/min via non-rebreather mask")
+        sim.applyUpdate("Dr Johnson started Chin lift")
         await sim.process_updates()
 
         print("==================================================")
-        print("OUTPUT AS __MAIN__")
         print(sim.exercise.to_markdown())
         print("==================================================")
         exit()

@@ -55,7 +55,8 @@
     },
     {
         "name": "Obtain IV access ($location)",
-        "description": "Establish an intravenous line for fluid or medication administration. Default location: `left hand`",
+        "description": "Establish an intravenous line for fluid or medication administration.",
+        "defaults": "Default location is left arm.",
         "exampleInputs": ["Let's get an IV in", "Obtain IV access - right arm", "Can we get an IV in? Right arm"],
         "exampleActions": ["Obtain IV access (left hand)", "Obtain IV access (right arm)"],
         "examples": [

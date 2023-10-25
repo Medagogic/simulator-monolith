@@ -17,7 +17,7 @@ from packages.medagogic_sim.gpt.medagogic_gpt import MODEL_GPT4, gpt, UserMessag
 
 import logging
 from packages.medagogic_sim.logger.logger import get_logger
-logger = get_logger(level=logging.DEBUG)
+logger = get_logger(level=logging.INFO)
 
 
 class TaskRunner:
@@ -198,7 +198,7 @@ if __name__ == "__main__":
     from packages.medagogic_sim.context_for_brains import ContextForBrains
     from packages.medagogic_sim.npc import MedicalNPC
     from packages.medagogic_sim.npc_manager import NPCManager
-    logger.setLevel(logging.INFO)
+    logger.setLevel(logging.DEBUG)
 
     async def main():
         context = ContextForBrains()

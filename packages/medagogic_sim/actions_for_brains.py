@@ -5,14 +5,17 @@ from typing import Dict, List, Optional, Union
 from pydantic import BaseModel
 import chromadb
 from chromadb.utils import embedding_functions
+from packages.medagogic_sim.logger.logger import get_logger, logging
 
 import dotenv
 dotenv.load_dotenv()
 
+logger = get_logger(level=logging.INFO)
+
 
 ACTIONS_HEADER = """Actions which you are capable of as part of the simulation:
 
-- Action name ($param1 $param2)
+- Action name ($param1 $param2...)
     : Description: Description of the action
     : Requirement: Requirement which must be met for the action to be possible
     : Example input: Example of user input which would trigger this action, and the action which would be taken
@@ -36,11 +39,11 @@ class ActionModel(BaseModel):
     animationId: str
     connectDeviceIDs: Optional[List[str]] = None
     type: str
+    defaults: Optional[str] = None
 
     @property
     def markdown(self) -> str:
         requirements_list = "\n".join([f"\t: Requirement: {r}" for r in self.requirements])
-        input_examples_list = "\n".join([f"\t: Example input: {e}" for e in self.exampleInputs])
 
         full_markdown = f"""
 - {self.name}
@@ -56,6 +59,9 @@ class ActionModel(BaseModel):
             else:
                 full_markdown += f"\n\t: Example input: {example.input} -> {example.action}"
                 # full_markdown += f"\n\t\t: Resulting action: {example.action}"
+
+        if self.defaults:
+            full_markdown += f"\n\t: If parameters not specified: {self.defaults}"
         
         return full_markdown.strip()
     
@@ -103,14 +109,14 @@ class ActionDatabase:
                 model_name="text-embedding-ada-002"
             )
 
-        print("Creating ActionDB Index...")
+        logger.info("Creating ActionDB Index...")
         self.full_actions_collection = self.client.create_collection(
             name="full_actions", 
             embedding_function=openai_ef,
         )
         self.__prepare_full_actions_collection()
 
-        print("Indexing complete.")
+        logger.info("Indexing complete.")
 
     def __prepare_full_actions_collection(self):
         documents=[action.search_text for action in self.actions]
@@ -122,10 +128,10 @@ class ActionDatabase:
             ids=[f"{i}" for i in range(len(self.actions))]
         )
 
-    def get_relevant_actions(self, user_input: str) -> List[ActionModel]:
+    def get_relevant_actions(self, user_input: str, top_n=8) -> List[ActionModel]:
         result = self.full_actions_collection.query(
             query_texts=[user_input],
-            n_results=5,
+            n_results=top_n,
         )
 
         action_ids = result["ids"][0]
@@ -133,9 +139,10 @@ class ActionDatabase:
         return [self.actions[int(i)] for i in action_ids]
     
 
-    def get_relevant_actions_markdown(self, user_input: str) -> str:
-        actions = self.get_relevant_actions(user_input)
+    def get_relevant_actions_markdown(self, user_input: str, top_n=8) -> str:
+        actions = self.get_relevant_actions(user_input, top_n=top_n)
         full_markdown = ACTIONS_HEADER + "\n" + "\n".join([a.markdown for a in actions])
+        logger.debug(f"{user_input}\n{full_markdown}")
         return full_markdown
     
 
@@ -169,15 +176,19 @@ class ActionDatabase:
                 task_call = TaskCall(**action.dict(), call_data=call_data, full_input=full_input)
                 return task_call
             
-        print(f"Error: No action found for call {call}")
+        logger.error(f"Error: No action found for call {call}")
                 
         return None
 
 if __name__ == "__main__":
     db = ActionDatabase()
+    logger.level = logging.DEBUG
+
+    for action in db.actions:
+        print(action.markdown)
 
     # actions_markdown = db.get_relevant_actions_markdown("Check the airway and perform a chin lift if needed")
-    actions_markdown = db.get_relevant_actions_markdown("Let's get IV access and start fluids")
+    actions_markdown = db.get_relevant_actions_markdown("Get IV access and give 0.3mg epinephrine stat, then monitor for improvement")
     print(actions_markdown)
 
     # action = db.get_action_from_call("Connect EKG/ECG")
