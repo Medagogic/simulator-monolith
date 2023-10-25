@@ -21,6 +21,8 @@ type ChatState = {
   setIsTyping: (status: boolean) => void;
   attachments: any[];
   chatterio?: ChatterIO;
+  toNPCId?: string;
+  setToNPCId: (npcId: string) => void;
 };
 
 export const useChatStore = create<ChatState>((set, get) => {
@@ -37,6 +39,9 @@ export const useChatStore = create<ChatState>((set, get) => {
     },
     setIsTyping: (status) => {
       set({ isTyping: status });
+    },
+    setToNPCId: (npcId) => {
+      set({ toNPCId: npcId });
     },
   }
 });

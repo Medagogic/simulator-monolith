@@ -96,7 +96,7 @@ const SimSessionPage: React.FC = () => {
         </div>
 
         <div className="main-page gap-2">
-          <div className='column'>
+          <div className='column' style={{flex: "1 0 auto"}}>
             {/* <VitalSignsDisplay debugVitalSigns={vitalSignsForDisplay} /> */}
             <PatientVisualization />
             {/* <ABCDEList abcdeData={abcdeData} vitalSigns={vitalSignsForABCDEList} /> */}
@@ -104,7 +104,7 @@ const SimSessionPage: React.FC = () => {
 
           </div>
           
-          <div className='column gap-2'>
+          <div className='column gap-2' style={{flex: "1 0 auto", width:"50%"}}>
             <div className="flex-shrink">
               <ActionLog logs={actionLogs} />
             </div>
@@ -118,7 +118,7 @@ const SimSessionPage: React.FC = () => {
             </div>
 
           </div>
-          <div className='column'>
+          <div className='column' style={{flex: "0 1 auto"}}>
             <ObjectivesList objectives={objectives} />
             <div className="self-end w-full">
               <Clippy onClick={(data) => { handleClippySuggestion(data) }} />
