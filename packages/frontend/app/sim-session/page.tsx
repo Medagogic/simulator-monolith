@@ -9,7 +9,7 @@ import ChatterBox from '../chatter/page';
 import "./page.css"
 import Clippy from './Clippy/Clippy';
 import ABCDEList from './ABCDEList/ABCDEList';
-import StaffList, { StaffMemberData } from './StaffList/StaffList';
+import StaffList from './StaffList/StaffList';
 import PatientVisualization from './Patient/PatientVisualization';
 import { ActionLog, ActionLogEntry } from './ActionLog/ActionLog';
 import TimeDisplay from './TimeDisplay/TimeDisplay';
@@ -73,17 +73,6 @@ const objectives: Objective[] = [
 const SimSessionPage: React.FC = () => {
   function handleClippySuggestion(data: { description: string, command: string }) {
     console.log(data.command);
-  }
-
-  function getStaffData(): StaffMemberData[] {
-    return staffData.map((staff, index) => {
-      return {
-        id: index.toString(),
-        name: staff.name,
-        specialty: staff.role,
-        activity: staff.activity
-      }
-    });
   }
 
   return (
