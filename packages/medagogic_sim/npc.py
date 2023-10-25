@@ -1,6 +1,6 @@
 from __future__ import annotations
 import asyncio
-from typing import List, TYPE_CHECKING
+from typing import List, TYPE_CHECKING, Optional
 
 from packages.medagogic_sim.npc_actions import BraniacActioner
 from packages.medagogic_sim.npc_definitions import NPCDefinition
@@ -85,6 +85,10 @@ class MedicalNPC():
             npc_line += "\n\t- Currently idle"
 
         return npc_line
+    
+    @property
+    def current_task_description(self) -> Optional[str]:
+        return self.actioner.current_task_description
 
     
 if __name__ == "__main__":

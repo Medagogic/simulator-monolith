@@ -11,6 +11,13 @@ export type NpcId = string | null;
 export type Message = string;
 export type Timestamp1 = string;
 export type NpcId1 = string;
+export type Id = string;
+export type Id1 = string;
+export type Name = string;
+export type Role = string;
+export type Specialities = string[];
+export type YearsOfExperience = number;
+export type CurrentTask = string | null;
 /**
  * The body temperature in degrees Celsius or Fahrenheit
  */
@@ -41,7 +48,6 @@ export type Timestamp2 = number;
 export type NpcName = string;
 export type Content = string;
 export type Log = CombatLogElement[];
-export type Interventions = string[];
 export type Message1 = string;
 export type Timestamp3 = string;
 export type TargetNpcId = string | null;
@@ -49,6 +55,7 @@ export type TargetNpcId = string | null;
 export interface ScribeEvents {
   chat_event: ChatEvent;
   chat_message: MessageFromNPC;
+  npc_data: API_NPCUpdateData;
   patient_vitals_update: VitalSigns;
   combatlog_update: CombatLogUpdateData;
   __server_on_join_session?: {
@@ -57,9 +64,6 @@ export interface ScribeEvents {
     };
   };
   __server_on_leave_session?: {};
-  __server_on_apply_interventions?: {
-    data?: InterventionData;
-  };
   __server_on_chat_message?: {
     data?: HumanMessage;
     return?: {
@@ -84,6 +88,23 @@ export interface MessageFromNPC {
   message: Message;
   timestamp: Timestamp1;
   npc_id: NpcId1;
+}
+export interface API_NPCUpdateData {
+  id: Id;
+  data: API_NPCData;
+}
+export interface API_NPCData {
+  id: Id1;
+  definition: NPCDefinition;
+  current_task?: CurrentTask;
+  [k: string]: unknown;
+}
+export interface NPCDefinition {
+  name: Name;
+  role: Role;
+  specialities: Specialities;
+  years_of_experience: YearsOfExperience;
+  [k: string]: unknown;
 }
 export interface VitalSigns {
   temperature: Temperature;
@@ -110,9 +131,6 @@ export interface CombatLogElement {
   npc_name: NpcName;
   content: Content;
   [k: string]: unknown;
-}
-export interface InterventionData {
-  interventions: Interventions;
 }
 export interface HumanMessage {
   message: Message1;

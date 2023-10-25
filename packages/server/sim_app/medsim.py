@@ -1,6 +1,6 @@
 from __future__ import annotations
 from datetime import datetime
-from typing import List
+from typing import Dict, List, Optional
 from fastapi import Depends
 from pydantic import BaseModel
 import socketio
@@ -8,6 +8,7 @@ from packages.medagogic_sim.exercise.markdownexercise import MarkdownExercise
 from packages.medagogic_sim.exercise.simulation_types import ActionType
 from packages.medagogic_sim.history.sim_history import Evt_Assessment, Evt_CompletedIntervention, Evt_StartTask, Evt_TaskConsequence, HistoryEvent
 import packages.medagogic_sim.iomanager as iomanager
+from packages.medagogic_sim.npc_definitions import NPCDefinition
 from packages.server.sim_app.chat import ChatEvent, HumanMessage, MessageFromNPC
 from packages.medagogic_sim.main import MedagogicSimulator, VitalSigns
 from packages.server.web_architecture.sessionrouter import Session, SessionRouter
@@ -38,6 +39,18 @@ class CombatLogElement(BaseModel):
 class CombatLogUpdateData(BaseModel):
     log: List[CombatLogElement]
 
+class API_NPCData(BaseModel):
+    id: str
+    definition: NPCDefinition
+    current_task: Optional[str] = None
+
+class API_NPCUpdateData(BaseModel):
+    id: str
+    data: API_NPCData
+
+class API_TeamData(BaseModel):
+    npc_data: List[API_NPCData]
+
 
 class Session_MedSim(Session):
     def __init__(self, session_id: str, sio: socketio.AsyncServer):
@@ -46,7 +59,7 @@ class Session_MedSim(Session):
         self.medsim = MedagogicSimulator()
 
         self.medsim.context.iomanager.on_npc_speak.subscribe(self.handle_on_npc_speak)
-        self.medsim.context.iomanager.on_npc_action.subscribe(self.handle_on_npc_action)
+        self.medsim.context.iomanager.on_npc_start_action.subscribe(self.handle_on_npc_start_action)
         self.medsim.context.history.on_new_event.subscribe(self.handle_on_new_history_event)
 
         self.emit_vitals_loop()
@@ -78,13 +91,23 @@ class Session_MedSim(Session):
         )
         asyncio.create_task(self.emit_chat_message(m))
 
-    def handle_on_npc_action(self, data: iomanager.NPCAction) -> None:
+    def handle_on_npc_start_action(self, data: iomanager.NPCAction) -> None:
         m = ChatEvent(
             event=f"{data.npc_name}: {data.task_info}",
             npc_id=data.npc_id,
             timestamp=datetime.now().isoformat(),
         )
         asyncio.create_task(self.emit_chat_event(m))
+
+        npc = self.medsim.npc_manager.npcs[data.npc_id]
+        npc_update_data = API_NPCUpdateData(
+            id=npc.id,
+            data=API_NPCData(
+                definition=npc.definition,
+                current_task=npc.current_task_description
+            )
+        )
+        asyncio.create_task(self.emit_npc_data(npc_update_data))
 
     @scribe_handler
     async def on_chat_message(self, sid, data: HumanMessage) -> None:
@@ -99,6 +122,10 @@ class Session_MedSim(Session):
     async def emit_chat_event(self, data: ChatEvent) -> None:
         await self.emit("chat_event", data)
     # END CHAT
+
+    @scribe_emits("npc_data", API_NPCUpdateData)
+    async def emit_npc_data(self, data: API_NPCUpdateData) -> None:
+        await self.emit("npc_data", data)
 
     @scribe_handler
     async def on_direct_intervention(self, sid, function_call: str) -> None:
@@ -129,7 +156,7 @@ class Session_MedSim(Session):
 
         async def _loop() -> None:
             while True:
-                vitals: VitalSigns = self.get_vitals()
+                vitals: VitalSigns = self.api_get_vitals()
                 await self.emit("patient_vitals_update", vitals)
                 await asyncio.sleep(1)
 
@@ -137,13 +164,19 @@ class Session_MedSim(Session):
         setattr(self, "emit_vitals_loop_task", task)
     
 
-    def get_vitals(self) -> VitalSigns:
+    def api_get_vitals(self) -> VitalSigns:
         return self.medsim.get_vitals()
     
-
-    @scribe_handler
-    async def on_apply_interventions(self, sid, data: InterventionData):
-        print(f"Client {sid} applied interventions {data} in {self.session_id}")
+    def api_get_team(self) -> API_TeamData:
+        team_data = API_TeamData(npc_data=[])
+        for id, npc in self.medsim.npc_manager.npcs.items():
+            npc_data = API_NPCData(
+                id=id,
+                definition=npc.definition,
+                current_task=npc.current_task_description
+            )
+            team_data.npc_data.append(npc_data)
+        return team_data
 
 
 class Router_MedSim(SessionRouter[Session_MedSim]):
@@ -153,7 +186,11 @@ class Router_MedSim(SessionRouter[Session_MedSim]):
     def init_api_routes(self):   
         @self.session_router.get("/medsim/vitals")
         async def medsim_vitals(session: Session_MedSim = Depends(self.get_session)):
-            return session.get_vitals()
+            return session.api_get_vitals()
+        
+        @self.session_router.get("/medsim/team")
+        async def medsim_team(session: Session_MedSim = Depends(self.get_session)) -> API_TeamData:
+            return session.api_get_team()
         
         return super().init_api_routes()
     

@@ -15,11 +15,14 @@
 
 import * as runtime from '../runtime';
 import type {
+  APITeamData,
   ExerciseCreationParams,
   GeneratedExerciseData,
   HTTPValidationError,
 } from '../models/index';
 import {
+    APITeamDataFromJSON,
+    APITeamDataToJSON,
     ExerciseCreationParamsFromJSON,
     ExerciseCreationParamsToJSON,
     GeneratedExerciseDataFromJSON,
@@ -30,6 +33,10 @@ import {
 
 export interface HandleGenerateStaticApiGenerateExercisePostRequest {
     exerciseCreationParams: ExerciseCreationParams;
+}
+
+export interface MedsimTeamNewSessionRouterSessionSessionIdMedsimTeamGetRequest {
+    sessionId: string;
 }
 
 export interface MedsimVitalsNewSessionRouterSessionSessionIdMedsimVitalsGetRequest {
@@ -126,6 +133,36 @@ export class DefaultApi extends runtime.BaseAPI {
      */
     async listSessionsNewSessionRouterListSessionsGet(initOverrides?: RequestInit | runtime.InitOverrideFunction): Promise<void> {
         await this.listSessionsNewSessionRouterListSessionsGetRaw(initOverrides);
+    }
+
+    /**
+     * Medsim Team
+     */
+    async medsimTeamNewSessionRouterSessionSessionIdMedsimTeamGetRaw(requestParameters: MedsimTeamNewSessionRouterSessionSessionIdMedsimTeamGetRequest, initOverrides?: RequestInit | runtime.InitOverrideFunction): Promise<runtime.ApiResponse<APITeamData>> {
+        if (requestParameters.sessionId === null || requestParameters.sessionId === undefined) {
+            throw new runtime.RequiredError('sessionId','Required parameter requestParameters.sessionId was null or undefined when calling medsimTeamNewSessionRouterSessionSessionIdMedsimTeamGet.');
+        }
+
+        const queryParameters: any = {};
+
+        const headerParameters: runtime.HTTPHeaders = {};
+
+        const response = await this.request({
+            path: `/new-session-router/session/{session_id}/medsim/team`.replace(`{${"session_id"}}`, encodeURIComponent(String(requestParameters.sessionId))),
+            method: 'GET',
+            headers: headerParameters,
+            query: queryParameters,
+        }, initOverrides);
+
+        return new runtime.JSONApiResponse(response, (jsonValue) => APITeamDataFromJSON(jsonValue));
+    }
+
+    /**
+     * Medsim Team
+     */
+    async medsimTeamNewSessionRouterSessionSessionIdMedsimTeamGet(requestParameters: MedsimTeamNewSessionRouterSessionSessionIdMedsimTeamGetRequest, initOverrides?: RequestInit | runtime.InitOverrideFunction): Promise<APITeamData> {
+        const response = await this.medsimTeamNewSessionRouterSessionSessionIdMedsimTeamGetRaw(requestParameters, initOverrides);
+        return await response.value();
     }
 
     /**

@@ -23,7 +23,7 @@ class NPCAction(BaseModel):
 class IOManager:
     def __init__(self) -> None:
         self.on_npc_speak: rx.core.typing.Subject[NPCSpeech, NPCSpeech] = Subject()
-        self.on_npc_action: rx.core.typing.Subject[NPCAction, NPCAction] = Subject()
+        self.on_npc_start_action: rx.core.typing.Subject[NPCAction, NPCAction] = Subject()
 
     def npc_speak(self, npc_id: str, npc_name: str, text: str):
         print(FormattedText([
@@ -46,4 +46,4 @@ class IOManager:
             ('#ffbb00 bold', f"Action - {npc_name}: "),
             ('#ffffff', task_info),
         ]))
-        self.on_npc_action.on_next(NPCAction(npc_id=npc_id, npc_name=npc_name, task_info=task_info))
+        self.on_npc_start_action.on_next(NPCAction(npc_id=npc_id, npc_name=npc_name, task_info=task_info))

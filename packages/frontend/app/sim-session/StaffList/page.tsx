@@ -1,3 +1,4 @@
+import { APIProvider } from "@/app/socketio/APIContext";
 import StaffList from "./StaffList";
 
 const staffData = [
@@ -10,11 +11,13 @@ const staffData = [
 
 const StaffListTest = () => {
   return (
-    <div style={{
+    <APIProvider sessionId="default-session">
+      <div style={{
         width: "25rem"
-    }}>
-      <StaffList staffData={staffData}/>
-    </div>
+      }}>
+        <StaffList />
+      </div>
+    </APIProvider>
   );
 };
 

@@ -1,6 +1,9 @@
+.openapi-generator-ignore
 apis/DefaultApi.ts
 apis/index.ts
 index.ts
+models/APINPCData.ts
+models/APITeamData.ts
 models/ExerciseCreationABCDE.ts
 models/ExerciseCreationFutureState.ts
 models/ExerciseCreationParams.ts
@@ -8,6 +11,7 @@ models/ExerciseCreationPatientBasicInfo.ts
 models/ExerciseCreationVitalSigns.ts
 models/GeneratedExerciseData.ts
 models/HTTPValidationError.ts
+models/NPCDefinition.ts
 models/ValidationError.ts
 models/ValidationErrorLocInner.ts
 models/index.ts

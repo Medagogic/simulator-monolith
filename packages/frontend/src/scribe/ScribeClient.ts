@@ -9,7 +9,6 @@ import { Socket } from 'socket.io-client';
 export enum EmitEvent {
 	JOIN_SESSION = "join_session",
 	LEAVE_SESSION = "leave_session",
-	APPLY_INTERVENTIONS = "apply_interventions",
 	CHAT_MESSAGE = "chat_message",
 	DIRECT_INTERVENTION = "direct_intervention",
 }
@@ -22,12 +21,13 @@ function subscribe(obj: ScribeClient, event: string, callback?: (data: any) => v
     }
 }
 
-import { ChatEvent, MessageFromNPC, VitalSigns, CombatLogUpdateData } from "./scribetypes";
+import { ChatEvent, MessageFromNPC, API_NPCUpdateData, VitalSigns, CombatLogUpdateData } from "./scribetypes";
 
 export abstract class ScribeClient {
     socket: Socket;
     on_chat_event?(data: ChatEvent): void;
     on_chat_message?(data: MessageFromNPC): void;
+    on_npc_data?(data: API_NPCUpdateData): void;
     on_patient_vitals_update?(data: VitalSigns): void;
     on_combatlog_update?(data: CombatLogUpdateData): void;
 
@@ -35,6 +35,7 @@ export abstract class ScribeClient {
         this.socket = socket;
         subscribe(this, "chat_event", this.on_chat_event);
         subscribe(this, "chat_message", this.on_chat_message);
+        subscribe(this, "npc_data", this.on_npc_data);
         subscribe(this, "patient_vitals_update", this.on_patient_vitals_update);
         subscribe(this, "combatlog_update", this.on_combatlog_update);
     }

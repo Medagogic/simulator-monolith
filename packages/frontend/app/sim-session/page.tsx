@@ -16,6 +16,7 @@ import TimeDisplay from './TimeDisplay/TimeDisplay';
 import { Objective, ObjectivesList } from './ObjectivesList/ObjectivesList';
 import { SocketProvider } from '../socketio/SocketContext';
 import PatientMonitor from './Monitor/PatientMonitor';
+import { APIProvider } from '../socketio/APIContext';
 
 
 
@@ -87,6 +88,7 @@ const SimSessionPage: React.FC = () => {
 
   return (
     <SocketProvider session_id='default-session'>
+      <APIProvider sessionId="default-session">
       <div style={{ width: "100%", height: "100%" }} className='flex flex-col base'>
         <div className='toolbar' style={{ maxWidth: "100%", display: 'flex', flexDirection: 'row', alignItems: 'center', justifyContent: 'space-between' }}>
           <div style={{ flex: 1 }}>
@@ -122,7 +124,7 @@ const SimSessionPage: React.FC = () => {
                 <ChatterBox />
               </div>
               <div className="flex-shrink">
-                <StaffList staffData={getStaffData()} />
+                <StaffList />
               </div>
             </div>
 
@@ -136,6 +138,7 @@ const SimSessionPage: React.FC = () => {
           
         </div>
       </div>
+      </APIProvider>
     </SocketProvider>
   );
 }

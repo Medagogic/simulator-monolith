@@ -112,6 +112,45 @@
                 }
             }
         },
+        "/new-session-router/session/{session_id}/medsim/team": {
+            "get": {
+                "summary": "Medsim Team",
+                "operationId": "medsim_team_new_session_router_session__session_id__medsim_team_get",
+                "parameters": [
+                    {
+                        "name": "session_id",
+                        "in": "path",
+                        "required": true,
+                        "schema": {
+                            "type": "string",
+                            "title": "Session Id"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "Successful Response",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/API_TeamData"
+                                }
+                            }
+                        }
+                    },
+                    "422": {
+                        "description": "Validation Error",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/HTTPValidationError"
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+        },
         "/new-session-router/session/{session_id}/test-session": {
             "get": {
                 "summary": "Test Endpoint",
@@ -152,6 +191,51 @@
     },
     "components": {
         "schemas": {
+            "API_NPCData": {
+                "properties": {
+                    "id": {
+                        "type": "string",
+                        "title": "Id"
+                    },
+                    "definition": {
+                        "$ref": "#/components/schemas/NPCDefinition"
+                    },
+                    "current_task": {
+                        "anyOf": [
+                            {
+                                "type": "string"
+                            },
+                            {
+                                "type": "null"
+                            }
+                        ],
+                        "title": "Current Task"
+                    }
+                },
+                "type": "object",
+                "required": [
+                    "id",
+                    "definition",
+                    "current_task"
+                ],
+                "title": "API_NPCData"
+            },
+            "API_TeamData": {
+                "properties": {
+                    "npc_data": {
+                        "items": {
+                            "$ref": "#/components/schemas/API_NPCData"
+                        },
+                        "type": "array",
+                        "title": "Npc Data"
+                    }
+                },
+                "type": "object",
+                "required": [
+                    "npc_data"
+                ],
+                "title": "API_TeamData"
+            },
             "ExerciseCreationABCDE": {
                 "properties": {
                     "A": {
@@ -350,6 +434,37 @@
                 },
                 "type": "object",
                 "title": "HTTPValidationError"
+            },
+            "NPCDefinition": {
+                "properties": {
+                    "name": {
+                        "type": "string",
+                        "title": "Name"
+                    },
+                    "role": {
+                        "type": "string",
+                        "title": "Role"
+                    },
+                    "specialities": {
+                        "items": {
+                            "type": "string"
+                        },
+                        "type": "array",
+                        "title": "Specialities"
+                    },
+                    "years_of_experience": {
+                        "type": "integer",
+                        "title": "Years Of Experience"
+                    }
+                },
+                "type": "object",
+                "required": [
+                    "name",
+                    "role",
+                    "specialities",
+                    "years_of_experience"
+                ],
+                "title": "NPCDefinition"
             },
             "ValidationError": {
                 "properties": {
