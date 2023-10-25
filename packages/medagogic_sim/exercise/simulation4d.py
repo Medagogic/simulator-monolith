@@ -11,7 +11,7 @@ import markdown_to_json
 import asyncio
 from rx.subject import Subject
 
-from packages.medagogic_sim.gpt import MODEL_GPT4, gpt, UserMessage, SystemMessage, GPTMessage
+from packages.medagogic_sim.gpt import MODEL_GPT4, gpt, UserMessage, SystemMessage, GPTMessage, MODEL_GPT35
 from packages.medagogic_sim.exercise.markdownexercise import HEADER_EVENTS, MarkdownExercise, VitalSigns, VitalSignsInterpolation
 from packages.medagogic_sim.exercise.simulation_types import Vitals, abcde_list_to_dict, vitals_list_to_dict
 from packages.medagogic_sim.history.sim_history import Evt_CompletedIntervention
@@ -181,6 +181,7 @@ class LeafyBlossom(IBlackBoxSimulation):
         self.finished = False
         self.loop = asyncio.create_task(self.__loop())
         self.on_alert = Subject()
+        self.gpt_model = MODEL_GPT4
 
 
     def getCurrentVitals(self, seconds_in_future: float = 0) -> VitalSigns:
@@ -375,7 +376,7 @@ Then, provide your updates. Use your description above when deciding on changes.
 
         try:
             messages = [SystemMessage(prompt), UserMessage(update)]
-            full_response = await gpt(messages, model=MODEL_GPT4, max_tokens=1000, temperature=0)
+            full_response = await gpt(messages, model=self.gpt_model, max_tokens=1000, temperature=0)
         except Exception as e:
             logger.error(f"Error calculating new immediate state from update: {e}")
             raise e
@@ -444,7 +445,7 @@ First, provide a description of what you expect to happen as a result of the upd
         logger.info(f"Calculating new future state from update: {update}")
 
         messages = [SystemMessage(prompt), UserMessage(content=update)]
-        full_response = await gpt(messages, model=MODEL_GPT4, max_tokens=1000, temperature=0)
+        full_response = await gpt(messages, model=self.gpt_model, max_tokens=1000, temperature=0)
 
         logger.info(f"Calculated new future state progression from update: {update}")
 
@@ -465,6 +466,8 @@ if __name__ == "__main__":
     async def main() -> None:
         context = ContextForBrains()
         sim: LeafyBlossom = context.simulation
+
+        # sim.gpt_model = MODEL_GPT35 # Just royally fuck it up
 
         sim.applyUpdate("Dr Johnson started Chin lift")
         await sim.process_updates()

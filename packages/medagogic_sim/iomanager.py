@@ -24,6 +24,7 @@ class IOManager:
     def __init__(self) -> None:
         self.on_npc_speak: rx.core.typing.Subject[NPCSpeech, NPCSpeech] = Subject()
         self.on_npc_start_action: rx.core.typing.Subject[NPCAction, NPCAction] = Subject()
+        self.on_npc_finished_action: rx.core.typing.Subject[NPCAction, NPCAction] = Subject()
 
     def npc_speak(self, npc_id: str, npc_name: str, text: str):
         print(FormattedText([
@@ -47,3 +48,13 @@ class IOManager:
             ('#ffffff', task_info),
         ]))
         self.on_npc_start_action.on_next(NPCAction(npc_id=npc_id, npc_name=npc_name, task_info=task_info))
+
+    def npc_finished_action(self, npc_id: str, npc_name: str, task: TaskCall):
+        task_info = f"Finished: {task.call_data.name}"
+        if len(task.call_data.params) > 0:
+            task_info += f": {', '.join(task.call_data.params)}"
+        print(FormattedText([
+            ('#ffbb00 bold', f"Action finished - {npc_name}: "),
+            ('#ffffff', task_info),
+        ]))
+        self.on_npc_finished_action.on_next(NPCAction(npc_id=npc_id, npc_name=npc_name, task_info=task_info))

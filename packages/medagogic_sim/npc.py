@@ -67,6 +67,7 @@ class MedicalNPC():
         logger.info(f"Performing task: {task.call_data}")
         self.context.iomanager.npc_start_action(self.id, self.definition.name, task)
         await self.actioner.perform_task(task)
+        self.context.iomanager.npc_finished_action(self.id, self.definition.name, task)
         self.__try_start_next_task()
 
     async def process_input(self, user_input: str) -> None:

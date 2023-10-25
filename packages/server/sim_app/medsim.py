@@ -61,6 +61,7 @@ class Session_MedSim(Session):
 
         self.medsim.context.iomanager.on_npc_speak.subscribe(self.handle_on_npc_speak)
         self.medsim.context.iomanager.on_npc_start_action.subscribe(self.handle_on_npc_start_action)
+        self.medsim.context.iomanager.on_npc_finished_action.subscribe(self.handle_on_npc_finished_action)
         self.medsim.context.history.on_new_event.subscribe(self.handle_on_new_history_event)
 
         self.emit_vitals_loop()
@@ -105,6 +106,15 @@ class Session_MedSim(Session):
             id=npc.id,
             definition=npc.definition,
             current_task=data.task_info
+        )
+        asyncio.create_task(self.emit_npc_data(npc_update_data))
+
+    def handle_on_npc_finished_action(self, data: iomanager.NPCAction) -> None:
+        npc = self.medsim.npc_manager.npcs[data.npc_id]
+        npc_update_data = SIO_NPCData(
+            id=npc.id,
+            definition=npc.definition,
+            current_task=None
         )
         asyncio.create_task(self.emit_npc_data(npc_update_data))
 
