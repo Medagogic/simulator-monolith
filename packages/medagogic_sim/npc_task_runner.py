@@ -191,7 +191,7 @@ What do you say? Max one sentence.
 
 
     def __handle_sim_update_finished(self, none: Any) -> None:
-        logger.debug(f"M update has finished processing!")
+        logger.debug(f"Sim update finished for {self.task.call_data}")
 
 
 if __name__ == "__main__":

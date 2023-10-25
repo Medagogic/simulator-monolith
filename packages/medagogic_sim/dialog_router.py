@@ -1,4 +1,5 @@
 from __future__ import annotations
+import time
 from typing import TYPE_CHECKING, Final, Optional, Tuple
 
 from pydantic import BaseModel
@@ -7,7 +8,7 @@ if TYPE_CHECKING:
     from packages.medagogic_sim.npc_manager import NPCManager
 
 from typing import List
-from packages.medagogic_sim.gpt.medagogic_gpt import MODEL_GPT4, gpt_streamed_lines, UserMessage, SystemMessage, GPTMessage
+from packages.medagogic_sim.gpt.medagogic_gpt import MODEL_GPT4, gpt_streamed_lines, UserMessage, SystemMessage, GPTMessage, gpt, MODEL_GPT35
 import asyncio
 from packages.medagogic_sim.condense_npcs import getNPCSummary
 from rx.subject import Subject
@@ -33,7 +34,7 @@ class DialogRouter():
     def __init__(self, context: ContextForBrains, npc_manager: NPCManager) -> None:
         self.context = context
         self.npc_manager = npc_manager
-        self.model = MODEL_GPT4
+        self.model = MODEL_GPT35
         logger.info(f"{self.__class__.__name__} initialized using {self.model}")
         self.on_new_routing = Subject()
 
@@ -60,11 +61,14 @@ INPUT:
             UserMessage(user_prompt)
         ]
 
-        temperature = 0
+        # await self.__profiling(messages, input_dialog, model=MODEL_GPT4)
+        # await self.__profiling(messages, input_dialog, model=MODEL_GPT35)
 
         routed_dialogs: List[Dialog] = []
-
-        async for line in gpt_streamed_lines(messages, model=self.model+"-0613", max_tokens=200, temperature=temperature):
+        response = await gpt(messages, model=self.model, max_tokens=200, temperature=0)
+        lines = response.split("\n")
+        for line in lines:
+            logger.debug(line)
             if not line.startswith("//"):
                 routed_dialog = self.parse_routed_dialog(input_dialog, line) 
                 if routed_dialog:
@@ -73,6 +77,50 @@ INPUT:
 
         if not routed_dialogs:
             logger.error(f"No routed dialogs found for input: {input_dialog}")
+
+
+    async def __profiling(self, messages: List[GPTMessage], input_dialog: Dialog, model: str):
+        async def routing_linebyline():
+            async for line in gpt_streamed_lines(messages, model=model, max_tokens=200, temperature=0):
+                logger.debug(line)
+                if not line.startswith("//"):
+                    routed_dialog = self.parse_routed_dialog(input_dialog, line) 
+                    if routed_dialog:
+                        yield routed_dialog
+
+        async def routing_simple():
+            response = await gpt(messages, model=model, max_tokens=200, temperature=0)
+            lines = response.split("\n")
+            for line in lines:
+                logger.debug(line)
+                if not line.startswith("//"):
+                    routed_dialog = self.parse_routed_dialog(input_dialog, line) 
+                    if routed_dialog:
+                        yield routed_dialog
+
+        # Profiling routing_linebyline
+        lbl_full_start_time = time.time()
+        lbl_first_response_time = None
+        async for routing in routing_linebyline():
+            if lbl_first_response_time is None:
+                lbl_first_response_time = time.time() - lbl_full_start_time
+
+        # Profiling routing_simple
+        simple_full_start_time = time.time()
+        simple_first_response_time = None
+        async for routing in routing_simple():
+            if simple_first_response_time is None:
+                simple_first_response_time = time.time() - simple_full_start_time
+
+        lbl_time = time.time() - lbl_full_start_time
+        simple_time = time.time() - simple_full_start_time
+
+        logger.info(f"{model} LINEBYLINE: Total time: {lbl_time} seconds")
+        logger.info(f"{model} LINEBYLINE: First response time: {lbl_first_response_time} seconds")
+        logger.info(f"{model} SIMPLE: Total time: {simple_time} seconds")
+        logger.info(f"{model} SIMPLE: First response time: {simple_first_response_time} seconds")
+
+
 
 
     def parse_routed_dialog(self, input_dialog: Dialog, response: str) -> Dialog | None:
@@ -141,7 +189,8 @@ if __name__ == "__main__":
         router = DialogRouter(context, npc_manager)
 
         inputs = [
-            Dialog(from_id=TEAM_LEAD_ID, content="what do you think team, what are we dealing with here ?"),
+            # Dialog(from_id=TEAM_LEAD_ID, content="what do you think team, what are we dealing with here ?"),
+            Dialog(from_id=TEAM_LEAD_ID, content="Let's start on IV access, and can we get a blood gas? asdsa"),
         ]
 
         for sapling_dialog in inputs:

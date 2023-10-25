@@ -7,6 +7,10 @@ from gptcache.manager.vector_data.faiss import Faiss
 from gptcache.embedding.openai import OpenAI
 from gptcache.adapter import openai
 
+from packages.medagogic_sim.logger.logger import get_logger, logging
+
+logger = get_logger(level=logging.DEBUG)
+
 import dotenv
 
 
@@ -51,6 +55,7 @@ def configure_cached_openai(directory=None):
     cache.set_openai_key()
 
     def hit_cache_callback(data):
-        print(f"Hit cache: {data}")
+        time, id = data
+        logger.debug(f"Hit cache id {id} ({time}s)")
 
     data_manager.hit_cache_callback = hit_cache_callback

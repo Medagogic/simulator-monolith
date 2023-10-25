@@ -2,9 +2,13 @@ from typing import List, TypedDict
 from tenacity import retry, wait_fixed
 from dotenv import load_dotenv
 
-# from packages.medagogic_sim.gpt.cached_openai import openai, configure_cached_openai
-# configure_cached_openai()
-import openai
+USE_CACHE = True
+
+if USE_CACHE:
+    from packages.medagogic_sim.gpt.cached_openai import openai, configure_cached_openai
+    configure_cached_openai()
+else:
+    import openai
 
 import os, json
 
@@ -12,7 +16,7 @@ load_dotenv()
 
 MODEL_GPT4 = "gpt-4"
 MODEL_GPT35 = "gpt-3.5-turbo"
-TEMPERATURE = 0.1    # 0 = predictable, 2 = chaotic
+TEMPERATURE = 0    # 0 = predictable, 2 = chaotic
 
 GPTMessage = TypedDict("GPTMessage", {"role": str, "content": str})
 
