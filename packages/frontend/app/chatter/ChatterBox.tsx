@@ -1,7 +1,7 @@
 // ChatterBox.tsx
 "use client"
 
-import React, { useState } from 'react';
+import React, { useEffect, useRef, useState } from 'react';
 import { Button, Input, MessageList } from 'react-chat-elements';
 import 'react-chat-elements/dist/main.css';
 import "app/chatter/ChatterBox.css"
@@ -27,6 +27,14 @@ const ChatterBox: React.FC = () => {
   function toggleAttachments() {
     setShowAttachments(!showAttachments);
   }
+
+  useEffect(() => {
+    const scrollToBottom = (chatContainer: HTMLElement | null) => {
+      if (chatContainer) {
+        chatContainer.scrollTop = chatContainer.scrollHeight - chatContainer.clientHeight;
+      }
+    };
+  }, [messages]);
 
   function message_list(): any[] {
     return messages.map((chatStoreMessage) => {
@@ -84,8 +92,8 @@ const ChatterBox: React.FC = () => {
   }
 
   return (
-    <div className={`chatPage bg-gray-700 relative`}>
-      <header>
+    <div className={`bg-gray-700 relative h-full flex flex-col`}>
+      <header className='flex-shrink'>
       </header>
 
       <button 
@@ -96,17 +104,15 @@ const ChatterBox: React.FC = () => {
         <FiPaperclip size={18} title="Recieved documents"/> {/* Icon for the button */}
       </button>
 
-      <div className="flex-grow">
-        <MessageList
-          className="messageList"
-          lockable={true}
-          toBottomHeight={'100%'}
-          dataSource={message_list()}
-          referance={React.createRef()}
-        />
-      </div>
+      <MessageList
+        className="flex-grow overflow-y-auto chat-styling"
+        lockable={true}
+        toBottomHeight={'100%'}
+        dataSource={message_list()}
+        referance={React.createRef()}
+      />
 
-      <footer>
+      <footer className='flex-shrink'>
         {/* ... any footer content, perhaps a text input and send button for new messages */}
         <Input
           value={currentMessage}

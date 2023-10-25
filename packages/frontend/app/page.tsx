@@ -8,7 +8,7 @@ import SimSessionPage from './sim-session/page';
 const Index: FC = () => {
  
   return (
-    <main style={{"height": "100vh"}}>
+    <main style={{"height": "100vh", width:"100vw"}}>
       <SocketProvider session_id='default-session'>
         <SimSessionPage />
       </SocketProvider>

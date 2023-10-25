@@ -78,8 +78,8 @@ const SimSessionPage: React.FC = () => {
   return (
     <SocketProvider session_id='default-session'>
       <APIProvider sessionId="default-session">
-      <div style={{ width: "100%", height: "100%" }} className='flex flex-col base'>
-        <div className='toolbar' style={{ maxWidth: "100%", display: 'flex', flexDirection: 'row', alignItems: 'center', justifyContent: 'space-between' }}>
+      <div className='page-container'>
+        <div className='toolbar'>
           <div style={{ flex: 1 }}>
             Medagogic Simulator
           </div>
@@ -95,8 +95,8 @@ const SimSessionPage: React.FC = () => {
           </div>
         </div>
 
-        <div style={{ "width": "100%", "height": "100%" }} className='flex flex-row'>
-          <div className='flex flex-col flex-auto gap-2 m-2' style={{ width: "100%", height: "100%" }}>
+        <div className="main-page gap-2">
+          <div className='column'>
             {/* <VitalSignsDisplay debugVitalSigns={vitalSignsForDisplay} /> */}
             <PatientVisualization />
             {/* <ABCDEList abcdeData={abcdeData} vitalSigns={vitalSignsForABCDEList} /> */}
@@ -104,11 +104,11 @@ const SimSessionPage: React.FC = () => {
 
           </div>
           
-          <div className='flex-auto m-2 flex flex-col gap-2' style={{ "width": "100%" }}>
-            <div>
+          <div className='column gap-2'>
+            <div className="flex-shrink">
               <ActionLog logs={actionLogs} />
             </div>
-            <div className="flex-auto flex gap-2">
+            <div className="flex-auto flex flex-grow overflow-hidden h-full">
               <div className="flex-auto">
                 <ChatterBox />
               </div>
@@ -118,7 +118,7 @@ const SimSessionPage: React.FC = () => {
             </div>
 
           </div>
-          <div className='flex-auto m-2 flex flex-col justify-between' style={{ "width": "50%" }}>
+          <div className='column'>
             <ObjectivesList objectives={objectives} />
             <div className="self-end w-full">
               <Clippy onClick={(data) => { handleClippySuggestion(data) }} />

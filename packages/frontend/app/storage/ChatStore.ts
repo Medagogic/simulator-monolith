@@ -4,6 +4,7 @@
 import { create } from 'zustand';
 import { ChatterIO } from '../socketio/ChatterIO';
 import { MessageFromNPC, ChatEvent, HumanMessage } from "@/src/scribe/scribetypes";
+import { getDummyMessages } from './_DummyChatData';
 
 export type ChatStoreMessage = {
   message: MessageFromNPC | HumanMessage | ChatEvent;
@@ -24,7 +25,7 @@ type ChatState = {
 
 export const useChatStore = create<ChatState>((set, get) => {
   return {
-    messages: [],
+    messages: [], //getDummyMessages() as unknown as ChatStoreMessage[],
     currentMessage: '',
     isTyping: false,
     attachments: [],
