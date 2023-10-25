@@ -8,7 +8,7 @@ const dummyMessages = [
         type: "human",
     },
     {
-        message: { event: "joined", timestamp: 1635102000 },
+        message: { event: "joined", timestamp: 1635102000, npc_id: "npc_2" },
         type: "event",
     },
     {
@@ -16,11 +16,11 @@ const dummyMessages = [
         type: "npc",
     },
     {
-        message: { message: "I'm fine", timestamp: 1635104000, target_npc_id: "npc_2" },
+        message: { message: "I'm fine", timestamp: 1635104000 },
         type: "human",
     },
     {
-        message: { event: "left", timestamp: 1635105000, npc_id: "npc_1" },
+        message: { event: "left", timestamp: 1635105000, npc_id: "npc_3" },
         type: "event",
     },
     {
@@ -36,7 +36,7 @@ const dummyMessages = [
         type: "event",
     },
     {
-        message: { message: "Why did you move?", timestamp: 1635109000, npc_id: "npc_3" },
+        message: { message: "Why did you move?", timestamp: 1635109000, npc_id: "npc_4" },
         type: "npc",
     },
     {
@@ -48,7 +48,7 @@ const dummyMessages = [
         type: "event",
     },
     {
-        message: { message: "Want to trade?", timestamp: 1635112000, npc_id: "npc_2" },
+        message: { message: "Want to trade?", timestamp: 1635112000, npc_id: "npc_0" },
         type: "npc",
     },
     {

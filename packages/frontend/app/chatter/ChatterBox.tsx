@@ -1,7 +1,7 @@
 // ChatterBox.tsx
 "use client"
 
-import React, { useEffect, useRef, useState } from 'react';
+import React, { ReactElement, useEffect, useRef, useState } from 'react';
 import { Button, Input, MessageList } from 'react-chat-elements';
 import 'react-chat-elements/dist/main.css';
 import "app/chatter/ChatterBox.css"
@@ -11,67 +11,92 @@ import AttachmentList from '../sim-session/AttachmentList/AttachmentList';
 import { useChatterIO } from '../socketio/SocketContext';
 import { ChatEvent, HumanMessage, MessageFromNPC } from "@/src/scribe/scribetypes"
 
-import {DefaultApi, Configuration} from "@/src/api"
-const api_config = new Configuration({basePath: process.env.API_HOST})
+import { DefaultApi, Configuration } from "@/src/api"
+import { useTeamStore } from '../storage/TeamStore';
+const api_config = new Configuration({ basePath: process.env.API_HOST })
 const api = new DefaultApi(api_config)
 
 const ChatterBox: React.FC = () => {
   const messages = useChatStore((state) => state.messages);
   const currentMessage = useChatStore((state) => state.currentMessage);
+  const setToNPCId = useChatStore((state) => state.setToNPCId);
   const setCurrentMessage = useChatStore((state) => state.setCurrentMessage); // Assuming you have this in your store
-  
+  const teamById = useTeamStore((state) => state.teamById);
+
   const [showAttachments, setShowAttachments] = useState(false);
   const attachments = useChatStore((state) => state.attachments); // Retrieve attachments from your store
   const chatterIO = useChatterIO()!;
+
+  const [messageList, setMessageList] = useState<any[]>([]);
 
   function toggleAttachments() {
     setShowAttachments(!showAttachments);
   }
 
   useEffect(() => {
-    const scrollToBottom = (chatContainer: HTMLElement | null) => {
-      if (chatContainer) {
-        chatContainer.scrollTop = chatContainer.scrollHeight - chatContainer.clientHeight;
-      }
-    };
-  }, [messages]);
+    setMessageList(message_list());
+  }, [messages, teamById]);
+
+  function getNPCName(npc_id: string): string {
+    const npc = teamById[npc_id];
+    if (npc) {
+      return npc.definition.name;
+    } else {
+      return npc_id;
+    }
+  }
 
   function message_list(): any[] {
     return messages.map((chatStoreMessage) => {
       let position: 'right' | 'left' | 'center';
-      let title: string;
-      let text: string;
+      let title: string | undefined;
+      let content: string | ReactElement;
       let type: string = "text";
-  
+      let className: string = "chat-message";
+      let replyButton: boolean = false;
+      let npc_id: string | undefined;
+
       switch (chatStoreMessage.type) {
         case 'human':
-          position = 'right'; // Assuming 'human' type messages are 'user' sent.
-          title = 'User'; // This is an assumption. Replace with actual data if available.
+          position = 'right';
+          // title = 'User';
           const human = chatStoreMessage.message as HumanMessage;
-          text = human.message; // Assuming 'message' field holds the text in 'HumanMessage'.
+          content = human.message;
           break;
         case 'npc':
           position = 'left';
           const npc = chatStoreMessage.message as MessageFromNPC;
-          title = npc.npc_id; // Assuming NPC's id should be displayed as title.
-          text = npc.message;
+          title = getNPCName(npc.npc_id);
+          npc_id = npc.npc_id;
+          content = npc.message;
+          className = `${className} npc-message ${npc.npc_id}`
+          // replyButton = true;
           break;
         case 'event':
-          position = 'center';
-          title = 'Event';
           const evt = chatStoreMessage.message as ChatEvent;
-          text = evt.event;
+          position = 'center';
+          if (evt.npc_id) {
+            title = getNPCName(evt.npc_id);
+            className = `${className} npc-event ${evt.npc_id}`
+          } else {
+            title = "System"
+            className = `${className} system-event`
+          }
+          content = evt.event;
           type = "system";
           break;
         default:
           throw new Error('Unsupported message type');
       }
-  
+
       return {
         position,
         type: type,
         title,
-        text
+        text: content,
+        className: className,
+        replyButton,
+        npc_id
       };
     });
   }
@@ -91,25 +116,30 @@ const ChatterBox: React.FC = () => {
     setCurrentMessage(event.target.value); // Update the currentMessage in the store
   }
 
+  function handleReplyClick(data: any) {
+    setToNPCId(data.npc_id);
+  }
+
   return (
     <div className={`bg-gray-700 relative h-full flex flex-col`}>
       <header className='flex-shrink'>
       </header>
 
-      <button 
-        onClick={toggleAttachments} 
+      <button
+        onClick={toggleAttachments}
         className="absolute top-0 right-0 m-3 text-white rounded-full p-2" // tailwind classes for styling
         style={{ zIndex: 10 }} // Ensure button is above other elements, adjust if necessary
       >
-        <FiPaperclip size={18} title="Recieved documents"/> {/* Icon for the button */}
+        <FiPaperclip size={18} title="Recieved documents" /> {/* Icon for the button */}
       </button>
 
       <MessageList
         className="flex-grow overflow-y-auto chat-styling"
         lockable={true}
         toBottomHeight={'100%'}
-        dataSource={message_list()}
+        dataSource={messageList}
         referance={React.createRef()}
+        onReplyClick={handleReplyClick}
       />
 
       <footer className='flex-shrink'>
@@ -121,16 +151,16 @@ const ChatterBox: React.FC = () => {
           placeholder="Type here..."
           multiline={false}
           maxHeight={200}
-          rightButtons={<Button text='Send' onClick={send_message}/>}
+          rightButtons={<Button text='Send' onClick={send_message} />}
           className='chat-input'
         />
       </footer>
 
-      
-        <AttachmentList
-          isOpen={showAttachments}
-          closeModal={toggleAttachments}
-        />
+
+      <AttachmentList
+        isOpen={showAttachments}
+        closeModal={toggleAttachments}
+      />
     </div>
   );
 }

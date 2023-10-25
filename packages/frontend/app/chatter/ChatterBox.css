@@ -1,3 +1,63 @@
 .chat-styling {
     color: #222222;
 }
+
+:root {
+    --npc_0: #7f1d84;
+    --npc_1: #454ADE;
+    --npc_2: #F75C03;
+    --npc_3: #B14AED;
+    --npc_4: #1B998B;
+}
+
+.npc_0 { --color: var(--npc_0); }
+.npc_1 { --color: var(--npc_1); }
+.npc_2 { --color: var(--npc_2); }
+.npc_3 { --color: var(--npc_3); }
+.npc_4 { --color: var(--npc_4); }
+
+.npc-message {
+    white-space: pre-line;
+}
+
+.npc-message .rce-mbox {
+    box-shadow: 0 0 10px var(--color);
+}
+
+.npc-message .rce-mbox-title {
+    color: var(--color);
+}
+
+.rce-smsg {
+    background: #222;
+    color: #aaa;
+}
+
+.npc-event {
+    white-space: pre-line;
+}
+
+.npc-event .rce-smsg {
+    border: 2px solid var(--color) !important;
+}
+
+
+*::-webkit-scrollbar-track
+{
+	-webkit-box-shadow: inset 0 0 6px rgba(0,0,0,0.3);
+	border-radius: 10px;
+	background-color: #222;
+}
+
+*::-webkit-scrollbar
+{
+	width: 12px;
+	background-color: #222;
+}
+
+*::-webkit-scrollbar-thumb
+{
+	border-radius: 10px;
+	-webkit-box-shadow: inset 0 0 6px rgba(0,0,0,.3);
+	background-color: #bbb;
+}
