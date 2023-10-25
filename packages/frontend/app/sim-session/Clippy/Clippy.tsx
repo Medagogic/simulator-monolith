@@ -1,7 +1,6 @@
 "use client";
 
 import React, { useState } from 'react';
-import { useChatStore } from '@/app/chatter/ChatStore';
 import { useChatterIO } from '@/app/socketio/SocketContext';
 
 const clippy = {

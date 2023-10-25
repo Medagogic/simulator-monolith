@@ -85,10 +85,7 @@ class MedicalNPC():
             npc_line += "\n\t- Currently idle"
 
         return npc_line
-    
-    @property
-    def current_task_description(self) -> Optional[str]:
-        return self.actioner.current_task_description
+
 
     
 if __name__ == "__main__":

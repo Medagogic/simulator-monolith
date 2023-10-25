@@ -44,9 +44,10 @@ class API_NPCData(BaseModel):
     definition: NPCDefinition
     current_task: Optional[str] = None
 
-class API_NPCUpdateData(BaseModel):
+class SIO_NPCData(BaseModel):
     id: str
-    data: API_NPCData
+    definition: NPCDefinition
+    current_task: Optional[str] = None
 
 class API_TeamData(BaseModel):
     npc_data: List[API_NPCData]
@@ -100,12 +101,10 @@ class Session_MedSim(Session):
         asyncio.create_task(self.emit_chat_event(m))
 
         npc = self.medsim.npc_manager.npcs[data.npc_id]
-        npc_update_data = API_NPCUpdateData(
+        npc_update_data = SIO_NPCData(
             id=npc.id,
-            data=API_NPCData(
-                definition=npc.definition,
-                current_task=npc.current_task_description
-            )
+            definition=npc.definition,
+            current_task=data.task_info
         )
         asyncio.create_task(self.emit_npc_data(npc_update_data))
 
@@ -123,8 +122,9 @@ class Session_MedSim(Session):
         await self.emit("chat_event", data)
     # END CHAT
 
-    @scribe_emits("npc_data", API_NPCUpdateData)
-    async def emit_npc_data(self, data: API_NPCUpdateData) -> None:
+    @scribe_emits("npc_data", SIO_NPCData)
+    async def emit_npc_data(self, data: SIO_NPCData) -> None:
+        print(f"Sending NPC data: {data}")
         await self.emit("npc_data", data)
 
     @scribe_handler
@@ -170,10 +170,13 @@ class Session_MedSim(Session):
     def api_get_team(self) -> API_TeamData:
         team_data = API_TeamData(npc_data=[])
         for id, npc in self.medsim.npc_manager.npcs.items():
+            current_task = None
+            if npc.actioner.current_task:
+                current_task = npc.actioner.current_task.name
             npc_data = API_NPCData(
                 id=id,
                 definition=npc.definition,
-                current_task=npc.current_task_description
+                current_task=current_task
             )
             team_data.npc_data.append(npc_data)
         return team_data

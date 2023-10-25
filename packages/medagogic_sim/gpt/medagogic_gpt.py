@@ -1,11 +1,14 @@
 from typing import List, TypedDict
 from tenacity import retry, wait_fixed
 from dotenv import load_dotenv
-from packages.medagogic_sim.gpt.cached_openai import openai, configure_cached_openai
+
+# from packages.medagogic_sim.gpt.cached_openai import openai, configure_cached_openai
+# configure_cached_openai()
+import openai
+
 import os, json
 
 load_dotenv()
-configure_cached_openai()
 
 MODEL_GPT4 = "gpt-4"
 MODEL_GPT35 = "gpt-3.5-turbo"

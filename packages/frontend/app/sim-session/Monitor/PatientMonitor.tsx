@@ -4,7 +4,7 @@ import React, { useEffect, useState } from 'react';
 import { DummyDataStream } from './DummyDataStream';
 import SmoothieGraph from './SmoothieGraph';
 import { SinusoidalDataStream } from './SinusoidalDataStream';
-import { usePatientStore } from '../Patient/PatientStore';
+import { usePatientStore } from '../../storage/PatientStore';
 import { usePatientIO } from '@/app/socketio/SocketContext';
 
 

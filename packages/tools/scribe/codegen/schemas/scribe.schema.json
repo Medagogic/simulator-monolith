@@ -10,7 +10,7 @@
             "$ref": "schemas/MessageFromNPC.schema.json"
         },
         "npc_data": {
-            "$ref": "schemas/API_NPCUpdateData.schema.json"
+            "$ref": "schemas/SIO_NPCData.schema.json"
         },
         "patient_vitals_update": {
             "$ref": "schemas/VitalSigns.schema.json"

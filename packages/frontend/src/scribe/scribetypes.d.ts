@@ -12,7 +12,6 @@ export type Message = string;
 export type Timestamp1 = string;
 export type NpcId1 = string;
 export type Id = string;
-export type Id1 = string;
 export type Name = string;
 export type Role = string;
 export type Specialities = string[];
@@ -55,7 +54,7 @@ export type TargetNpcId = string | null;
 export interface ScribeEvents {
   chat_event: ChatEvent;
   chat_message: MessageFromNPC;
-  npc_data: API_NPCUpdateData;
+  npc_data: SIO_NPCData;
   patient_vitals_update: VitalSigns;
   combatlog_update: CombatLogUpdateData;
   __server_on_join_session?: {
@@ -89,15 +88,10 @@ export interface MessageFromNPC {
   timestamp: Timestamp1;
   npc_id: NpcId1;
 }
-export interface API_NPCUpdateData {
+export interface SIO_NPCData {
   id: Id;
-  data: API_NPCData;
-}
-export interface API_NPCData {
-  id: Id1;
   definition: NPCDefinition;
   current_task?: CurrentTask;
-  [k: string]: unknown;
 }
 export interface NPCDefinition {
   name: Name;

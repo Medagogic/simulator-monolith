@@ -5,12 +5,14 @@ import React, { createContext, useContext, useEffect, useState, ReactNode, use }
 import { io, Socket } from "socket.io-client";
 import { PatientIO } from "./PatientIO";
 import { ChatterIO } from "./ChatterIO";
+import { TeamIO } from "./TeamIO";
 
 // Defining the context shape
 interface ISocketContext {
     socket: Socket | null;
     patientIO: PatientIO | null;
     chatterIO: ChatterIO | null;
+    teamIO: TeamIO | null;
 }
 
 const SocketContext = createContext<ISocketContext | null>(null);
@@ -24,6 +26,7 @@ interface ContextSingleton {
     socket: Socket;
     patientIO: PatientIO;
     chatterIO: ChatterIO;
+    teamIO: TeamIO;
     session_id: string | null;
 }
 
@@ -35,7 +38,14 @@ const getContextSingleton = () => {
     const socket = io(socket_url);
     const patientIO = new PatientIO(socket);
     const chatterIO = new ChatterIO(socket);
-    context_singleton = { socket: socket, patientIO: patientIO, chatterIO: chatterIO, session_id: null };
+    const teamIO = new TeamIO(socket);
+    context_singleton = {
+        socket: socket,
+        patientIO: patientIO,
+        chatterIO: chatterIO,
+        teamIO: teamIO,
+        session_id: null
+    };
   }
   return context_singleton;
 };
@@ -44,6 +54,7 @@ export const SocketProvider: React.FC<SocketProviderProps> = ({ session_id, chil
     const [socket, setSocket] = useState<Socket | null>(null);
     const [patientIO, setPatientIO] = useState<PatientIO | null>(null);
     const [chatterIO, setChatterIO] = useState<ChatterIO | null>(null);
+    const [teamIO, setTeamIO] = useState<TeamIO | null>(null);
 
     useEffect(() => {
         if (typeof window !== "undefined") {
@@ -52,6 +63,7 @@ export const SocketProvider: React.FC<SocketProviderProps> = ({ session_id, chil
             setSocket(contextSingleton.socket);
             setPatientIO(contextSingleton.patientIO);
             setChatterIO(contextSingleton.chatterIO);
+            setTeamIO(contextSingleton.teamIO);
 
             if (contextSingleton.session_id != session_id) {
                 contextSingleton.session_id = session_id;
@@ -67,7 +79,7 @@ export const SocketProvider: React.FC<SocketProviderProps> = ({ session_id, chil
     }, []);
 
     return (
-        <SocketContext.Provider value={{ socket:socket, patientIO:patientIO, chatterIO:chatterIO }}>
+        <SocketContext.Provider value={{ socket:socket, patientIO:patientIO, chatterIO:chatterIO, teamIO: teamIO }}>
             {children}
         </SocketContext.Provider>
     );

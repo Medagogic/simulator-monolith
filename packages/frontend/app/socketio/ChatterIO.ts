@@ -1,6 +1,6 @@
 import { ScribeClient, EmitEvent } from "@/src/scribe/ScribeClient";
 import { ChatEvent, CombatLogUpdateData, HumanMessage, MessageFromNPC, VitalSigns } from "@/src/scribe/scribetypes";
-import { useChatStore, ChatStoreMessage } from "../chatter/ChatStore";
+import { useChatStore, ChatStoreMessage } from "../storage/ChatStore";
 
 export class ChatterIO extends ScribeClient {
     on_chat_message(data: MessageFromNPC) {

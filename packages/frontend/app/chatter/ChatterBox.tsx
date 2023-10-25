@@ -5,7 +5,7 @@ import React, { useState } from 'react';
 import { Button, Input, MessageList } from 'react-chat-elements';
 import 'react-chat-elements/dist/main.css';
 import "app/chatter/ChatterBox.css"
-import { useChatStore } from './ChatStore';
+import { useChatStore } from '../storage/ChatStore';
 import { FiPaperclip } from 'react-icons/fi';
 import AttachmentList from '../sim-session/AttachmentList/AttachmentList';
 import { useChatterIO } from '../socketio/SocketContext';

@@ -7,7 +7,7 @@ import React, { useEffect } from 'react';
 import "./VitalSignsDisplay.css"
 import { PatientIO } from '../socketio/PatientIO';
 import { useSocket } from '../socketio/SocketContext';
-import { usePatientStore } from './Patient/PatientStore';
+import { usePatientStore } from '../storage/PatientStore';
 
 interface Props {
     debugVitalSigns: VitalSigns;

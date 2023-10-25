@@ -1,0 +1,64 @@
+{
+    "$defs": {
+        "NPCDefinition": {
+            "properties": {
+                "name": {
+                    "title": "Name",
+                    "type": "string"
+                },
+                "role": {
+                    "title": "Role",
+                    "type": "string"
+                },
+                "specialities": {
+                    "items": {
+                        "type": "string"
+                    },
+                    "title": "Specialities",
+                    "type": "array"
+                },
+                "years_of_experience": {
+                    "title": "Years Of Experience",
+                    "type": "integer"
+                }
+            },
+            "required": [
+                "name",
+                "role",
+                "specialities",
+                "years_of_experience"
+            ],
+            "title": "NPCDefinition",
+            "type": "object"
+        }
+    },
+    "properties": {
+        "id": {
+            "title": "Id",
+            "type": "string"
+        },
+        "definition": {
+            "$ref": "#/$defs/NPCDefinition"
+        },
+        "current_task": {
+            "anyOf": [
+                {
+                    "type": "string"
+                },
+                {
+                    "type": "null"
+                }
+            ],
+            "default": null,
+            "title": "Current Task"
+        }
+    },
+    "required": [
+        "id",
+        "definition"
+    ],
+    "title": "SIO_NPCData",
+    "type": "object",
+    "$id": "SIO_NPCData.schema.json",
+    "additionalProperties": false
+}

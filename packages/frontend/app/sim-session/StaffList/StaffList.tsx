@@ -4,6 +4,7 @@ import React, { useEffect } from 'react';
 import "./StaffList.css";
 import { sessionRequestParams, useAPI } from '@/app/socketio/APIContext';
 import { APINPCData, APITeamData } from '@/src/api';
+import { useTeamStore } from '@/app/storage/TeamStore';
 
 
 // StaffMember component
@@ -33,8 +34,10 @@ interface StaffListProps {
 const StaffList: React.FC<StaffListProps> = ({  }) => {
   const api = useAPI();
   const requestParams = sessionRequestParams();
+  const teamById = useTeamStore((state) => state.teamById);
+  const setNPCData = useTeamStore((state) => state.setNPCData);
   
-  const [staffData, setStaffData] = React.useState<APINPCData[]>([]);
+  // const [staffData, setStaffData] = React.useState<APINPCData[]>([]);
   let loading = false;
 
   useEffect(() => {
@@ -47,16 +50,22 @@ const StaffList: React.FC<StaffListProps> = ({  }) => {
       requestParams,
     ).then((response: APITeamData) => {
       response.npcData.forEach((npc: APINPCData) => {
-        setStaffData(staffData => [...staffData, npc]);
+        // setStaffData(staffData => [...staffData, npc]);
+        console.log("Setting teamById", npc.id);
+        setNPCData(npc.id, npc);
       });
     });
   }, []);
 
   return (
     <div className="staff-list">
-      {staffData.map(staff => (
+      {Object.keys(teamById).map((key) => {
+        const npc = teamById[key];
+        return <StaffMember key={npc.id} data={npc} />;
+      })}
+      {/* {staffData.map(staff => (
         <StaffMember key={staff.id} data={staff} />
-      ))}
+      ))} */}
     </div>
   );
 };
