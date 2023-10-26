@@ -6,7 +6,7 @@ import re
 from typing import Any, Dict, Final, Generic, List, Optional, Type, TypeVar
 from pydantic import BaseModel, Field
 from packages.medagogic_sim.exercise.simulation_types import ActionType, Vitals
-from packages.medagogic_sim.actions_for_brains import ActionDatabase, ActionModel, TaskCall, loadActions
+from packages.medagogic_sim.actions_for_brains import ActionDatabase, ActionExample, ActionModel, TaskCall, loadActions
 import asyncio
 import json
 import jsonschema2md
@@ -34,7 +34,7 @@ class FuzzyEnumMatcher(Generic[T, V]):
 
         return best_match if best_ratio > 0.9 else None
 
-class DeviceConnectionManager_Base(ABC):
+class DeviceHandler_Base(ABC):
     action_name: str = "NOT SET"
 
     @staticmethod
@@ -51,6 +51,11 @@ class DeviceConnectionManager_Base(ABC):
     
     @abstractmethod
     def handle_call(self, call_data: ActionDatabase.CallData) -> str:
+        pass
+
+    @property
+    @abstractmethod
+    def is_connected(self) -> bool:
         pass
     
     @staticmethod
@@ -84,7 +89,7 @@ class DeviceConnectionManager_Base(ABC):
     @staticmethod
     def _params_to_md(params_type: Type[BaseModel]) -> List[str]:
         schema = params_type.model_json_schema()
-        schema = DeviceConnectionManager_Base.__inline_schema_refs(schema)
+        schema = DeviceHandler_Base.__inline_schema_refs(schema)
         parser = jsonschema2md.Parser()
         md_lines = parser.parse_schema({"properties": schema})
         md_lines = [l.strip() for l in md_lines if l.strip() != ""]
@@ -101,7 +106,7 @@ class IVAccessParams(BaseModel):
     location: IVAccessLocation
 
 
-class IVAccessManager(DeviceConnectionManager_Base):
+class IVAccessManager(DeviceHandler_Base):
     def __init__(self) -> None:
         self.connected_ivs: Dict[IVAccessLocation, IVAccessParams] = {}
 
@@ -125,11 +130,15 @@ class IVAccessManager(DeviceConnectionManager_Base):
         return IVAccessManager._params_to_md(IVAccessParams)
     
     def get_state(self) -> str:
-        if len(self.connected_ivs) == 0:
+        if not self.is_connected:
             return "No IV access"
         else:
             output = "IV access established in " + ", ".join([f"{loc.value}" for loc in self.connected_ivs.keys()])
             return output
+        
+    @property
+    def is_connected(self) -> bool:
+        return len(self.connected_ivs) > 0
     
 class IOAccessLocation(Enum):
     PROXIMAL_TIBIA = "proximal tibia"
@@ -147,7 +156,7 @@ class IOAccessParams(BaseModel):
     side: IOBodySide = Field(default=None, description='Side of body, e.g., "left", "right"')
 
 
-class IOAccessManager(DeviceConnectionManager_Base):
+class IOAccessManager(DeviceHandler_Base):
     def __init__(self) -> None:
         self.connected_ios: Dict[IOAccessLocation, IOAccessParams] = {}
         self.action_name = "Obtain IO access ($location, $size)"
@@ -187,19 +196,23 @@ class IOAccessManager(DeviceConnectionManager_Base):
         return IOAccessManager._params_to_md(IOAccessParams)
     
     def get_state(self) -> str:
-        if len(self.connected_ios) == 0:
+        if not self.is_connected:
             return "No IO access"
         else:
             output = ""
             for connected_io in self.connected_ios.values():
                 output += self.connection_str(connected_io) + "\n"
             return output.strip()
+        
+    @property
+    def is_connected(self) -> bool:
+        return len(self.connected_ios) > 0
 
 
 class EKGConnectionParams(BaseModel):
     pass
 
-class EKGConnectionManager(DeviceConnectionManager_Base):
+class EKGConnectionManager(DeviceHandler_Base):
     def __init__(self) -> None:
         self.ekg_connected: bool = False
         self.action_name = "Connect EKG/ECG"
@@ -218,21 +231,25 @@ class EKGConnectionManager(DeviceConnectionManager_Base):
         return EKGConnectionManager._params_to_md(EKGConnectionParams)
     
     def get_state(self) -> str:
-        if not self.ekg_connected:
+        if not self.is_connected:
             return "EKG not connected"
         else:
             return "EKG connected"
         
     def exposed_vitals(self) -> List[Vitals]:
-        if not self.ekg_connected:
+        if not self.is_connected:
             return []
         return [Vitals.HEART_RATE, Vitals.RESPIRATORY_RATE]
+    
+    @property
+    def is_connected(self) -> bool:
+        return self.ekg_connected
     
 
 class NIBPMonitorParams(BaseModel):
     pass
 
-class NIBPMonitorManager(DeviceConnectionManager_Base):
+class NIBPMonitorManager(DeviceHandler_Base):
     def __init__(self) -> None:
         self.nibp_params: Optional[NIBPMonitorParams] = None
         self.action_name = "Connect BP monitor"
@@ -241,7 +258,7 @@ class NIBPMonitorManager(DeviceConnectionManager_Base):
         return self.connect(NIBPMonitorParams())
 
     def connect(self, params: NIBPMonitorParams):
-        if self.nibp_params is not None:
+        if self.is_connected:
             raise Exception("NIBP already connected")
         self.nibp_params = params
         return "NIBP monitor connected"
@@ -251,30 +268,42 @@ class NIBPMonitorManager(DeviceConnectionManager_Base):
         return NIBPMonitorManager._params_to_md(NIBPMonitorParams)
 
     def get_state(self) -> str:
-        if self.nibp_params is None:
+        if not self.is_connected:
             return "NIBP monitor not connected"
         else:
             return f"NIBP monitor connected"
 
     def exposed_vitals(self) -> List[Vitals]:
-        if self.nibp_params is None:
+        if not self.is_connected:
             return []
         return [Vitals.BLOOD_PRESSURE]
+    
+    @property
+    def is_connected(self) -> bool:
+        return self.nibp_params is not None
 
 
 class PulseOximeterParams(BaseModel):
     probe_position: str = Field(..., description='Type of probe used, e.g., "Finger", "Earlobe", "Foot"')
 
-class PulseOximeterManager(DeviceConnectionManager_Base):
+class PulseOximeterManager(DeviceHandler_Base):
     def __init__(self) -> None:
         self.connection_params: Optional[PulseOximeterParams] = None
         self.action_name = "Connect pulse oximeter"
+        self.default_params = PulseOximeterParams(probe_position="Finger")
+
+    def extract_params(self, call_data: ActionDatabase.CallData) -> PulseOximeterParams:
+        params = PulseOximeterParams(**self.default_params.model_dump())
+        if len(call_data.params) > 0:
+            params.probe_position = call_data.params[0]
+
+        return params
 
     def handle_call(self, call_data: ActionDatabase.CallData) -> str:
-        return self.connect(PulseOximeterParams(probe_position=call_data.params[0]))
+        return self.connect(self.extract_params(call_data))
 
     def connect(self, params: PulseOximeterParams):
-        if self.connection_params is not None:
+        if self.is_connected:
             raise Exception("Pulse Oximeter already connected")
         self.connection_params = params
         return f"Pulse Oximeter connected on {params.probe_position}"
@@ -284,22 +313,26 @@ class PulseOximeterManager(DeviceConnectionManager_Base):
         return PulseOximeterManager._params_to_md(PulseOximeterParams)
 
     def get_state(self) -> str:
-        if self.connection_params is None:
+        if not self.is_connected:
             return "Pulse Oximeter not connected"
         else:
             return f"Pulse Oximeter connected on {self.connection_params.probe_position}"
 
     def exposed_vitals(self) -> List[Vitals]:
-        if self.connection_params is None:
+        if not self.is_connected:
             return []
-        return [Vitals.HEART_RATE, Vitals.RESPIRATORY_RATE]
+        return [Vitals.HEART_RATE, Vitals.OXYGEN_SATURATION]
+    
+    @property
+    def is_connected(self) -> bool:
+        return self.connection_params is not None
 
 
 class VentilatorParams(BaseModel):
     mode: str = Field(..., description='Ventilation mode, e.g., "AC", "PC", "PSV"')
     fio2: float = Field(..., description='Fraction of Inspired Oxygen, a value between 0.21 and 1.0')
 
-class VentilatorManager(DeviceConnectionManager_Base):
+class VentilatorManager(DeviceHandler_Base):
     def __init__(self) -> None:
         self.connection_params: Optional[VentilatorParams] = None
 
@@ -307,7 +340,7 @@ class VentilatorManager(DeviceConnectionManager_Base):
         return self.connect(VentilatorParams(mode=call_data.params[0], fio2=float(call_data.params[1])))
 
     def connect(self, params: VentilatorParams):
-        if self.connection_params is not None:
+        if self.is_connected:
             raise Exception("Ventilator already connected")
         self.connection_params = params
         return f"Ventilator connected in {params.mode} mode, FiO2: {params.fio2}"
@@ -317,21 +350,25 @@ class VentilatorManager(DeviceConnectionManager_Base):
         return VentilatorManager._params_to_md(VentilatorParams)
 
     def get_state(self) -> str:
-        if self.connection_params is None:
+        if not self.is_connected:
             return "Ventilator not connected"
         else:
             return f"Ventilator connected in {self.connection_params.mode} mode, FiO2: {self.connection_params.fio2}"
 
     def exposed_vitals(self) -> List[Vitals]:
-        if self.connection_params is None:
+        if not self.is_connected:
             return []
         return [Vitals.RESPIRATORY_RATE] # [Vitals.CO2_LEVEL]
+    
+    @property
+    def is_connected(self) -> bool:
+        return self.connection_params is not None
     
 
 class ContinuousGlucometerParams(BaseModel):
     pass
 
-class ContinuousGlucometerManager(DeviceConnectionManager_Base):
+class ContinuousGlucometerManager(DeviceHandler_Base):
     def __init__(self) -> None:
         self.connection_params: Optional[ContinuousGlucometerParams] = None
 
@@ -339,7 +376,7 @@ class ContinuousGlucometerManager(DeviceConnectionManager_Base):
         return self.connect(ContinuousGlucometerParams())
 
     def connect(self, params: ContinuousGlucometerParams):
-        if self.connection_params is not None:
+        if self.is_connected:
             raise Exception("Continuous Glucometer already connected")
         self.connection_params = params
         return f"Continuous Glucometer connected"
@@ -349,17 +386,21 @@ class ContinuousGlucometerManager(DeviceConnectionManager_Base):
         return ContinuousGlucometerManager._params_to_md(ContinuousGlucometerParams)
     
     def get_state(self) -> str:
-        if self.connection_params is None:
+        if not self.is_connected:
             return "Continuous Glucometer not connected"
         else:
             return f"Continuous Glucometer connected"
         
     def exposes_vitals(self) -> List[Vitals]:
         return [Vitals.BLOOD_GLUCOSE]
+    
+    @property
+    def is_connected(self) -> bool:
+        return self.connection_params is not None
 
 
 
-class DeviceManager:
+class DeviceInterface:
     def __init__(self) -> None:
         self.iv_manager = IVAccessManager()
         self.io_manager = IOAccessManager()
@@ -369,7 +410,7 @@ class DeviceManager:
         self.ventilator_manager = VentilatorManager()
         self.continuous_glucometer_manager = ContinuousGlucometerManager()
 
-        self.all_managers: List[DeviceConnectionManager_Base] = [
+        self.all_managers: List[DeviceHandler_Base] = [
             self.iv_manager,
             self.io_manager,
             self.ekg_manager,
@@ -379,46 +420,63 @@ class DeviceManager:
             self.continuous_glucometer_manager,
         ]
 
-    def full_state_markdown(self) -> List[str]:
+    def full_state_markdown(self, only_connected=False) -> List[str]:
         states: List[str] = []
         for manager in self.all_managers:
-            states.append(manager.get_state())
+            if manager.is_connected or not only_connected:
+                states.append(manager.get_state())
         
         return states
     
-    def get_manager_from_call_data(self, call_data: ActionDatabase.CallData) -> DeviceConnectionManager_Base | None:
+    def get_manager_from_call_data(self, call_data: ActionDatabase.CallData) -> DeviceHandler_Base | None:
         for manager in self.all_managers:
             if call_data.name.lower() in manager.action_name.lower():
                 return manager
         return None
+    
+    def handle_call(self, call_data: ActionDatabase.CallData) -> str:
+        manager = self.get_manager_from_call_data(call_data)
+        if manager is None:
+            raise Exception(f"Could not find manager for {call_data.name}")
+        return manager.handle_call(call_data)
+
+    def exposed_vitals(self) -> List[Vitals]:
+        vitals: List[Vitals] = []
+        for manager in self.all_managers:
+            vitals.extend(manager.exposed_vitals())
+        return list(set(vitals))
 
 
 if __name__ == "__main__":
     async def main():
-        device_manager = DeviceManager()
+        device_interface = DeviceInterface()
 
         action_db = ActionDatabase()
 
         input_commands = [
             "get IV access",
             "get IO access",
-            # "connect the EKG",
-            # "connect the BP monitor",
-            # "connect the pulse oximeter",
+            "connect the EKG",
+            "connect the BP monitor",
+            "connect the pulse oximeter",
             # "connect the ventilator",
             # "connect the continuous glucometer",
         ]
 
         for input_command in input_commands:
             action = action_db.get_relevant_actions(input_command)[0]
-            task_call = action_db.get_action_from_call(action.examples[0].action, action.examples[0].input)
+            example = action.examples[0]
+            if isinstance(example, ActionExample):
+                task_call = action_db.get_action_from_call(action.examples[0].action, action.examples[0].input)
+            else:
+                task_call = action_db.get_action_from_call(action.name, example)
 
-            print(task_call.full_input)
+            logger.info(task_call.full_input)
 
-            connection_manager = device_manager.get_manager_from_call_data(task_call.call_data)
-            result = connection_manager.handle_call(task_call.call_data)
-            print(result)
+            response = device_interface.handle_call(task_call.call_data)
+            logger.info(response)
 
-            print(device_manager.full_state_markdown())
+            logger.info(device_interface.full_state_markdown(only_connected=True))
+            logger.info(device_interface.exposed_vitals())
 
     asyncio.run(main())
