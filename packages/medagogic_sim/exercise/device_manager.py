@@ -1,4 +1,5 @@
 from __future__ import annotations
+from abc import ABC, abstractmethod
 from enum import Enum
 
 from typing import Any, Dict, Final, Generic, List, Optional, Type, TypeVar
@@ -32,21 +33,23 @@ class FuzzyEnumMatcher(Generic[T, V]):
 
         return best_match if best_ratio > 0.9 else None
 
-class DeviceConnectionManager_Base:
+class DeviceConnectionManager_Base(ABC):
     action_name: str = "NOT SET"
 
     @staticmethod
+    @abstractmethod
     def connection_params_markdown() -> List[str]:
-        return []
+        pass
     
+    @abstractmethod
     def get_state(self) -> str:
-        return ""
+        pass
     
     def exposed_vitals(self) -> List[Vitals]:
         return []
     
+    @abstractmethod
     def handle_call(self, call_data: ActionDatabase.CallData) -> str:
-        print(call_data)
         pass
     
     @staticmethod
@@ -104,13 +107,11 @@ class IVAccessManager(DeviceConnectionManager_Base):
         self.action_name = "Obtain IV access ($location)"
 
     def handle_call(self, call_data: ActionDatabase.CallData) -> str:
-        params = call_data.params
-        location_str = params[0].strip()
-        location_enum = FuzzyEnumMatcher.str_to_enum(location_str, IVAccessLocation)
+        location_enum = FuzzyEnumMatcher.str_to_enum(call_data.params[0].strip(), IVAccessLocation)
         if location_enum:
             return self.connect(IVAccessParams(location=location_enum))
         
-        raise Exception(f"Invalid parameters for {self.action_name}: {params}")
+        raise Exception(f"Invalid parameters for {self.action_name}: {call_data.params}")
 
     def connect(self, params: IVAccessParams) -> str:
         if params.location in self.connected_ivs:
@@ -141,7 +142,7 @@ class IOAccessLocation(Enum):
 
 class IOAccessParams(BaseModel):
     location: IOAccessLocation
-    needle_size: str = Field(..., pattern=r'\d+G', description='Gauge of needle, eg "18G", "20G", "22G"')
+    needle_size: Optional[str] = Field(default=None, pattern=r'\d+G', description='Gauge of needle, eg "18G", "20G", "22G"')
 
 
 class IOAccessManager(DeviceConnectionManager_Base):
@@ -150,11 +151,19 @@ class IOAccessManager(DeviceConnectionManager_Base):
 
         self.action_name = "Obtain IO access ($location, $size)"
 
+    def handle_call(self, call_data: ActionDatabase.CallData) -> str:
+        location_enum = FuzzyEnumMatcher.str_to_enum(call_data.params[0].strip(), IOAccessLocation)
+        needle_size = call_data.params[1].strip() if len(call_data.params) > 1 else None
+        if location_enum:
+            return self.connect(IOAccessParams(location=location_enum, needle_size=needle_size))
+        raise Exception(f"Invalid parameters for {self.action_name}: {call_data.params}")
+
+
     def connect(self, params: IOAccessParams):
         if params.location in self.connected_ios:
             raise Exception(f"IO already connected to {params.location}")
-        
         self.connected_ios[params.location] = params
+        return f"IO access established in {params.location.value}"
 
     @staticmethod
     def connection_params_markdown() -> List[str]:
@@ -176,11 +185,14 @@ class EKGConnectionManager(DeviceConnectionManager_Base):
         self.ekg_connected: bool = False
         self.action_name = "Connect EKG/ECG"
 
-    def connect(self, params: EKGConnectionParams):
+    def handle_call(self, call_data: ActionDatabase.CallData) -> str:
+        return self.connect(EKGConnectionParams())
+
+    def connect(self, params: EKGConnectionParams) -> str:
         if self.ekg_connected:
             raise Exception(f"EKG already connected")
-        
         self.ekg_connected = True
+        return f"EKG connected"
 
     @staticmethod
     def connection_params_markdown() -> List[str]:
@@ -203,29 +215,30 @@ class NIBPMonitorParams(BaseModel):
 
 class NIBPMonitorManager(DeviceConnectionManager_Base):
     def __init__(self) -> None:
-        self.nibp_connected: bool = False
         self.nibp_params: Optional[NIBPMonitorParams] = None
         self.action_name = "Connect BP monitor"
 
+    def handle_call(self, call_data: ActionDatabase.CallData) -> str:
+        return self.connect(NIBPMonitorParams())
+
     def connect(self, params: NIBPMonitorParams):
-        if self.nibp_connected:
+        if self.nibp_params is not None:
             raise Exception("NIBP already connected")
-        
-        self.nibp_connected = True
         self.nibp_params = params
+        return "NIBP monitor connected"
 
     @staticmethod
     def connection_params_markdown() -> List[str]:
         return NIBPMonitorManager._params_to_md(NIBPMonitorParams)
 
     def get_state(self) -> str:
-        if not self.nibp_connected:
+        if self.nibp_params is None:
             return "NIBP monitor not connected"
         else:
             return f"NIBP monitor connected"
 
     def exposed_vitals(self) -> List[Vitals]:
-        if not self.nibp_connected:
+        if self.nibp_params is None:
             return []
         return [Vitals.BLOOD_PRESSURE]
 
@@ -238,11 +251,14 @@ class PulseOximeterManager(DeviceConnectionManager_Base):
         self.connection_params: Optional[PulseOximeterParams] = None
         self.action_name = "Connect pulse oximeter"
 
+    def handle_call(self, call_data: ActionDatabase.CallData) -> str:
+        return self.connect(PulseOximeterParams(probe_position=call_data.params[0]))
+
     def connect(self, params: PulseOximeterParams):
         if self.connection_params is not None:
             raise Exception("Pulse Oximeter already connected")
-        
         self.connection_params = params
+        return f"Pulse Oximeter connected on {params.probe_position}"
 
     @staticmethod
     def connection_params_markdown() -> List[str]:
@@ -268,11 +284,14 @@ class VentilatorManager(DeviceConnectionManager_Base):
     def __init__(self) -> None:
         self.connection_params: Optional[VentilatorParams] = None
 
+    def handle_call(self, call_data: ActionDatabase.CallData) -> str:
+        return self.connect(VentilatorParams(mode=call_data.params[0], fio2=float(call_data.params[1])))
+
     def connect(self, params: VentilatorParams):
         if self.connection_params is not None:
             raise Exception("Ventilator already connected")
-        
         self.connection_params = params
+        return f"Ventilator connected in {params.mode} mode, FiO2: {params.fio2}"
 
     @staticmethod
     def connection_params_markdown() -> List[str]:
@@ -297,11 +316,14 @@ class ContinuousGlucometerManager(DeviceConnectionManager_Base):
     def __init__(self) -> None:
         self.connection_params: Optional[ContinuousGlucometerParams] = None
 
+    def handle_call(self, call_data: ActionDatabase.CallData) -> str:
+        return self.connect(ContinuousGlucometerParams())
+
     def connect(self, params: ContinuousGlucometerParams):
         if self.connection_params is not None:
             raise Exception("Continuous Glucometer already connected")
-        
         self.connection_params = params
+        return f"Continuous Glucometer connected"
 
     @staticmethod
     def connection_params_markdown() -> List[str]:
@@ -357,15 +379,27 @@ if __name__ == "__main__":
         device_manager = DeviceManager()
 
         action_db = ActionDatabase()
-        action = action_db.get_relevant_actions("Get IV access")[0]
-        task_call = action_db.get_action_from_call(action.examples[0].action, action.examples[0].input)
 
-        print(task_call.full_input)
+        input_commands = [
+            "get IV access",
+            "get IO access",
+            # "connect the EKG",
+            # "connect the BP monitor",
+            # "connect the pulse oximeter",
+            # "connect the ventilator",
+            # "connect the continuous glucometer",
+        ]
 
-        connection_manager = device_manager.get_manager_from_call_data(task_call.call_data)
-        result = connection_manager.handle_call(task_call.call_data)
-        print(result)
+        for input_command in input_commands:
+            action = action_db.get_relevant_actions(input_command)[0]
+            task_call = action_db.get_action_from_call(action.examples[0].action, action.examples[0].input)
 
-        print(device_manager.full_state_markdown())
+            print(task_call.full_input)
+
+            connection_manager = device_manager.get_manager_from_call_data(task_call.call_data)
+            result = connection_manager.handle_call(task_call.call_data)
+            print(result)
+
+            print(device_manager.full_state_markdown())
 
     asyncio.run(main())
