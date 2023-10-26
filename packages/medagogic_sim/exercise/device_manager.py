@@ -316,7 +316,7 @@ class PulseOximeterManager(DeviceHandler_Base):
         if not self.is_connected:
             return "Pulse Oximeter not connected"
         else:
-            return f"Pulse Oximeter connected on {self.connection_params.probe_position}"
+            return f"Pulse Oximeter connected on {self.connection_params.probe_position}"   # type: ignore
 
     def exposed_vitals(self) -> List[Vitals]:
         if not self.is_connected:
@@ -353,7 +353,7 @@ class VentilatorManager(DeviceHandler_Base):
         if not self.is_connected:
             return "Ventilator not connected"
         else:
-            return f"Ventilator connected in {self.connection_params.mode} mode, FiO2: {self.connection_params.fio2}"
+            return f"Ventilator connected in {self.connection_params.mode} mode, FiO2: {self.connection_params.fio2}"   # type: ignore
 
     def exposed_vitals(self) -> List[Vitals]:
         if not self.is_connected:
