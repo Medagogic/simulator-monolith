@@ -80,21 +80,20 @@
     },
     {
         "name": "Obtain IO access ($location, $size)",
-        "description": "Establish intraosseous access when IV access is not possible. User MUST specify location and size.",
-        "exampleInputs": ["Let's try for IO access", "Obtain IO access - right tibia, 15mm", "Can we get IO access? Right humerus, 25mm"],
-        "exampleActions": ["Obtain IO access (right tibia, 15mm)", "Obtain IO access (left humerus, 25mm)"],
+        "description": "Establish IO (intraosseous) access, typically when IV access is not possible.",
+        "exampleInputs": ["Let's try for IO access", "Obtain IO access - 15mm", "Can we get IO access? proximal tibia 25mm"],
         "examples": [
             {
                 "input": "Let's try for IO access",
-                "action": "Obtain IO access (right tibia, 15mm)"
+                "action": "Obtain IO access"
             },
             {
-                "input": "Obtain IO access - right tibia, 15mm",
-                "action": "Obtain IO access (right tibia, 15mm)"
+                "input": "Obtain IO access - 15mm",
+                "action": "Obtain IO access (15mm)"
             },
             {
-                "input": "Can we get IO access? Right humerus, 25mm",
-                "action": "Obtain IO access (right humerus, 25mm)"
+                "input": "Can we get IO access? Proximal tibia, 25mm",
+                "action": "Obtain IO access (proximal tibia, 25mm)"
             }
         ],
         "requirements": [],

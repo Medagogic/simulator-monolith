@@ -1,6 +1,7 @@
 from __future__ import annotations
 from abc import ABC, abstractmethod
 from enum import Enum
+import re
 
 from typing import Any, Dict, Final, Generic, List, Optional, Type, TypeVar
 from pydantic import BaseModel, Field
@@ -132,38 +133,54 @@ class IVAccessManager(DeviceConnectionManager_Base):
     
 class IOAccessLocation(Enum):
     PROXIMAL_TIBIA = "proximal tibia"
-    DISTAL_FEMUR = "distal femur"
     DISTAL_TIBIA = "distal tibia"
-    PROXIMAL_HUMERUS = "proximal humerus"
-    STERNUM = "sternum"
-    RADIUS_AND_ULNA = "radius and ulna"
-    CALCANEUS = "calcaneus"
+    DISTAL_FEMUR = "distal femur"
+
+class IOBodySide(Enum):
+    LEFT = "left"
+    RIGHT = "right"
 
 
 class IOAccessParams(BaseModel):
     location: IOAccessLocation
-    needle_size: Optional[str] = Field(default=None, pattern=r'\d+G', description='Gauge of needle, eg "18G", "20G", "22G"')
+    needle_size: str = Field(default=None, pattern=r'\d+G', description='Gauge of needle, eg "18G", "20G", "22G"')
+    side: IOBodySide = Field(default=None, description='Side of body, e.g., "left", "right"')
 
 
 class IOAccessManager(DeviceConnectionManager_Base):
     def __init__(self) -> None:
         self.connected_ios: Dict[IOAccessLocation, IOAccessParams] = {}
-
         self.action_name = "Obtain IO access ($location, $size)"
+        self.default_params = IOAccessParams(location=IOAccessLocation.PROXIMAL_TIBIA, needle_size="18G", side=IOBodySide.LEFT)
+
+
+    def extract_params(self, call_data: ActionDatabase.CallData) -> IOAccessParams:
+        params = IOAccessParams(**self.default_params.model_dump())
+
+        for p in call_data.params:
+            matched_location = FuzzyEnumMatcher.str_to_enum(p.strip(), IOAccessLocation)
+            if matched_location:
+                params.location = matched_location
+            elif re.match(r'\d+G', p.strip()):
+                params.needle_size = p.strip()
+            else:
+                raise Exception(f"Invalid parameters for {self.action_name}: {call_data.params}")
+
+        return params
+    
 
     def handle_call(self, call_data: ActionDatabase.CallData) -> str:
-        location_enum = FuzzyEnumMatcher.str_to_enum(call_data.params[0].strip(), IOAccessLocation)
-        needle_size = call_data.params[1].strip() if len(call_data.params) > 1 else None
-        if location_enum:
-            return self.connect(IOAccessParams(location=location_enum, needle_size=needle_size))
-        raise Exception(f"Invalid parameters for {self.action_name}: {call_data.params}")
+        return self.connect(self.extract_params(call_data))
 
 
     def connect(self, params: IOAccessParams):
         if params.location in self.connected_ios:
             raise Exception(f"IO already connected to {params.location}")
         self.connected_ios[params.location] = params
-        return f"IO access established in {params.location.value}"
+        return self.connection_str(params)
+    
+    def connection_str(self, params: IOAccessParams):
+        return f"IO access established in {params.side.value} {params.location.value} ({params.needle_size})"
 
     @staticmethod
     def connection_params_markdown() -> List[str]:
@@ -173,8 +190,10 @@ class IOAccessManager(DeviceConnectionManager_Base):
         if len(self.connected_ios) == 0:
             return "No IO access"
         else:
-            output = "IO access established in " + ", ".join([f"{loc.value}" for loc in self.connected_ios.keys()])
-            return output
+            output = ""
+            for connected_io in self.connected_ios.values():
+                output += self.connection_str(connected_io) + "\n"
+            return output.strip()
 
 
 class EKGConnectionParams(BaseModel):
