@@ -28,7 +28,7 @@ if __name__ == "__main__":
 
     async def main():
         simulator = MedagogicSimulator()
-        await simulator.process_user_input("Do a chin lift")
+        await simulator.process_user_input("Get IV access")
 
         while True:
             await asyncio.sleep(1)

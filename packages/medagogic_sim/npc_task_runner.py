@@ -70,7 +70,7 @@ class TaskRunner:
             self.update_receipt.on_new_immediate_state_generated.subscribe(self.__handle_current_state_recalculated)
             self.update_receipt.on_finished.subscribe(self.__handle_sim_update_finished)
         else:
-            self.add_pending_task(self.__generate_dialog_for_assessment())
+            self.add_pending_task(self.__generate_basic_completion_dialog())
 
         # Then wait for anims and dialog
         anim_task = self.context.animation_resolver.resolve_animation(self.npc.id, self.task.animationId)
@@ -152,10 +152,10 @@ What do you say to the Team Lead? Max one sentence. Be professional, concise, an
         self.on_dialog.on_next(response)
 
 
-    async def __generate_dialog_for_assessment(self) -> None:
+    async def __generate_basic_completion_dialog(self) -> None:
         current_patient_state = self.context.simulation.exercise.current_state.to_markdown()
 
-        logger.info(f"Figuring out dialog for assessment: {self.task.call_data}")
+        logger.info(f"Figuring out completion dialog for: {self.task.call_data}")
 
         prompt = f"""
 You are {self.npc.markdown_summary()} in a pediatric emergency training simulation.
