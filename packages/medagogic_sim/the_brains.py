@@ -12,9 +12,9 @@ if TYPE_CHECKING:
 
 import asyncio
 from packages.medagogic_sim.gpt.medagogic_gpt import MODEL_GPT35, MODEL_GPT4, gpt, UserMessage, SystemMessage, GPTMessage
-from packages.medagogic_sim.exercise.device_definitions import DEVICE_CONFIG
 from rx.subject import Subject
 from packages.medagogic_sim.actions_for_brains import ActionDatabase, TaskCall
+
 
 import logging
 from packages.medagogic_sim.logger.logger import get_logger
@@ -49,13 +49,8 @@ class BrainBase:
 
     @property
     def full_world_state(self) -> str:
-        device_lines: List[str] = []
-        for device in DEVICE_CONFIG:
-            connected = device.id in self.context.connected_device_ids
-            line = f"{device.display_name}: {connected and 'Connected' or 'Not connected'}"
-            device_lines.append(line)
-        
-        devices = "\n".join(device_lines)
+        device_lines = self.context.device_interface.full_state_markdown(only_connected=False)
+        devices = "\n".join([f" - {l}" for l in device_lines])
 
         history = self.context.history.get_cached_summary()
 
@@ -97,7 +92,7 @@ NONE
 
 If YES:
     - Provide a comma separated list of actions to perform, as <action 1 name> (<parameter 1>, <parameter 2>, ...), <action 2 name> (<parameter 1>, <parameter 2>, ...), ...
-    - eg: `Obtain IV access (right arm), Administer medication (normal saline, 500mL, IV)`
+    - eg: `Obtain IV access, Administer medication (normal saline, 500mL, IV)`
     - eg: `Give oxygen via non-rebreather mask (15L/min)`
     - eg: `Assess airway`
     - eg: `Prepare bolus, Chin lift`
@@ -115,7 +110,7 @@ For example:
 
 Example 1: User input is possible, single action
 ```
-YES: Obtain IV access (right arm)
+YES: Obtain IV access
 ```
 
 Example 2: User input is possible, but more information is required
@@ -145,7 +140,7 @@ NO: We don't have IV access yet.
 
 Example 7: User input is possible due to order of actions
 ```
-YES: Obtain IV access (right arm), Administer medication (normal saline, 500mL, IV)
+YES: Obtain IV access, Administer medication (normal saline, 500mL, IV)
 ```
 
 Example 8: User input is not an instruction

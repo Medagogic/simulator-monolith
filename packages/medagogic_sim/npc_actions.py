@@ -55,7 +55,7 @@ class BraniacActioner:
         self.current_task_runner = TaskRunner(self.npc, task)
 
         self.current_task_runner.on_dialog.subscribe(self.__handle_task_runner_dialog)
-                
+    
         await self.current_task_runner.run()
             
         self.on_action_complete.on_next(task)

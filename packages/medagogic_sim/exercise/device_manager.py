@@ -110,14 +110,15 @@ class IVAccessManager(DeviceHandler_Base):
     def __init__(self) -> None:
         self.connected_ivs: Dict[IVAccessLocation, IVAccessParams] = {}
 
-        self.action_name = "Obtain IV access ($location)"
+        self.action_name = "Obtain IV access"
 
     def handle_call(self, call_data: ActionDatabase.CallData) -> str:
-        location_enum = FuzzyEnumMatcher.str_to_enum(call_data.params[0].strip(), IVAccessLocation)
-        if location_enum:
-            return self.connect(IVAccessParams(location=location_enum))
+        return self.connect(IVAccessParams(location=IVAccessLocation.LEFT_HAND))
+        # location_enum = FuzzyEnumMatcher.str_to_enum(call_data.params[0].strip(), IVAccessLocation)
+        # if location_enum:
+        #     return self.connect(IVAccessParams(location=location_enum))
         
-        raise Exception(f"Invalid parameters for {self.action_name}: {call_data.params}")
+        # raise Exception(f"Invalid parameters for {self.action_name}: {call_data.params}")
 
     def connect(self, params: IVAccessParams) -> str:
         if params.location in self.connected_ivs:

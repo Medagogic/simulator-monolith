@@ -69,6 +69,10 @@ class TaskRunner:
 
             self.update_receipt.on_new_immediate_state_generated.subscribe(self.__handle_current_state_recalculated)
             self.update_receipt.on_finished.subscribe(self.__handle_sim_update_finished)
+        elif action_type == ActionType.DEVICE:
+            response = self.context.device_interface.handle_call(self.task.call_data)
+            logger.debug(response)
+            self.add_pending_task(self.__generate_basic_completion_dialog())
         else:
             self.add_pending_task(self.__generate_basic_completion_dialog())
 
@@ -206,7 +210,7 @@ if __name__ == "__main__":
 
         npc = list(npc_manager.npcs.values())[0]
 
-        task_runner = TaskRunner(npc, context.action_db.get_action_from_call("Chin lift", "Perform a chin lift please."))
+        task_runner = TaskRunner(npc, context.action_db.get_action_from_call("Connect pulse oximeter", "Let's get the pulse oximeter connected"))
 
         await task_runner.run()
 

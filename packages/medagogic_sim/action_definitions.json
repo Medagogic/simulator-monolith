@@ -54,23 +54,23 @@
         "type": "assessment"
     },
     {
-        "name": "Obtain IV access ($location)",
+        "name": "Obtain IV access",
         "description": "Establish an intravenous line for fluid or medication administration.",
         "defaults": "Default location is left arm.",
-        "exampleInputs": ["Let's get an IV in", "Obtain IV access - right arm", "Can we get an IV in? Right arm"],
-        "exampleActions": ["Obtain IV access (left hand)", "Obtain IV access (right arm)"],
+        "exampleInputs": ["Let's get an IV in", "Obtain IV access", "Can we get an IV in?"],
+        "exampleActions": ["Obtain IV access"],
         "examples": [
             {
                 "input": "Let's get an IV in",
-                "action": "Obtain IV access (left hand)"
+                "action": "Obtain IV access"
             },
             {
-                "input": "Obtain IV access - right arm",
-                "action": "Obtain IV access (right arm)"
+                "input": "Obtain IV access asap",
+                "action": "Obtain IV access"
             },
             {
-                "input": "Can we get an IV in? Right arm",
-                "action": "Obtain IV access (right arm)"
+                "input": "Can we get an IV in?",
+                "action": "Obtain IV access"
             }
         ],
         "requirements": [],

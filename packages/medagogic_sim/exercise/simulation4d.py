@@ -18,6 +18,7 @@ from packages.medagogic_sim.history.sim_history import Evt_CompletedIntervention
 from packages.medagogic_sim.logger.logger import get_logger, logging
 from packages.medagogic_sim.exercise.exercise_loader import read_exercise
 
+
 if TYPE_CHECKING:
     from packages.medagogic_sim.history.sim_history import HistoryLog
     
