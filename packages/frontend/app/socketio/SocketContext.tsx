@@ -6,6 +6,7 @@ import { io, Socket } from "socket.io-client";
 import { PatientIO } from "./PatientIO";
 import { ChatterIO } from "./ChatterIO";
 import { TeamIO } from "./TeamIO";
+import { DeviceIO } from "./DeviceIO";
 
 // Defining the context shape
 interface ISocketContext {
@@ -13,6 +14,7 @@ interface ISocketContext {
     patientIO: PatientIO | null;
     chatterIO: ChatterIO | null;
     teamIO: TeamIO | null;
+    deviceIO: DeviceIO | null;
 }
 
 const SocketContext = createContext<ISocketContext | null>(null);
@@ -27,6 +29,7 @@ interface ContextSingleton {
     patientIO: PatientIO;
     chatterIO: ChatterIO;
     teamIO: TeamIO;
+    deviceIO: DeviceIO;
     session_id: string | null;
 }
 
@@ -39,11 +42,13 @@ const getContextSingleton = () => {
     const patientIO = new PatientIO(socket);
     const chatterIO = new ChatterIO(socket);
     const teamIO = new TeamIO(socket);
+    const deviceIO = new DeviceIO(socket);
     context_singleton = {
         socket: socket,
         patientIO: patientIO,
         chatterIO: chatterIO,
         teamIO: teamIO,
+        deviceIO: deviceIO,
         session_id: null
     };
   }
@@ -55,6 +60,7 @@ export const SocketProvider: React.FC<SocketProviderProps> = ({ session_id, chil
     const [patientIO, setPatientIO] = useState<PatientIO | null>(null);
     const [chatterIO, setChatterIO] = useState<ChatterIO | null>(null);
     const [teamIO, setTeamIO] = useState<TeamIO | null>(null);
+    const [deviceIO, setDeviceIO] = useState<DeviceIO | null>(null);
 
     useEffect(() => {
         if (typeof window !== "undefined") {
@@ -64,6 +70,7 @@ export const SocketProvider: React.FC<SocketProviderProps> = ({ session_id, chil
             setPatientIO(contextSingleton.patientIO);
             setChatterIO(contextSingleton.chatterIO);
             setTeamIO(contextSingleton.teamIO);
+            setDeviceIO(contextSingleton.deviceIO);
 
             if (contextSingleton.session_id != session_id) {
                 contextSingleton.session_id = session_id;
@@ -79,7 +86,7 @@ export const SocketProvider: React.FC<SocketProviderProps> = ({ session_id, chil
     }, []);
 
     return (
-        <SocketContext.Provider value={{ socket:socket, patientIO:patientIO, chatterIO:chatterIO, teamIO: teamIO }}>
+        <SocketContext.Provider value={{ socket:socket, patientIO:patientIO, chatterIO:chatterIO, teamIO: teamIO, deviceIO: deviceIO }}>
             {children}
         </SocketContext.Provider>
     );
@@ -113,4 +120,14 @@ export const useChatterIO = (): ChatterIO | null => {
     }
 
     return context.chatterIO;
+}
+
+export const useDeviceIO = (): DeviceIO | null => {
+    const context = useContext(SocketContext);
+
+    if (!context) {
+        throw new Error("useDeviceIO must be used within a SocketProvider");
+    }
+
+    return context.deviceIO;
 }
