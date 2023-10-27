@@ -29,8 +29,6 @@ class SessionServer:
             allow_headers=["*"]
         )
 
-        self.__setup_serve_next_app()
-
         self.sio = socketio.AsyncServer(async_mode="asgi", cors_allowed_origins=[]) # FastAPI handles CORS
         self.socket_app = socketio.ASGIApp(self.sio, socketio_path="/")
 
@@ -47,6 +45,9 @@ class SessionServer:
         async def connect(sid, env):
             print(f"SIO client connection at / - {sid}")
 
+        # This must be last, I think? Probably an indicator that something is fucked.
+        self.__setup_serve_next_app()
+
     
     def __setup_serve_next_app(self) -> None:
         if LaunchConfig.noFrontend():
@@ -54,6 +55,7 @@ class SessionServer:
             return
         
         self.app.mount("/_next/static", StaticFiles(directory="packages/frontend/out/_next/static"), name="static")
+
         def serve_index(full_path: Request):
             # Hacky as fuuuuck
             path = full_path.path_params['full_path']
