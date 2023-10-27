@@ -11,6 +11,28 @@ export type NpcId = string | null;
 export type Message = string;
 export type Timestamp1 = string;
 export type NpcId1 = string;
+export type IVAccessLocation = "left hand" | "right hand";
+export type IvAccess = IVAccessParams[];
+export type IOAccessLocation = "proximal tibia" | "distal tibia" | "distal femur";
+/**
+ * Gauge of needle, eg "18G", "20G", "22G"
+ */
+export type NeedleSize = string;
+export type IOBodySide = "left" | "right";
+export type IoAccess = IOAccessParams[];
+export type EkgConnected = boolean;
+/**
+ * Type of probe used, e.g., "Finger", "Earlobe", "Foot"
+ */
+export type ProbePosition = string;
+/**
+ * Ventilation mode, e.g., "AC", "PC", "PSV"
+ */
+export type Mode = string;
+/**
+ * Fraction of Inspired Oxygen, a value between 0.21 and 1.0
+ */
+export type Fio2 = number;
 export type Id = string;
 export type Name = string;
 export type Role = string;
@@ -54,6 +76,7 @@ export type TargetNpcId = string | null;
 export interface ScribeEvents {
   chat_event: ChatEvent;
   chat_message: MessageFromNPC;
+  device_update: SIO_ConnectedDevices;
   npc_data: SIO_NPCData;
   patient_vitals_update: VitalSigns;
   combatlog_update: CombatLogUpdateData;
@@ -87,6 +110,43 @@ export interface MessageFromNPC {
   message: Message;
   timestamp: Timestamp1;
   npc_id: NpcId1;
+}
+export interface SIO_ConnectedDevices {
+  iv_access?: IvAccess;
+  io_access?: IoAccess;
+  ekg_connected: EkgConnected;
+  nibp?: NIBPMonitorParams | null;
+  pulse_ox?: PulseOximeterParams | null;
+  ventilator?: VentilatorParams | null;
+  continuous_glucometer?: ContinuousGlucometerParams | null;
+}
+export interface IVAccessParams {
+  location: IVAccessLocation;
+  [k: string]: unknown;
+}
+export interface IOAccessParams {
+  location: IOAccessLocation;
+  needle_size?: NeedleSize;
+  /**
+   * Side of body, e.g., "left", "right"
+   */
+  side?: IOBodySide;
+  [k: string]: unknown;
+}
+export interface NIBPMonitorParams {
+  [k: string]: unknown;
+}
+export interface PulseOximeterParams {
+  probe_position: ProbePosition;
+  [k: string]: unknown;
+}
+export interface VentilatorParams {
+  mode: Mode;
+  fio2: Fio2;
+  [k: string]: unknown;
+}
+export interface ContinuousGlucometerParams {
+  [k: string]: unknown;
 }
 export interface SIO_NPCData {
   id: Id;

@@ -1,0 +1,186 @@
+{
+    "$defs": {
+        "ContinuousGlucometerParams": {
+            "properties": {},
+            "title": "ContinuousGlucometerParams",
+            "type": "object"
+        },
+        "IOAccessLocation": {
+            "enum": [
+                "proximal tibia",
+                "distal tibia",
+                "distal femur"
+            ],
+            "title": "IOAccessLocation",
+            "type": "string"
+        },
+        "IOAccessParams": {
+            "properties": {
+                "location": {
+                    "$ref": "#/$defs/IOAccessLocation"
+                },
+                "needle_size": {
+                    "default": null,
+                    "description": "Gauge of needle, eg \"18G\", \"20G\", \"22G\"",
+                    "pattern": "\\d+G",
+                    "title": "Needle Size",
+                    "type": "string"
+                },
+                "side": {
+                    "allOf": [
+                        {
+                            "$ref": "#/$defs/IOBodySide"
+                        }
+                    ],
+                    "default": null,
+                    "description": "Side of body, e.g., \"left\", \"right\""
+                }
+            },
+            "required": [
+                "location"
+            ],
+            "title": "IOAccessParams",
+            "type": "object"
+        },
+        "IOBodySide": {
+            "enum": [
+                "left",
+                "right"
+            ],
+            "title": "IOBodySide",
+            "type": "string"
+        },
+        "IVAccessLocation": {
+            "enum": [
+                "left hand",
+                "right hand"
+            ],
+            "title": "IVAccessLocation",
+            "type": "string"
+        },
+        "IVAccessParams": {
+            "properties": {
+                "location": {
+                    "$ref": "#/$defs/IVAccessLocation"
+                }
+            },
+            "required": [
+                "location"
+            ],
+            "title": "IVAccessParams",
+            "type": "object"
+        },
+        "NIBPMonitorParams": {
+            "properties": {},
+            "title": "NIBPMonitorParams",
+            "type": "object"
+        },
+        "PulseOximeterParams": {
+            "properties": {
+                "probe_position": {
+                    "description": "Type of probe used, e.g., \"Finger\", \"Earlobe\", \"Foot\"",
+                    "title": "Probe Position",
+                    "type": "string"
+                }
+            },
+            "required": [
+                "probe_position"
+            ],
+            "title": "PulseOximeterParams",
+            "type": "object"
+        },
+        "VentilatorParams": {
+            "properties": {
+                "mode": {
+                    "description": "Ventilation mode, e.g., \"AC\", \"PC\", \"PSV\"",
+                    "title": "Mode",
+                    "type": "string"
+                },
+                "fio2": {
+                    "description": "Fraction of Inspired Oxygen, a value between 0.21 and 1.0",
+                    "title": "Fio2",
+                    "type": "number"
+                }
+            },
+            "required": [
+                "mode",
+                "fio2"
+            ],
+            "title": "VentilatorParams",
+            "type": "object"
+        }
+    },
+    "properties": {
+        "iv_access": {
+            "default": [],
+            "items": {
+                "$ref": "#/$defs/IVAccessParams"
+            },
+            "title": "Iv Access",
+            "type": "array"
+        },
+        "io_access": {
+            "default": [],
+            "items": {
+                "$ref": "#/$defs/IOAccessParams"
+            },
+            "title": "Io Access",
+            "type": "array"
+        },
+        "ekg_connected": {
+            "title": "Ekg Connected",
+            "type": "boolean"
+        },
+        "nibp": {
+            "anyOf": [
+                {
+                    "$ref": "#/$defs/NIBPMonitorParams"
+                },
+                {
+                    "type": "null"
+                }
+            ],
+            "default": null
+        },
+        "pulse_ox": {
+            "anyOf": [
+                {
+                    "$ref": "#/$defs/PulseOximeterParams"
+                },
+                {
+                    "type": "null"
+                }
+            ],
+            "default": null
+        },
+        "ventilator": {
+            "anyOf": [
+                {
+                    "$ref": "#/$defs/VentilatorParams"
+                },
+                {
+                    "type": "null"
+                }
+            ],
+            "default": null
+        },
+        "continuous_glucometer": {
+            "anyOf": [
+                {
+                    "$ref": "#/$defs/ContinuousGlucometerParams"
+                },
+                {
+                    "type": "null"
+                }
+            ],
+            "default": null
+        }
+    },
+    "required": [
+        "ekg_connected"
+    ],
+    "title": "SIO_ConnectedDevices",
+    "type": "object",
+    "$id": "SIO_ConnectedDevices.schema.json",
+    "additionalProperties": false
+}

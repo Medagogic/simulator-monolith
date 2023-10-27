@@ -9,6 +9,9 @@
         "chat_message": {
             "$ref": "schemas/MessageFromNPC.schema.json"
         },
+        "device_update": {
+            "$ref": "schemas/SIO_ConnectedDevices.schema.json"
+        },
         "npc_data": {
             "$ref": "schemas/SIO_NPCData.schema.json"
         },
@@ -61,6 +64,7 @@
     "required": [
         "chat_event",
         "chat_message",
+        "device_update",
         "npc_data",
         "patient_vitals_update",
         "combatlog_update"

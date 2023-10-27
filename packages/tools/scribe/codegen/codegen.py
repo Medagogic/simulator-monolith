@@ -8,12 +8,21 @@ import re
 from packages.tools.scribe import ScribeEmitSchema, ScribeHandlerSchema
 from packages.tools.scribe.src.scribe_helpers import get_field_info
 import asyncio
+import shutil
 
 def generate_code(verbose=False) -> None:
     this_file = Path(os.path.realpath(__file__))
     this_dir = this_file.parent
     schema_dir = f"{this_dir}/schemas"
     generated_dir = f"{this_dir}/generated"
+
+    if os.path.exists(schema_dir):
+        shutil.rmtree(schema_dir)
+    os.mkdir(schema_dir)
+
+    if os.path.exists(generated_dir):
+        shutil.rmtree(generated_dir)
+    os.mkdir(generated_dir)
 
     emitted_events: List[ScribeEmitSchema] = Router_MedSim.scribe_get_all_emitted_events(Session_MedSim)
     handled_events: List[ScribeHandlerSchema] = Router_MedSim.scribe_get_all_handled_events(Session_MedSim)
@@ -182,13 +191,13 @@ export enum EmitEvent {{
 }}
     """.strip()
 
-    from packages.server.gpt.gpt_api import gpt, MODEL_GPT35, GPTMessage, Role
+    from packages.server.gpt.gpt_api import gpt, MODEL_GPT35, GPTMessage, Role, MODEL_GPT4
 
     async def main():
         show_progress="Generating ScribeClient..."
-        if not verbose:
-            show_progress = False
-        response = await gpt([GPTMessage(role=Role.USER, content=formatted_prompt)], model=MODEL_GPT35, show_progress=show_progress)
+        # if not verbose:
+        show_progress = True
+        response = await gpt([GPTMessage(role=Role.USER, content=formatted_prompt)], model=MODEL_GPT4, show_progress=show_progress, max_tokens=1000)
 
         response = response.strip()
         response = response.replace("```typescript", "").replace("```", "").strip()

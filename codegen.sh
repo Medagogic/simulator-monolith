@@ -21,6 +21,8 @@ if [ -f "$VENV_PATH" ]; then
         exit 1
     fi
 
+    meld "packages/frontend/src/"
+
     # Deactivate the virtual environment (optional, but good practice)
     deactivate
 else
