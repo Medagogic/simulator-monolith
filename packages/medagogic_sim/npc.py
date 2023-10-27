@@ -25,6 +25,7 @@ def get_test_npc(context: ContextForBrains) -> MedicalNPC:
 
     return npc
 
+# NPCs do not emit IO events/subjects, they call into the IO manager
 
 class MedicalNPC():
     def __init__(self, context: ContextForBrains, definition: NPCDefinition, id: str):
@@ -71,7 +72,12 @@ class MedicalNPC():
         self.__try_start_next_task()
 
     async def process_input(self, user_input: str) -> None:
-        await self.brain.process_user_input(user_input)
+        self.context.iomanager.npc_start_thinking(self.id, self.definition.name, user_input)
+        try:
+            await self.brain.process_user_input(user_input)
+        except Exception as e:
+            logger.exception(e)
+            self.on_stop_thinking.on_next(None)
 
     def markdown_summary(self) -> str:
         name = self.definition.name

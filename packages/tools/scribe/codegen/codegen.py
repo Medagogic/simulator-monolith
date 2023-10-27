@@ -1,6 +1,6 @@
 from typing import Any, Dict, List
 from pydantic import BaseModel
-from packages.server.sim_app.medsim import Router_MedSim, Session_MedSim
+from packages.server.sim_app.session_router import Router_MedSim, Session_MedSim
 import json
 import os
 from pathlib import Path

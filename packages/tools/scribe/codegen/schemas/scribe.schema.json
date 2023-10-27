@@ -21,6 +21,9 @@
         "combatlog_update": {
             "$ref": "schemas/CombatLogUpdateData.schema.json"
         },
+        "npc_thinking_updated": {
+            "$ref": "schemas/NPCThinking.schema.json"
+        },
         "__server_on_join_session": {
             "type": "object",
             "properties": {
@@ -67,6 +70,7 @@
         "device_update",
         "npc_data",
         "patient_vitals_update",
-        "combatlog_update"
+        "combatlog_update",
+        "npc_thinking_updated"
     ]
 }

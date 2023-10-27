@@ -1,5 +1,5 @@
 import uvicorn
-from packages.server.sim_app.medsim import Router_MedSim
+from packages.server.sim_app.session_router import Router_MedSim
 from sim_app.static_api import MedagogicAPI
 from web_architecture.sessionserver import SessionServer
 

@@ -4,7 +4,6 @@ from typing import Optional
 from pydantic import BaseModel
 import socketio
 import packages.medagogic_sim.iomanager as iomanager
-from packages.server.sim_app.chat import ChatEvent, HumanMessage, MessageFromNPC
 from packages.tools.scribe import scribe_emits, scribe_handler
 import asyncio
 from .med_session_base import MedSessionBase
@@ -12,6 +11,23 @@ from packages.medagogic_sim.npc_definitions import NPCDefinition
 
 from packages.medagogic_sim.logger.logger import get_logger, logging
 logger = get_logger(level=logging.INFO)
+
+
+class MessageFromNPC(BaseModel):
+    message: str
+    timestamp: str
+    npc_id: str
+
+class ChatEvent(BaseModel):
+    event: str
+    timestamp: str
+    npc_id: Optional[str] = None
+
+class HumanMessage(BaseModel):
+    message: str
+    timestamp: str
+    target_npc_id: Optional[str] = None
+
 
 
 class SIO_NPCData(BaseModel):
@@ -26,6 +42,11 @@ class Session_Chat(MedSessionBase):
         self.medsim.context.iomanager.on_npc_speak.subscribe(self.handle_on_npc_speak)
         self.medsim.context.iomanager.on_npc_start_action.subscribe(self.handle_on_npc_start_action)
         self.medsim.context.iomanager.on_npc_finished_action.subscribe(self.handle_on_npc_finished_action)
+        self.medsim.context.iomanager.on_npc_thinking_updated.subscribe(self.handle_on_npc_thinking_updated)
+
+    @scribe_emits("npc_thinking_updated", iomanager.NPCThinking)
+    def handle_on_npc_thinking_updated(self, data: iomanager.NPCThinking) -> None:
+        asyncio.create_task(self.emit("npc_thinking_updated", data))
 
     def handle_on_npc_speak(self, data: iomanager.NPCSpeech) -> None:
         m = MessageFromNPC(

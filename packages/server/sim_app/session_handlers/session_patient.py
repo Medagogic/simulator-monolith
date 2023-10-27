@@ -1,18 +1,10 @@
 from __future__ import annotations
-from datetime import datetime
-from typing import Dict, List, Optional
-from fastapi import Depends
+from typing import List
 from pydantic import BaseModel
 import socketio
-from packages.medagogic_sim.exercise.markdownexercise import MarkdownExercise
-from packages.medagogic_sim.exercise.simulation_types import ActionType
 from packages.medagogic_sim.history.sim_history import Evt_Assessment, Evt_CompletedIntervention, Evt_StartTask, Evt_TaskConsequence, HistoryEvent
-import packages.medagogic_sim.iomanager as iomanager
-from packages.medagogic_sim.npc_definitions import NPCDefinition
-from packages.server.sim_app.chat import ChatEvent, HumanMessage, MessageFromNPC
-from packages.medagogic_sim.main import MedagogicSimulator, VitalSigns
-from packages.server.web_architecture.sessionrouter import Session, SessionRouter
-from packages.tools.scribe import scribe_emits, scribe_handler
+from packages.medagogic_sim.main import VitalSigns
+from packages.tools.scribe import scribe_emits
 import asyncio
 from .med_session_base import MedSessionBase
 

@@ -1,4 +1,4 @@
-from packages.server.sim_app.medsim import Router_MedSim
+from packages.server.sim_app.session_router import Router_MedSim
 import json
 from packages.server.sim_app.static_api import MedagogicAPI
 
