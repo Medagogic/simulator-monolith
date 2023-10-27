@@ -8,32 +8,73 @@
     padding: 0.5rem;
     display: flex;
     flex-direction: column;
-    gap: 0.1rem; /* Reduced gap for a more condensed look */
+    gap: 0.1rem;
+    /* Reduced gap for a more condensed look */
     border-radius: 8px;
 }
 
-.staff-member-name, .staff-member-specialty {
-    display: inline-block; /* Display name and specialty on the same line */
+.staff-member-name,
+.staff-member-specialty {
+    display: inline-block;
+    /* Display name and specialty on the same line */
 }
 
 .staff-member-name {
     color: #ffffff88;
     font-weight: bold;
-    font-size: 1rem; /* Reduced font size */
-    margin-right: 0.5rem; /* Space between name and specialty */
+    font-size: 1rem;
+    /* Reduced font size */
+    margin-right: 0.5rem;
+    /* Space between name and specialty */
 }
 
 .staff-member-specialty {
     color: #ffffffaa;
-    font-size: 0.9rem; /* Reduced font size */
+    font-size: 0.9rem;
+    /* Reduced font size */
 }
 
 .activity-indicator {
-    padding: 0.1rem 0.4rem; /* Reduced padding for a more compact indicator */
+    padding: 0.1rem 0.4rem;
+    /* Reduced padding for a more compact indicator */
     border-radius: 4px;
-    font-size: 0.8rem; /* Reduced font size */
+    font-size: 0.8rem;
+    /* Reduced font size */
     font-weight: 500;
     /* text-transform: uppercase; */
+}
+
+.activity-indicator.active {
+    background-color: #00ff00;
+    color: #000000;
+}
+
+.activity-indicator.thinking {
+    background-color: #228ba6;
+    color: #ffffff;
+}
+
+.activity-indicator.idle {
+    background-color: #ff080854;
+    color: #ffffff;
+    animation: idle-throb 1s infinite;
+}
+
+@keyframes idle-throb {
+    0% {
+        background-color: #ff080854;
+        color: #ffffff;
+    }
+
+    50% {
+        background-color: #ff080888;
+        color: #fff;
+    }
+
+    100% {
+        background-color: #ff080854;
+        color: #ffffff;
+    }
 }
 
 .staff-info {

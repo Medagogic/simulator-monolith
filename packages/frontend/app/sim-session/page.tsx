@@ -17,6 +17,7 @@ import { Objective, ObjectivesList } from './ObjectivesList/ObjectivesList';
 import { SocketProvider } from '../socketio/SocketContext';
 import PatientMonitor from './Monitor/PatientMonitor';
 import { APIProvider } from '../socketio/APIContext';
+import { useSessionStore } from '../storage/SessionStore';
 
 
 
@@ -63,65 +64,73 @@ const objectives: Objective[] = [
   // ... other objectives
 ];
 
-const SimSessionPage: React.FC = () => {
+export interface SimSessionPageProps {
+  sessionName: string;
+}
+
+
+const SimSessionPage: React.FC<SimSessionPageProps> = ({ sessionName }) => {
+
+
   function handleClippySuggestion(data: { description: string, command: string }) {
     console.log(data.command);
   }
 
   return (
-    <SocketProvider session_id='default-session'>
-      <APIProvider sessionId="default-session">
-      <div className='page-container'>
-        <div className='toolbar'>
-          <div style={{ flex: 1 }}>
-            Medagogic Simulator
+    <SocketProvider session_id={sessionName}>
+      <APIProvider sessionId={sessionName}>
+        <div className='page-container'>
+          <div className='toolbar'>
+            <div style={{ flex: 1 }}>
+              Medagogic Simulator - {sessionName}
+            </div>
+
+            <div style={{ display: 'flex', justifyContent: 'center', position: 'absolute', left: 0, right: 0 }}>
+              <TimeDisplay />
+            </div>
+
+            <div style={{ flex: 1, display: 'flex', justifyContent: 'flex-end' }}>
+              <h1 className="text-white">
+
+              </h1>
+            </div>
           </div>
 
-          <div style={{ display: 'flex', justifyContent: 'center', position: 'absolute', left: 0, right: 0 }}>
-            <TimeDisplay />
-          </div>
+          <div className="main-page gap-2">
+            <div className='column' style={{ flex: "1 0 auto" }}>
+              {/* <VitalSignsDisplay debugVitalSigns={vitalSignsForDisplay} /> */}
+              <PatientVisualization />
+              {/* <ABCDEList abcdeData={abcdeData} vitalSigns={vitalSignsForABCDEList} /> */}
+              <PatientMonitor />
 
-          <div style={{ flex: 1, display: 'flex', justifyContent: 'flex-end' }}>
-            <h1 className="text-white">
+            </div>
 
-            </h1>
+            <div className='column gap-2' style={{ flex: "1 0 auto", width: "50%" }}>
+              <div className="flex-shrink h-1/4">
+                <ActionLog />
+              </div>
+              <div className="flex-auto flex flex-grow overflow-hidden h-full">
+                <div className="flex-auto">
+                  <ChatterBox />
+                </div>
+                <div className="flex-shrink">
+                  <StaffList />
+                </div>
+              </div>
+
+            </div>
+            <div className='column' style={{ flex: "0 1 auto" }}>
+              <ObjectivesList objectives={objectives} />
+              <div className="self-end w-full">
+                <Clippy onClick={(data) => { handleClippySuggestion(data) }} />
+              </div>
+            </div>
+
           </div>
         </div>
-
-        <div className="main-page gap-2">
-          <div className='column' style={{flex: "1 0 auto"}}>
-            {/* <VitalSignsDisplay debugVitalSigns={vitalSignsForDisplay} /> */}
-            <PatientVisualization />
-            {/* <ABCDEList abcdeData={abcdeData} vitalSigns={vitalSignsForABCDEList} /> */}
-            <PatientMonitor />
-
-          </div>
-          
-          <div className='column gap-2' style={{flex: "1 0 auto", width:"50%"}}>
-            <div className="flex-shrink h-1/4">
-              <ActionLog />
-            </div>
-            <div className="flex-auto flex flex-grow overflow-hidden h-full">
-              <div className="flex-auto">
-                <ChatterBox />
-              </div>
-              <div className="flex-shrink">
-                <StaffList />
-              </div>
-            </div>
-
-          </div>
-          <div className='column' style={{flex: "0 1 auto"}}>
-            <ObjectivesList objectives={objectives} />
-            <div className="self-end w-full">
-              <Clippy onClick={(data) => { handleClippySuggestion(data) }} />
-            </div>
-          </div>
-          
-        </div>
-      </div>
       </APIProvider>
     </SocketProvider>
+
   );
 }
 

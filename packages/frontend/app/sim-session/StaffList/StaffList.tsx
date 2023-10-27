@@ -16,22 +16,22 @@ interface StaffMemberProps {
 const StaffMember: React.FC<StaffMemberProps> = ({ data, thinkingAbout }) => {
 
   const getActivityIndicator = (data: APINPCData, thinkingAbout: string | null) => {
-    let backgroundColor = '';
     let text = '';
+    let className = '';
 
     if (data.currentTask) {
-      backgroundColor = 'green';
       text = data.currentTask;
+      className = "active";
     } else if (thinkingAbout) {
-      backgroundColor = '#222244';
       text = thinkingAbout;
+      className = "thinking";
     } else {
-      backgroundColor = '#ff080854';
       text = 'Inactive';
+      className = "idle";
     }
 
     return (
-      <div className="activity-indicator" style={{ backgroundColor }}>
+      <div className={`activity-indicator ${className}`}>
         {text}
       </div>
     );
