@@ -16,6 +16,7 @@ class CombatLogElement(BaseModel):
     timestamp: float
     npc_name: str
     content: str
+    type: str
 
 class CombatLogUpdateData(BaseModel):
     log: List[CombatLogElement]
@@ -42,7 +43,8 @@ class Session_Patient(MedSessionBase):
             log = [CombatLogElement(
                 timestamp=e.timestamp,
                 npc_name=e.npc_name,
-                content=e.content
+                content=e.content,
+                type=e.__class__.__name__
             ) for e in full_combat_log]
         )
         asyncio.create_task(self.emit("combatlog_update", data))

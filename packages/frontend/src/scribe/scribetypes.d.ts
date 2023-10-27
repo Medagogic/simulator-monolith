@@ -68,6 +68,7 @@ export type CapillaryRefill = number;
 export type Timestamp2 = number;
 export type NpcName = string;
 export type Content = string;
+export type Type = string;
 export type Log = CombatLogElement[];
 export type NpcId2 = string;
 export type NpcName1 = string;
@@ -188,6 +189,7 @@ export interface CombatLogElement {
   timestamp: Timestamp2;
   npc_name: NpcName;
   content: Content;
+  type: Type;
   [k: string]: unknown;
 }
 export interface NPCThinking {

@@ -28,15 +28,15 @@ const StaffMember: React.FC<StaffMemberProps> = ({ data }) => {
 
 // StaffList component
 interface StaffListProps {
-  
+
 }
 
-const StaffList: React.FC<StaffListProps> = ({  }) => {
+const StaffList: React.FC<StaffListProps> = ({ }) => {
   const api = useAPI();
   const requestParams = sessionRequestParams();
   const teamById = useTeamStore((state) => state.teamById);
   const setNPCData = useTeamStore((state) => state.setNPCData);
-  
+
   // const [staffData, setStaffData] = React.useState<APINPCData[]>([]);
   let loading = false;
 
@@ -54,6 +54,8 @@ const StaffList: React.FC<StaffListProps> = ({  }) => {
         console.log("Setting teamById", npc.id);
         setNPCData(npc.id, npc);
       });
+    }).catch((err: any) => {
+      console.log("Error getting team data", err);
     });
   }, []);
 

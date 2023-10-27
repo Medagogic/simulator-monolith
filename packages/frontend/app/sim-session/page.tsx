@@ -105,8 +105,8 @@ const SimSessionPage: React.FC = () => {
           </div>
           
           <div className='column gap-2' style={{flex: "1 0 auto", width:"50%"}}>
-            <div className="flex-shrink">
-              <ActionLog logs={actionLogs} />
+            <div className="flex-shrink h-1/4">
+              <ActionLog />
             </div>
             <div className="flex-auto flex flex-grow overflow-hidden h-full">
               <div className="flex-auto">

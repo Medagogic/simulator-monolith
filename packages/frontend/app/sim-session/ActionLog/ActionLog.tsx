@@ -1,48 +1,50 @@
+"use client"
+
 // components/ActionLog.tsx
-import React from 'react';
+import { generateCombatLogElements, useCombatLogStore } from '@/app/storage/CombatLogStore';
+import React, { use, useEffect, useRef } from 'react';
 
-export enum ActionType {
-  Intervention = 'intervention',
-  Preparation = 'preparation',
-  Assessment = 'assessment',
-  Communication = 'communication',
-}
-
-export interface ActionLogEntry {
-  timestamp: Date;
-  staffName: string; // changed from 'character' to 'staffName' for clarity in a medical context
-  action: string;
-  actionType: ActionType;
-}
 
 interface ActionLogProps {
-  logs: ActionLogEntry[];
+
 }
 
-const actionTypeColors: Record<ActionType, string> = {
-  [ActionType.Intervention]: 'text-amber-600', // Amber, being a warm color, draws attention without the urgency of red.
-  [ActionType.Preparation]: 'text-blue-600', // Blue is calm and stable, ideal for preparation stages.
-  [ActionType.Assessment]: 'text-cyan-600', // Cyan, as a mix of blue and green, suggests careful consideration, suitable for assessments.
-  [ActionType.Communication]: 'text-purple-600', // Purple can signify communication, being a mix of calm blue and energetic red.
-  // ... any other action types and their colors
+const actionTypeColors: Record<string, string> = {
+  ["Evt_CompletedIntervention"]: 'text-amber-600',
+  ["Evt_StartTask"]: 'text-blue-600',
+  ["Evt_Assessment"]: 'text-cyan-600',
+  ["Evt_TaskConsequence"]: 'text-purple-600',
 };
 
-const getActionColor = (actionType: ActionType): string => {
-  // Return the corresponding color or fall back to a default color if the action type is not found
+const getActionColor = (actionType: string): string => {
   return actionTypeColors[actionType] || 'text-gray-500'; // Neutral gray as the default color
 };
 
-export const ActionLog: React.FC<ActionLogProps> = ({ logs }) => {
+export const ActionLog: React.FC<ActionLogProps> = ({  }) => {
+  const logs = useCombatLogStore((state) => state.logs);
+  const setLogs = useCombatLogStore((state) => state.setLogs);
+  const containerRef = useRef<HTMLDivElement>(null);
+
+  useEffect(() => {
+    if (containerRef.current) {
+      containerRef.current.scrollTop = containerRef.current.scrollHeight;
+    }
+  }, [logs]);
+
+  useEffect(() => {
+    setLogs(generateCombatLogElements(100));
+  }, []);
+
   return (
-    <div className="flex flex-col space-y-2 p-3 max-h-96 overflow-auto border border-gray-300 bg-gray-700 text-white">
+    <div ref={containerRef} className="flex flex-col space-y-2 p-3 max-h-96 overflow-auto border border-gray-300 bg-gray-700 text-white h-full">
       {logs.map((log, index) => (
         <div key={index} className="flex w-full items-center space-x-2 text-xs"> {/* Added 'text-xs' here for font sizing */}
           <div className="flex-shrink-0">
-            <span>[{log.timestamp.toLocaleTimeString()}]</span>
+            <span>[{log.timestamp}]</span>
           </div>
-          <div className={`flex-grow flex items-center ${getActionColor(log.actionType)}`}>
-            <span className="font-bold mr-2">{log.staffName}</span>
-            <span>{log.action}</span>
+          <div className={`flex-grow flex items-center ${getActionColor(log.type)}`}>
+            <span className="font-bold mr-2">{log.npc_name}</span>
+            <span>{log.content}</span>
           </div>
         </div>
       ))}

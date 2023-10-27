@@ -13,12 +13,17 @@
                 "content": {
                     "title": "Content",
                     "type": "string"
+                },
+                "type": {
+                    "title": "Type",
+                    "type": "string"
                 }
             },
             "required": [
                 "timestamp",
                 "npc_name",
-                "content"
+                "content",
+                "type"
             ],
             "title": "CombatLogElement",
             "type": "object"
