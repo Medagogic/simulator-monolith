@@ -15,7 +15,7 @@ export class TeamIO extends ScribeClient {
                 specialities: data.definition.specialities,
                 yearsOfExperience: data.definition.years_of_experience,
             },
-            currentTask: data.current_task as string
+            currentTask: data.current_task
         }
 
         // useTeamStore.getState().teamById[data.id] = npc_data;

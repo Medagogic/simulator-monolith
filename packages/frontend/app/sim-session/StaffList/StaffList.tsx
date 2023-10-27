@@ -10,18 +10,40 @@ import { useTeamStore } from '@/app/storage/TeamStore';
 // StaffMember component
 interface StaffMemberProps {
   data: APINPCData;
+  thinkingAbout: string | null;
 }
 
-const StaffMember: React.FC<StaffMemberProps> = ({ data }) => {
+const StaffMember: React.FC<StaffMemberProps> = ({ data, thinkingAbout }) => {
+
+  const getActivityIndicator = (data: APINPCData, thinkingAbout: string | null) => {
+    let backgroundColor = '';
+    let text = '';
+
+    if (data.currentTask) {
+      backgroundColor = 'green';
+      text = data.currentTask;
+    } else if (thinkingAbout) {
+      backgroundColor = '#222244';
+      text = thinkingAbout;
+    } else {
+      backgroundColor = '#ff080854';
+      text = 'Inactive';
+    }
+
+    return (
+      <div className="activity-indicator" style={{ backgroundColor }}>
+        {text}
+      </div>
+    );
+  };
+
   return (
     <div className="bg-gray-700 rounded-md shadow-md space-y-2 text-white staff-member-container">
       <div className="staff-info"> {/* New container div for name and specialty */}
         <h2 className="text-xl font-bold mr-4 staff-member-name">{data.definition.name}</h2>
         <p className="text-sm font-semibold staff-member-specialty">{data.definition.role}</p>
       </div>
-      <div className="activity-indicator" style={{ backgroundColor: data.currentTask ? "green" : "#ff080854" }}>
-        {data.currentTask || "Inactive"}
-      </div>
+      {getActivityIndicator(data, thinkingAbout)}
     </div>
   );
 };
@@ -36,6 +58,7 @@ const StaffList: React.FC<StaffListProps> = ({ }) => {
   const requestParams = sessionRequestParams();
   const teamById = useTeamStore((state) => state.teamById);
   const setNPCData = useTeamStore((state) => state.setNPCData);
+  const thinkingAboutById = useTeamStore((state) => state.thinkingAbout);
 
   // const [staffData, setStaffData] = React.useState<APINPCData[]>([]);
   let loading = false;
@@ -63,7 +86,8 @@ const StaffList: React.FC<StaffListProps> = ({ }) => {
     <div className="staff-list">
       {Object.keys(teamById).map((key) => {
         const npc = teamById[key];
-        return <StaffMember key={npc.id} data={npc} />;
+        const thinkingAbout = key in thinkingAboutById ? thinkingAboutById[key] : null;
+        return <StaffMember key={npc.id} data={npc} thinkingAbout={thinkingAbout} />;
       })}
       {/* {staffData.map(staff => (
         <StaffMember key={staff.id} data={staff} />
