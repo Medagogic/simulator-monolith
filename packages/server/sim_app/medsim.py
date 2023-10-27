@@ -22,11 +22,12 @@ class API_TeamData(BaseModel):
     npc_data: List[API_NPCData]
 
 
-class Session_MedSim(ChatSession, PatientSession, DirectInterventionSession):
+class Session_MedSim(Session_Chat, Session_Patient, Session_DirectIntervention, Session_Devices):
     def __init__(self, session_id: str, sio: socketio.AsyncServer):
-        ChatSession.__init__(self, session_id=session_id, sio=sio)
-        PatientSession.__init__(self, session_id=session_id, sio=sio)
-        DirectInterventionSession.__init__(self, session_id=session_id, sio=sio)
+        Session_Chat.__init__(self, session_id=session_id, sio=sio)
+        Session_Patient.__init__(self, session_id=session_id, sio=sio)
+        Session_DirectIntervention.__init__(self, session_id=session_id, sio=sio)
+        Session_Devices.__init__(self, session_id=session_id, sio=sio)
 
     def api_get_team(self) -> API_TeamData:
         team_data = API_TeamData(npc_data=[])

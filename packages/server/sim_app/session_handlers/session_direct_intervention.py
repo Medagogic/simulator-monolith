@@ -7,7 +7,7 @@ logger = get_logger(level=logging.INFO)
 
 
 
-class DirectInterventionSession(MedSessionBase):
+class Session_DirectIntervention(MedSessionBase):
     @scribe_handler
     async def on_direct_intervention(self, sid, function_call: str) -> None:
         print(f"Client {sid} called on_direct_intervention `{function_call}` in {self.session_id}")

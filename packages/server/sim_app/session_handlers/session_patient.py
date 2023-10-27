@@ -30,7 +30,7 @@ class CombatLogUpdateData(BaseModel):
 
 
 
-class PatientSession(MedSessionBase):
+class Session_Patient(MedSessionBase):
     def __init__(self, session_id: str, sio: socketio.AsyncServer):
         MedSessionBase.__init__(self, session_id=session_id, sio=sio)
         self.medsim.context.history.on_new_event.subscribe(self.handle_on_new_history_event)

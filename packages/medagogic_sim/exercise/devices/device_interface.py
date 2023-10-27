@@ -1,5 +1,6 @@
 from __future__ import annotations
 from abc import ABC, abstractmethod
+from dataclasses import dataclass
 from typing import Any, Dict, List, Type, TYPE_CHECKING
 from pydantic import BaseModel
 import asyncio
@@ -14,6 +15,13 @@ from packages.medagogic_sim.exercise.devices.device_managers import *
 from packages.medagogic_sim.logger.logger import get_logger, logging
 logger = get_logger(level=logging.DEBUG)
 
+import rx.core.typing
+from rx.subject import Subject
+
+
+@dataclass
+class DeviceChangeData:
+    manager: DeviceHandler_Base
 
 
 class DeviceInterface:
@@ -36,6 +44,8 @@ class DeviceInterface:
             self.continuous_glucometer_manager,
         ]
 
+        self.on_device_change: rx.core.typing.Subject[DeviceChangeData, DeviceChangeData] = Subject()
+
     def full_state_markdown(self, only_connected=False) -> List[str]:
         states: List[str] = []
         for manager in self.all_managers:
@@ -54,7 +64,9 @@ class DeviceInterface:
         manager = self.get_manager_from_call_data(call_data)
         if manager is None:
             raise Exception(f"Could not find manager for {call_data.name}")
-        return manager.handle_call(call_data)
+        response = manager.handle_call(call_data)
+        self.on_device_change.on_next(DeviceChangeData(manager=manager))
+        return response
 
     def exposed_vitals(self) -> List[Vitals]:
         vitals: List[Vitals] = []

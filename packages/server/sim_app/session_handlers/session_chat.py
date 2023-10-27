@@ -20,7 +20,7 @@ class SIO_NPCData(BaseModel):
     current_task: Optional[str] = None
 
 
-class ChatSession(MedSessionBase):
+class Session_Chat(MedSessionBase):
     def __init__(self, session_id: str, sio: socketio.AsyncServer):
         MedSessionBase.__init__(self, session_id=session_id, sio=sio)
         self.medsim.context.iomanager.on_npc_speak.subscribe(self.handle_on_npc_speak)
