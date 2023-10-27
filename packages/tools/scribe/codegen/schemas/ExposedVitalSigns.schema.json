@@ -1,0 +1,118 @@
+{
+    "$defs": {
+        "BloodPressureModel": {
+            "properties": {
+                "systolic": {
+                    "title": "Systolic",
+                    "type": "number"
+                },
+                "diastolic": {
+                    "title": "Diastolic",
+                    "type": "number"
+                }
+            },
+            "required": [
+                "systolic",
+                "diastolic"
+            ],
+            "title": "BloodPressureModel",
+            "type": "object"
+        }
+    },
+    "properties": {
+        "temperature": {
+            "anyOf": [
+                {
+                    "type": "number"
+                },
+                {
+                    "type": "null"
+                }
+            ],
+            "default": null,
+            "description": "The body temperature in degrees Celsius or Fahrenheit",
+            "title": "Temperature"
+        },
+        "heart_rate": {
+            "anyOf": [
+                {
+                    "type": "number"
+                },
+                {
+                    "type": "null"
+                }
+            ],
+            "default": null,
+            "description": "The heart rate in beats per minute",
+            "title": "Heart Rate"
+        },
+        "respiratory_rate": {
+            "anyOf": [
+                {
+                    "type": "number"
+                },
+                {
+                    "type": "null"
+                }
+            ],
+            "default": null,
+            "description": "The number of breaths taken per minute",
+            "title": "Respiratory Rate"
+        },
+        "blood_pressure": {
+            "anyOf": [
+                {
+                    "$ref": "#/$defs/BloodPressureModel"
+                },
+                {
+                    "type": "null"
+                }
+            ],
+            "default": null,
+            "description": "Blood pressure measurements"
+        },
+        "blood_glucose": {
+            "anyOf": [
+                {
+                    "type": "number"
+                },
+                {
+                    "type": "null"
+                }
+            ],
+            "default": null,
+            "description": "The blood glucose level",
+            "title": "Blood Glucose"
+        },
+        "oxygen_saturation": {
+            "anyOf": [
+                {
+                    "type": "number"
+                },
+                {
+                    "type": "null"
+                }
+            ],
+            "default": null,
+            "description": "The oxygen saturation in percentage",
+            "title": "Oxygen Saturation"
+        },
+        "capillary_refill": {
+            "anyOf": [
+                {
+                    "type": "number"
+                },
+                {
+                    "type": "null"
+                }
+            ],
+            "default": null,
+            "description": "The capillary refill time in seconds",
+            "title": "Capillary Refill"
+        }
+    },
+    "title": "ExposedVitalSigns",
+    "type": "object",
+    "$id": "ExposedVitalSigns.schema.json",
+    "additionalProperties": false
+}

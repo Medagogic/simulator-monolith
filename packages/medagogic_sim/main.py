@@ -1,11 +1,22 @@
+from typing import Optional
+from pydantic import BaseModel, Field
 from packages.medagogic_sim.context_for_brains import ContextForBrains
 from packages.medagogic_sim.dialog_router import TeamLeadDialog
-from packages.medagogic_sim.exercise.simulation_types import VitalSigns
+from packages.medagogic_sim.exercise.simulation_types import BloodPressureModel, VitalSigns
 from packages.medagogic_sim.history import sim_history
 import asyncio
 
 from packages.medagogic_sim.npc_manager import NPCManager
 
+
+class ExposedVitalSigns(BaseModel):
+    temperature: Optional[float] = Field(None, description="The body temperature in degrees Celsius or Fahrenheit")
+    heart_rate: Optional[float] = Field(None, description="The heart rate in beats per minute")
+    respiratory_rate: Optional[float] = Field(None, description="The number of breaths taken per minute")
+    blood_pressure: Optional[BloodPressureModel] = Field(None, description="Blood pressure measurements")
+    blood_glucose: Optional[float] = Field(None, description="The blood glucose level")
+    oxygen_saturation: Optional[float] = Field(None, description="The oxygen saturation in percentage")
+    capillary_refill: Optional[float] = Field(None, description="The capillary refill time in seconds")
 
 class MedagogicSimulator:
     def __init__(self, exercise_name: str="pediatric_septic_shock"):
@@ -17,8 +28,17 @@ class MedagogicSimulator:
         self.context.history.add_event(sim_history.Evt_ChatMessage(name="Team Lead", content=input_text))
         await self.npc_manager.process_dialog(TeamLeadDialog(input_text))
 
-    def get_vitals(self) -> VitalSigns:
-        return self.context.simulation.getCurrentVitals()
+    def get_exposed_vitals(self) -> ExposedVitalSigns:
+        vital_signs = self.context.simulation.getCurrentVitals()
+        exposed_vital_types = self.context.device_interface.exposed_vitals()
+        as_dict = vital_signs.model_dump()
+
+        exposed_dict = {}
+        for vital_type in exposed_vital_types:
+            if vital_type in as_dict:
+                exposed_dict[vital_type] = as_dict[vital_type]
+
+        return ExposedVitalSigns(**exposed_dict)
 
 if __name__ == "__main__":
     import logging
@@ -28,9 +48,14 @@ if __name__ == "__main__":
 
     async def main():
         simulator = MedagogicSimulator()
-        await simulator.process_user_input("Get IV access")
 
-        while True:
-            await asyncio.sleep(1)
+        simulator.context.device_interface.nibp_manager.connect({})
+
+        print(simulator.get_exposed_vitals())
+
+        # await simulator.process_user_input("Get IV access")
+
+        # while True:
+        #     await asyncio.sleep(1)
 
     asyncio.run(main())

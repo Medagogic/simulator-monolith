@@ -16,7 +16,7 @@
             "$ref": "schemas/SIO_NPCData.schema.json"
         },
         "patient_vitals_update": {
-            "$ref": "schemas/VitalSigns.schema.json"
+            "$ref": "schemas/ExposedVitalSigns.schema.json"
         },
         "combatlog_update": {
             "$ref": "schemas/CombatLogUpdateData.schema.json"

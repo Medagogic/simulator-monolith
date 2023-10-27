@@ -21,7 +21,7 @@ function subscribe(obj: ScribeClient, event: string, callback?: (data: any) => v
     }
 }
 
-import { ChatEvent, MessageFromNPC, SIO_ConnectedDevices, SIO_NPCData, VitalSigns, CombatLogUpdateData, NPCThinking, SIO_TimeUpdate } from "./scribetypes";
+import { ChatEvent, MessageFromNPC, SIO_ConnectedDevices, SIO_NPCData, ExposedVitalSigns, CombatLogUpdateData, NPCThinking, SIO_TimeUpdate } from "./scribetypes";
 
 export abstract class ScribeClient {
     socket: Socket;
@@ -29,7 +29,7 @@ export abstract class ScribeClient {
     on_chat_message?(data: MessageFromNPC): void;
     on_device_update?(data: SIO_ConnectedDevices): void;
     on_npc_data?(data: SIO_NPCData): void;
-    on_patient_vitals_update?(data: VitalSigns): void;
+    on_patient_vitals_update?(data: ExposedVitalSigns): void;
     on_combatlog_update?(data: CombatLogUpdateData): void;
     on_npc_thinking_updated?(data: NPCThinking): void;
     on_time_update?(data: SIO_TimeUpdate): void;

@@ -22,23 +22,33 @@ const PatientMonitor: React.FC = () => {
 
   useEffect(() => {
     if (vitalSigns) {
-      datastream_ecg.setConnected(true);
-      datastream_bp.setConnected(true);
-      datastream_breath.setConnected(true);
-      datastream_spo2.setConnected(true);
+      if (vitalSigns.heart_rate != undefined) {
+        datastream_ecg.setConnected(true);
+        
+        const bpm = vitalSigns.heart_rate!;
+        datastream_ecg.updateBpm(bpm);
+        datastream_bp.updateBpm(bpm);
+        datastream_spo2.updateBpm(bpm);
+      }
 
-      const bpm = vitalSigns.heart_rate;
-      datastream_ecg.updateBpm(bpm);
-      datastream_bp.updateBpm(bpm);
-      datastream_spo2.updateBpm(bpm);
-      const resp_rate = vitalSigns.respiratory_rate;
-      datastream_breath.updateBpm(resp_rate);
+      if (vitalSigns.blood_pressure != undefined) {
+        datastream_bp.setConnected(true);
+      }
+
+      if (vitalSigns.respiratory_rate != undefined) {
+        datastream_breath.setConnected(true);
+        datastream_breath.updateBpm(vitalSigns.respiratory_rate);
+      }
+
+      if (vitalSigns.oxygen_saturation != undefined) {
+        datastream_spo2.setConnected(true);
+      }
     }
   }, [vitalSigns]);
 
 
   function heartRate() {
-    if (vitalSigns) {
+    if (vitalSigns && vitalSigns.heart_rate != undefined) {
       return vitalSigns.heart_rate.toFixed(0);
     } else {
       return "-";
@@ -46,7 +56,7 @@ const PatientMonitor: React.FC = () => {
   }
 
   function bloodPressure() {
-    if (vitalSigns) {
+    if (vitalSigns && vitalSigns.blood_pressure != undefined) {
       return `${vitalSigns.blood_pressure.systolic.toFixed(0)}/${vitalSigns.blood_pressure.diastolic.toFixed(0)}`;
     } else {
       return "-/-";
@@ -54,7 +64,7 @@ const PatientMonitor: React.FC = () => {
   }
 
   function respRate() {
-    if (vitalSigns) {
+    if (vitalSigns && vitalSigns.respiratory_rate != undefined) {
       return vitalSigns.respiratory_rate.toFixed(0);
     } else {
       return "-";
@@ -62,7 +72,7 @@ const PatientMonitor: React.FC = () => {
   }
 
   function spo2() {
-    if (vitalSigns) {
+    if (vitalSigns && vitalSigns.oxygen_saturation != undefined) {
       return vitalSigns.oxygen_saturation.toFixed(1);
     } else {
       return "-";

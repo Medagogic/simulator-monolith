@@ -96,5 +96,4 @@ class Session_Chat(MedSessionBase):
     
     @scribe_emits("npc_data", SIO_NPCData)
     async def emit_npc_data(self, data: SIO_NPCData) -> None:
-        print(f"Sending NPC data: {data}")
         await self.emit("npc_data", data)

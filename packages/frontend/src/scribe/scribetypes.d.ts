@@ -42,29 +42,29 @@ export type CurrentTask = string | null;
 /**
  * The body temperature in degrees Celsius or Fahrenheit
  */
-export type Temperature = number;
+export type Temperature = number | null;
 /**
  * The heart rate in beats per minute
  */
-export type HeartRate = number;
+export type HeartRate = number | null;
 /**
  * The number of breaths taken per minute
  */
-export type RespiratoryRate = number;
+export type RespiratoryRate = number | null;
 export type Systolic = number;
 export type Diastolic = number;
 /**
  * The blood glucose level
  */
-export type BloodGlucose = number;
+export type BloodGlucose = number | null;
 /**
  * The oxygen saturation in percentage
  */
-export type OxygenSaturation = number;
+export type OxygenSaturation = number | null;
 /**
  * The capillary refill time in seconds
  */
-export type CapillaryRefill = number;
+export type CapillaryRefill = number | null;
 export type Timestamp2 = number;
 export type NpcName = string;
 export type Content = string;
@@ -83,7 +83,7 @@ export interface ScribeEvents {
   chat_message: MessageFromNPC;
   device_update: SIO_ConnectedDevices;
   npc_data: SIO_NPCData;
-  patient_vitals_update: VitalSigns;
+  patient_vitals_update: ExposedVitalSigns;
   combatlog_update: CombatLogUpdateData;
   npc_thinking_updated: NPCThinking;
   time_update: SIO_TimeUpdate;
@@ -167,17 +167,17 @@ export interface NPCDefinition {
   years_of_experience: YearsOfExperience;
   [k: string]: unknown;
 }
-export interface VitalSigns {
-  temperature: Temperature;
-  heart_rate: HeartRate;
-  respiratory_rate: RespiratoryRate;
+export interface ExposedVitalSigns {
+  temperature?: Temperature;
+  heart_rate?: HeartRate;
+  respiratory_rate?: RespiratoryRate;
   /**
    * Blood pressure measurements
    */
-  blood_pressure: BloodPressureModel;
-  blood_glucose: BloodGlucose;
-  oxygen_saturation: OxygenSaturation;
-  capillary_refill: CapillaryRefill;
+  blood_pressure?: BloodPressureModel | null;
+  blood_glucose?: BloodGlucose;
+  oxygen_saturation?: OxygenSaturation;
+  capillary_refill?: CapillaryRefill;
 }
 export interface BloodPressureModel {
   systolic: Systolic;

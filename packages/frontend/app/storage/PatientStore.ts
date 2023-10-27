@@ -1,9 +1,9 @@
-import { VitalSigns } from "@/src/scribe/scribetypes";
+import { ExposedVitalSigns } from "@/src/scribe/scribetypes";
 import { create } from "zustand";
 
 type PatientStore = {
-    vitals: VitalSigns | null;
-    setVitals: (vitals: VitalSigns) => void;
+    vitals: ExposedVitalSigns | null;
+    setVitals: (vitals: ExposedVitalSigns) => void;
 };
 
 export const usePatientStore = create<PatientStore>((set, get) => ({

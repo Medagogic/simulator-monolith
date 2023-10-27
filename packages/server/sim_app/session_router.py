@@ -57,7 +57,7 @@ class Session_MedSim(Session_Chat, Session_Patient, Session_DirectIntervention, 
             while True:
                 await asyncio.sleep(1)
                 data = SIO_TimeUpdate(exercise_time_seconds=self.medsim.context.simulation.timekeeper.exerciseTimeSeconds)
-                self.emit("time_update", data)
+                await self.emit("time_update", data)
         asyncio.create_task(__loop())
 
 
@@ -69,7 +69,7 @@ class Router_MedSim(SessionRouter[Session_MedSim]):
     def init_api_routes(self):   
         @self.session_router.get("/medsim/vitals")
         async def medsim_vitals(session: Session_MedSim = Depends(self.get_session)):
-            return session.api_get_vitals()
+            return session.medsim.get_exposed_vitals()
         
         @self.session_router.get("/medsim/team")
         async def medsim_team(session: Session_MedSim = Depends(self.get_session)) -> API_TeamData:

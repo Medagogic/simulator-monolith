@@ -79,6 +79,8 @@ class MedicalNPC():
             logger.error(e)
             self.context.iomanager.npc_stop_thinking(self.id, self.definition.name)
             raise e
+        self.context.iomanager.npc_stop_thinking(self.id, self.definition.name)
+
 
     def markdown_summary(self) -> str:
         name = self.definition.name
