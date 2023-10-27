@@ -37,7 +37,6 @@ class ActionModel(BaseModel):
     examples: Union[List[str], List[ActionExample]]
     requirements: List[str]
     animationId: str
-    connectDeviceIDs: Optional[List[str]] = None
     type: str
     defaults: Optional[str] = None
 
