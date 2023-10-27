@@ -2,7 +2,7 @@ from __future__ import annotations
 import datetime
 import os
 import traceback
-from typing import TYPE_CHECKING
+from typing import TYPE_CHECKING, Optional
 from pydantic import BaseModel
 from abc import ABC, abstractmethod, abstractproperty
 import json
@@ -15,15 +15,15 @@ from packages.medagogic_sim.gpt import MODEL_GPT4, gpt, UserMessage, SystemMessa
 from packages.medagogic_sim.exercise.markdownexercise import HEADER_EVENTS, MarkdownExercise, VitalSigns, VitalSignsInterpolation
 from packages.medagogic_sim.exercise.simulation_types import Vitals, abcde_list_to_dict, vitals_list_to_dict
 from packages.medagogic_sim.history.sim_history import Evt_CompletedIntervention
-from packages.medagogic_sim.logger.logger import get_logger, logging
 from packages.medagogic_sim.exercise.exercise_loader import read_exercise
 
 
 if TYPE_CHECKING:
     from packages.medagogic_sim.history.sim_history import HistoryLog
     
-
+from packages.medagogic_sim.logger.logger import get_logger, logging
 logger = get_logger(level=logging.INFO)
+
 
 def log_error_with_traceback(e):
     tb_str = traceback.format_exception(etype=type(e), value=e, tb=e.__traceback__)
@@ -234,6 +234,22 @@ class LeafyBlossom(IBlackBoxSimulation):
         return current_exercise.to_markdown(include_progression=False)
 
 
+    def validate_update_markdown(self, update_markdown: str) -> Optional[str]:
+        try:
+            state_update_dict = markdown_to_json.dictify(update_markdown)
+            if "Current Patient State" in state_update_dict:
+                state_update_dict = state_update_dict["Current Patient State"]
+            elif "State Progression" in state_update_dict:
+                state_update_dict = state_update_dict["State Progression"]
+            else:
+                return f"Invalid update markdown (no state progression or current patient state): {update_markdown}"
+        except Exception as e:
+            logger.error(f"Error validating update markdown: {e}")
+            return f"Invalid update markdown: {update_markdown}"
+        
+        return None
+
+
     def apply_update_markdown(self, exercise: MarkdownExercise, update_markdown: str, future_state: bool = False) -> MarkdownExercise:
         state_update_dict = markdown_to_json.dictify(update_markdown)
         if "Current Patient State" in state_update_dict:
@@ -241,6 +257,7 @@ class LeafyBlossom(IBlackBoxSimulation):
         elif "State Progression" in state_update_dict:
             state_update_dict = state_update_dict["State Progression"]
         else:
+            logger.error(update_markdown)
             raise ValueError("Invalid update markdown (no state progression or current patient state)")
 
         if "Vital Signs" in state_update_dict:
@@ -384,10 +401,18 @@ Then, provide your updates. Use your description above when deciding on changes.
 
         logger.info(f"Calculated new immediate state from updte: {update}")
 
+        update_markdown = full_response.strip()
+        markdown_error = self.validate_update_markdown(update_markdown)
+        if markdown_error is not None:
+            logger.error(markdown_error)
+            logger.error(update_markdown)
+            exit()
+            
+
         return NewCurrentStateResponse(
             gpt_messages=messages,  # type: ignore
             gpt_response=full_response,
-            new_current_state_markdown=full_response.strip()
+            new_current_state_markdown=update_markdown
         )
 
 
@@ -468,7 +493,7 @@ if __name__ == "__main__":
         context = ContextForBrains()
         sim: LeafyBlossom = context.simulation
 
-        # sim.gpt_model = MODEL_GPT35 # Just royally fuck it up
+        sim.gpt_model = MODEL_GPT35 # Just royally fuck it up
 
         sim.applyUpdate("Dr Johnson started Chin lift")
         await sim.process_updates()

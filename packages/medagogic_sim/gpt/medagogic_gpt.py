@@ -27,7 +27,7 @@ def UserMessage(content: str) -> GPTMessage:
     return {"role": "user", "content": content}
 
 
-async def gpt(messages: List[GPTMessage], model=MODEL_GPT4, max_tokens=500, temperature=TEMPERATURE) -> str:
+async def gpt(messages: List[GPTMessage], model=MODEL_GPT4, max_tokens=500, temperature=TEMPERATURE, cache_skip=False) -> str:
     kwargs = {
         "model": model,
         "messages": messages,
@@ -35,7 +35,7 @@ async def gpt(messages: List[GPTMessage], model=MODEL_GPT4, max_tokens=500, temp
         "n": 1,
         "temperature": temperature,
     }
-    response = await openai.ChatCompletion.acreate(**kwargs)
+    response = await openai.ChatCompletion.acreate(**kwargs, cache_skip=cache_skip)
 
     return response["choices"][0]["message"]["content"]
 

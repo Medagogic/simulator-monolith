@@ -59,3 +59,4 @@ def configure_cached_openai(directory=None):
         logger.debug(f"Hit cache id {id} ({time}s)")
 
     data_manager.hit_cache_callback = hit_cache_callback
+
