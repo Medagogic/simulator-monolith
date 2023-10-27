@@ -1,3 +1,4 @@
+from packages.medagogic_sim.actions_for_brains import ActionModel
 from packages.medagogic_sim.exercise.devices.device_managers.default_device_imports import *
 logger = get_logger(level=logging.WARNING)
 
@@ -37,3 +38,16 @@ class NIBPMonitor(DeviceHandler_Base):
     @property
     def is_connected(self) -> bool:
         return self.nibp_params is not None
+    
+    @staticmethod
+    def get_action_model() -> ActionModel:
+        return ActionModel(
+            name="Connect BP monitor",
+            description="Attach a blood pressure monitor to the patient to continuously monitor blood pressure",
+            exampleInputs=["Get the BP monitor connected", "Let's get the blood pressure monitor on"],
+            examples=["Get the BP monitor connected", "Let's get the blood pressure monitor on"],
+            requirements=[],
+            animationId="connect blood pressure cuff",
+            connectDeviceIDs=["blood pressure monitor"],
+            type="connection"
+        )

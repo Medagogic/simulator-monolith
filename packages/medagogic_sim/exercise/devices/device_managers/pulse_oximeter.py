@@ -1,3 +1,4 @@
+from packages.medagogic_sim.actions_for_brains import ActionModel
 from packages.medagogic_sim.exercise.devices.device_managers.default_device_imports import *
 logger = get_logger(level=logging.WARNING)
 
@@ -45,3 +46,16 @@ class PulseOximeter(DeviceHandler_Base):
     @property
     def is_connected(self) -> bool:
         return self.connection_params is not None
+    
+    @staticmethod
+    def get_action_model() -> ActionModel:
+        return ActionModel(
+            name="Connect pulse oximeter",
+            description="Attach a pulse oximeter to the patient to monitor their oxygen saturation",
+            exampleInputs=["Connect pulse oximeter to patient's finger", "Connect pulse oximeter to patient's earlobe"],
+            examples=["Connect pulse oximeter to patient's finger", "Connect pulse oximeter to patient's earlobe"],
+            requirements=[],
+            animationId="connect pulse oximeter",
+            connectDeviceIDs=["pulse oximeter"],
+            type="connection"
+        )

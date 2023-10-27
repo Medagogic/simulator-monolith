@@ -1,3 +1,4 @@
+from packages.medagogic_sim.actions_for_brains import ActionModel
 from packages.medagogic_sim.exercise.devices.device_managers.default_device_imports import *
 logger = get_logger(level=logging.WARNING)
 
@@ -37,3 +38,25 @@ class Ventilator(DeviceHandler_Base):
     @property
     def is_connected(self) -> bool:
         return self.connection_params is not None
+    
+    @staticmethod
+    def get_action_model() -> ActionModel:
+        example_data = [
+            ActionExample(input="Connect ventilator in AC mode with fio2 0.5", 
+                        action="Connect ventilator (AC, 0.5)"),
+            ActionExample(input="Ventilator to PC mode and 0.7 fio2", 
+                        action="Connect ventilator (PC, 0.7)"),
+            ActionExample(input="Switch to PSV and set fio2 to 0.3", 
+                        action="Connect ventilator (PSV, 0.3)")
+        ]
+
+        return ActionModel(
+            name="Connect ventilator ($mode, $fio2)",
+            description="Connect to a ventilator with specified mode and fio2 settings.",
+            exampleInputs=["Connect ventilator in AC mode", "Switch to PC mode, fio2 0.7", "Set ventilator to PSV mode with 0.3 fio2"],
+            examples=example_data,
+            requirements=[],
+            animationId="connect ventilator",
+            connectDeviceIDs=["ventilator"],
+            type="connection"
+        )

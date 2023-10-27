@@ -54,54 +54,6 @@
         "type": "assessment"
     },
     {
-        "name": "Obtain IV access",
-        "description": "Establish an intravenous line for fluid or medication administration.",
-        "defaults": "Default location is left arm.",
-        "exampleInputs": ["Let's get an IV in", "Obtain IV access", "Can we get an IV in?"],
-        "exampleActions": ["Obtain IV access"],
-        "examples": [
-            {
-                "input": "Let's get an IV in",
-                "action": "Obtain IV access"
-            },
-            {
-                "input": "Obtain IV access asap",
-                "action": "Obtain IV access"
-            },
-            {
-                "input": "Can we get an IV in?",
-                "action": "Obtain IV access"
-            }
-        ],
-        "requirements": [],
-        "animationId": "establish IV access",
-        "connectDeviceIDs": ["iv access"],
-        "type": "connection"
-    },
-    {
-        "name": "Obtain IO access ($location, $size)",
-        "description": "Establish IO (intraosseous) access, typically when IV access is not possible.",
-        "exampleInputs": ["Let's try for IO access", "Obtain IO access - 15mm", "Can we get IO access? proximal tibia 25mm"],
-        "examples": [
-            {
-                "input": "Let's try for IO access",
-                "action": "Obtain IO access"
-            },
-            {
-                "input": "Obtain IO access - 15mm",
-                "action": "Obtain IO access (15mm)"
-            },
-            {
-                "input": "Can we get IO access? Proximal tibia, 25mm",
-                "action": "Obtain IO access (proximal tibia, 25mm)"
-            }
-        ],
-        "requirements": [],
-        "animationId":"establish IO access",
-        "connectDeviceIDs": ["io access"],
-        "type": "connection"
-    },
-    {
         "name": "Give oxygen via mask ($flow)",
         "description": "Administer oxygen through a face mask",
         "exampleInputs": ["Give oxygen via mask at 5 liters per minute", "Give oxygen via mask at 10L/min"],
@@ -214,36 +166,6 @@
         "requirements": ["The patient must be unconscious or sedated"],
         "animationId": "intubate",
         "type": "intervention"
-    },
-    {
-        "name": "Connect BP monitor",
-        "description": "Attach a blood pressure monitor to the patient to continuously monitor blood pressure",
-        "exampleInputs": ["Get the BP monitor connected", "Let's get the blood pressure monitor on"],
-        "examples": ["Get the BP monitor connected", "Let's get the blood pressure monitor on"],
-        "requirements": [],
-        "connectDeviceIDs": ["blood pressure monitor"],
-        "animationId": "connect blood pressure cuff",
-        "type": "connection"
-    },
-    {
-        "name": "Connect EKG/ECG",
-        "description": "Attach electrocardiogram leads to the patient to monitor the heart's electrical activity",
-        "exampleInputs": ["Get the EKG connected", "Connect a 12-lead EKG", "Connect a 3-lead EKG"],
-        "examples": ["Get the EKG connected", "Connect a 12-lead EKG", "Connect a 3-lead EKG"],
-        "requirements": [],
-        "connectDeviceIDs": ["ekg"],
-        "animationId": "connect ekg",
-        "type": "connection"
-    },
-    {
-        "name": "Connect pulse oximeter",
-        "description": "Attach a pulse oximeter to the patient to monitor their oxygen saturation",
-        "exampleInputs": ["Connect pulse oximeter to patient's finger", "Connect pulse oximeter to patient's earlobe"],
-        "examples": ["Connect pulse oximeter to patient's finger", "Connect pulse oximeter to patient's earlobe"],
-        "requirements": [],
-        "connectDeviceIDs": ["pulse oximeter"],
-        "animationId": "connect pulse oximeter",
-        "type": "connection"
     },
     {
         "name": "Take blood glucose reading",

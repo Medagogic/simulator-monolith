@@ -1,3 +1,4 @@
+from packages.medagogic_sim.actions_for_brains import ActionModel
 from .default_device_imports import *
 logger = get_logger(level=logging.WARNING)
 
@@ -38,3 +39,15 @@ class EKGConnection(DeviceHandler_Base):
     def is_connected(self) -> bool:
         return self.ekg_connected
     
+    @staticmethod
+    def get_action_model() -> ActionModel:
+        return ActionModel(
+            name="Connect EKG/ECG",
+            description="Attach electrocardiogram leads to the patient to monitor the heart's electrical activity",
+            exampleInputs=["Get the EKG connected", "Connect a 12-lead EKG", "Connect a 3-lead EKG"],
+            examples=["Get the EKG connected", "Connect a 12-lead EKG", "Connect a 3-lead EKG"],
+            requirements=[],
+            animationId="connect ekg",
+            connectDeviceIDs=["ekg"],
+            type="connection"
+        )

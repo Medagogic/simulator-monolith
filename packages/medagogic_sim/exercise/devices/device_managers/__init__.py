@@ -5,3 +5,20 @@ from .nibp import NIBPMonitor, NIBPMonitorParams
 from .pulse_oximeter import PulseOximeter, PulseOximeterParams
 from .ventilator import Ventilator, VentilatorParams
 from .continuous_glucometer import ContinuousGlucometer, ContinuousGlucometerParams
+
+
+from typing import List
+from packages.medagogic_sim.actions_for_brains import ActionModel
+
+def get_device_action_models() -> List[ActionModel]:
+    devices = [
+        IVAccessManager,
+        IOAccessManager,
+        EKGConnection,
+        NIBPMonitor,
+        PulseOximeter,
+        Ventilator,
+        ContinuousGlucometer
+    ]
+
+    return [device.get_action_model() for device in devices]

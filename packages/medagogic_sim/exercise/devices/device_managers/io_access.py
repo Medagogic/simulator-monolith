@@ -70,3 +70,22 @@ class IOAccessManager(DeviceHandler_Base):
     @property
     def is_connected(self) -> bool:
         return len(self.connected_ios) > 0
+    
+    @staticmethod
+    def get_action_model() -> ActionModel:
+        example_data = [
+            ActionExample(input="Let's try for IO access", action="Obtain IO access"),
+            ActionExample(input="Obtain IO access - 15mm", action="Obtain IO access (15mm)"),
+            ActionExample(input="Can we get IO access? Proximal tibia, 25mm", action="Obtain IO access (proximal tibia, 25mm)")
+        ]
+
+        return ActionModel(
+            name="Obtain IO access ($location, $size)",
+            description="Establish IO (intraosseous) access, typically when IV access is not possible.",
+            exampleInputs=["Let's try for IO access", "Obtain IO access - 15mm", "Can we get IO access? proximal tibia 25mm"],
+            examples=example_data,
+            requirements=[],
+            animationId="establish IO access",
+            connectDeviceIDs=["io access"],
+            type="connection"
+        )

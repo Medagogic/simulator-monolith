@@ -1,3 +1,4 @@
+from packages.medagogic_sim.actions_for_brains import ActionModel
 from packages.medagogic_sim.exercise.devices.device_managers.default_device_imports import *
 logger = get_logger(level=logging.WARNING)
 
@@ -34,3 +35,16 @@ class ContinuousGlucometer(DeviceHandler_Base):
     @property
     def is_connected(self) -> bool:
         return self.connection_params is not None
+    
+    @staticmethod
+    def get_action_model() -> ActionModel:
+        return ActionModel(
+            name="Connect continuous glucometer",
+            description="Attach a continuous glucometer to the patient to monitor their blood glucose levels",
+            exampleInputs=["Connect the continuous glucometer", "Attach the glucometer"],
+            examples=["Connect the continuous glucometer", "Attach the glucometer"],
+            requirements=[],
+            animationId="connect continuous glucometer",
+            connectDeviceIDs=["continuous glucometer"],
+            type="connection"
+        )

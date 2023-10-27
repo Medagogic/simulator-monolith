@@ -41,3 +41,21 @@ class IVAccessManager(DeviceHandler_Base):
     @property
     def is_connected(self) -> bool:
         return len(self.connected_ivs) > 0
+    
+    @staticmethod
+    def get_action_model() -> ActionModel:
+        return ActionModel(
+            name="Obtain IV access",
+            description="Establish an intravenous line for fluid or medication administration.",
+            exampleInputs=["Let's get an IV in", "Obtain IV access", "Can we get an IV in?"],
+            exampleActions=["Obtain IV access"],
+            examples=[
+                ActionExample(input="Let's get an IV in", action="Obtain IV access"),
+                ActionExample(input="Obtain IV access asap", action="Obtain IV access"),
+                ActionExample(input="Can we get an IV in?", action="Obtain IV access")
+            ],
+            requirements=[],
+            animationId="establish IV access",
+            connectDeviceIDs=["iv access"],
+            type="connection"
+        )

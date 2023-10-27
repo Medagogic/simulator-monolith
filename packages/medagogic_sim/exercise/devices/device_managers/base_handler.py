@@ -2,6 +2,8 @@ from __future__ import annotations
 from abc import ABC, abstractmethod
 from typing import TYPE_CHECKING, Any, List, Dict, Optional, Type
 
+from packages.medagogic_sim.actions_for_brains import ActionModel
+
 if TYPE_CHECKING:
     from packages.medagogic_sim.actions_for_brains import ActionDatabase
 
@@ -77,3 +79,8 @@ class DeviceHandler_Base(ABC):
         params = md_lines[2:]
         
         return params
+    
+    @staticmethod
+    @abstractmethod
+    def get_action_model() -> ActionModel:
+        pass

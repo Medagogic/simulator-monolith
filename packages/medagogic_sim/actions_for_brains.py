@@ -34,7 +34,7 @@ class ActionModel(BaseModel):
     description: str
     exampleInputs: List[str]
     exampleActions: Optional[List[str]] = None
-    examples: List[Union[str, ActionExample]]
+    examples: Union[List[str], List[ActionExample]]
     requirements: List[str]
     animationId: str
     connectDeviceIDs: Optional[List[str]] = None
@@ -95,6 +95,10 @@ def loadActions() -> List[ActionModel]:
     for action_dict in loaded_actions:
         model = ActionModel(**action_dict)
         action_models.append(model)
+
+    from packages.medagogic_sim.exercise.devices.device_managers import get_device_action_models
+    device_action_models = get_device_action_models()
+    action_models.extend(device_action_models)
 
     return action_models
 
