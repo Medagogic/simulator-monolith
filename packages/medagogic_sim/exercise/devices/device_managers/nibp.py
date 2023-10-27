@@ -48,6 +48,5 @@ class NIBPMonitor(DeviceHandler_Base):
             examples=["Get the BP monitor connected", "Let's get the blood pressure monitor on"],
             requirements=[],
             animationId="connect blood pressure cuff",
-            connectDeviceIDs=["blood pressure monitor"],
             type="connection"
         )

@@ -48,6 +48,5 @@ class EKGConnection(DeviceHandler_Base):
             examples=["Get the EKG connected", "Connect a 12-lead EKG", "Connect a 3-lead EKG"],
             requirements=[],
             animationId="connect ekg",
-            connectDeviceIDs=["ekg"],
             type="connection"
         )

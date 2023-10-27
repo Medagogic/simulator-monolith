@@ -57,6 +57,5 @@ class Ventilator(DeviceHandler_Base):
             examples=example_data,
             requirements=[],
             animationId="connect ventilator",
-            connectDeviceIDs=["ventilator"],
             type="connection"
         )

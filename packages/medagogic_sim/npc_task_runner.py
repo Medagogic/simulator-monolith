@@ -70,16 +70,14 @@ class TaskRunner:
             self.update_receipt.on_new_immediate_state_generated.subscribe(self.__handle_current_state_recalculated)
             self.update_receipt.on_finished.subscribe(self.__handle_sim_update_finished)
         elif action_type == ActionType.DEVICE:
-            response = self.context.device_interface.handle_call(self.task.call_data)
-            logger.debug(response)
-            self.add_pending_task(self.__generate_basic_completion_dialog())
+            self.add_pending_task(self.connect_devices_at_right_time())
         else:
             self.add_pending_task(self.__generate_basic_completion_dialog())
 
         # Then wait for anims and dialog
         anim_task = self.context.animation_resolver.resolve_animation(self.npc.id, self.task.animationId)
         self.add_pending_task(anim_task)
-        self.add_pending_task(self.connect_devices_at_right_time())
+        
 
         # Don't return until we're finished doing, animating, updating, and speaking
         while len(self.pending_tasks) > 0 or self.waiting_for_update():
@@ -99,8 +97,9 @@ class TaskRunner:
     async def connect_devices_at_right_time(self):
         await asyncio.sleep(10)
 
-        if self.task.connectDeviceIDs:
-            self.npc.context.add_connected_devices(self.task.connectDeviceIDs)
+        response = self.context.device_interface.handle_call(self.task.call_data)
+        logger.debug(response)
+        self.add_pending_task(self.__generate_basic_completion_dialog())
 
 
     def __handle_current_state_recalculated(self, data: Tuple[MarkdownExercise, str]) -> None:

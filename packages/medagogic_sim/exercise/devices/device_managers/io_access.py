@@ -86,6 +86,5 @@ class IOAccessManager(DeviceHandler_Base):
             examples=example_data,
             requirements=[],
             animationId="establish IO access",
-            connectDeviceIDs=["io access"],
             type="connection"
         )

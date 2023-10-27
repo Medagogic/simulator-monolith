@@ -56,6 +56,5 @@ class IVAccessManager(DeviceHandler_Base):
             ],
             requirements=[],
             animationId="establish IV access",
-            connectDeviceIDs=["iv access"],
             type="connection"
         )

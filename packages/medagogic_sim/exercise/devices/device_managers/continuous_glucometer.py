@@ -45,6 +45,5 @@ class ContinuousGlucometer(DeviceHandler_Base):
             examples=["Connect the continuous glucometer", "Attach the glucometer"],
             requirements=[],
             animationId="connect continuous glucometer",
-            connectDeviceIDs=["continuous glucometer"],
             type="connection"
         )

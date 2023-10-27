@@ -56,6 +56,5 @@ class PulseOximeter(DeviceHandler_Base):
             examples=["Connect pulse oximeter to patient's finger", "Connect pulse oximeter to patient's earlobe"],
             requirements=[],
             animationId="connect pulse oximeter",
-            connectDeviceIDs=["pulse oximeter"],
             type="connection"
         )

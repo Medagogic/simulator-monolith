@@ -31,6 +31,3 @@ class ContextForBrains:
     @property
     def interventions_markdown(self) -> str:
         return ""
-
-    def add_connected_devices(self, device_ids: List[str]) -> None:
-        pass
