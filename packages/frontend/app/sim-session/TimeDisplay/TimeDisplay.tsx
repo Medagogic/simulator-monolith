@@ -1,7 +1,8 @@
+import { useSessionStore } from '@/app/storage/SessionStore';
 import React, { useState, useEffect } from 'react';
 
 const TimeDisplay: React.FC = () => {
-    const [secondsElapsed, setSecondsElapsed] = useState(0);
+    const exerciseTimeSeconds = useSessionStore((state) => state.exerciseTimeSeconds);
 
     // This function will convert the elapsed total seconds into a time format (HH:mm:ss)
     const formatTime = (totalSeconds: number) => {
@@ -14,19 +15,9 @@ const TimeDisplay: React.FC = () => {
         return `${formatNumber(hours)}:${formatNumber(minutes)}:${formatNumber(seconds)}`;
     };
 
-    // Use the useEffect hook to set up an interval that updates the elapsed time
-    useEffect(() => {
-        const intervalId = setInterval(() => {
-            setSecondsElapsed((prev) => prev + 1);
-        }, 1000); // Update every second
-
-        // Clean up the interval on component unmount
-        return () => clearInterval(intervalId);
-    }, []);
-
     return (
         <div>
-            <h2>{formatTime(secondsElapsed)}</h2>
+            <h2>{formatTime(exerciseTimeSeconds)}</h2>
         </div>
     );
 };

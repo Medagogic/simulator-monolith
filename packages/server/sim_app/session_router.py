@@ -10,6 +10,7 @@ import asyncio
 from packages.server.sim_app.session_handlers import *
 
 from packages.medagogic_sim.logger.logger import get_logger, logging
+from packages.tools.scribe.src.scribe import scribe_emits
 logger = get_logger(level=logging.INFO)
 
 class API_NPCData(BaseModel):
@@ -21,6 +22,9 @@ class API_NPCData(BaseModel):
 class API_TeamData(BaseModel):
     npc_data: List[API_NPCData]
 
+class SIO_TimeUpdate(BaseModel):
+    exercise_time_seconds: int
+
 
 class Session_MedSim(Session_Chat, Session_Patient, Session_DirectIntervention, Session_Devices):
     def __init__(self, session_id: str, sio: socketio.AsyncServer):
@@ -28,6 +32,9 @@ class Session_MedSim(Session_Chat, Session_Patient, Session_DirectIntervention, 
         Session_Patient.__init__(self, session_id=session_id, sio=sio)
         Session_DirectIntervention.__init__(self, session_id=session_id, sio=sio)
         Session_Devices.__init__(self, session_id=session_id, sio=sio)
+
+        self.time_loop()
+
 
     def api_get_team(self) -> API_TeamData:
         team_data = API_TeamData(npc_data=[])
@@ -42,6 +49,16 @@ class Session_MedSim(Session_Chat, Session_Patient, Session_DirectIntervention, 
             )
             team_data.npc_data.append(npc_data)
         return team_data
+    
+    
+    @scribe_emits("time_update", SIO_TimeUpdate)
+    def time_loop(self):
+        async def __loop():
+            while True:
+                await asyncio.sleep(1)
+                data = SIO_TimeUpdate(exercise_time_seconds=self.medsim.context.simulation.timekeeper.exerciseTimeSeconds)
+                self.emit("time_update", data)
+        asyncio.create_task(__loop())
 
 
 

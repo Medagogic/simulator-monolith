@@ -1,0 +1,15 @@
+{
+    "properties": {
+        "exercise_time_seconds": {
+            "title": "Exercise Time Seconds",
+            "type": "integer"
+        }
+    },
+    "required": [
+        "exercise_time_seconds"
+    ],
+    "title": "SIO_TimeUpdate",
+    "type": "object",
+    "$id": "SIO_TimeUpdate.schema.json",
+    "additionalProperties": false
+}

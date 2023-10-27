@@ -73,6 +73,7 @@ export type Log = CombatLogElement[];
 export type NpcId2 = string;
 export type NpcName1 = string;
 export type About = string | null;
+export type ExerciseTimeSeconds = number;
 export type Message1 = string;
 export type Timestamp3 = string;
 export type TargetNpcId = string | null;
@@ -85,6 +86,7 @@ export interface ScribeEvents {
   patient_vitals_update: VitalSigns;
   combatlog_update: CombatLogUpdateData;
   npc_thinking_updated: NPCThinking;
+  time_update: SIO_TimeUpdate;
   __server_on_join_session?: {
     session_id?: {
       [k: string]: unknown;
@@ -196,6 +198,9 @@ export interface NPCThinking {
   npc_id: NpcId2;
   npc_name: NpcName1;
   about?: About;
+}
+export interface SIO_TimeUpdate {
+  exercise_time_seconds: ExerciseTimeSeconds;
 }
 export interface HumanMessage {
   message: Message1;

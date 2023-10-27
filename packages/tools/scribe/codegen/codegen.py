@@ -240,7 +240,7 @@ function subscribe(obj: ScribeClient, event: string, callback?: (data: any) => v
         # remove generated_dir
         shutil.rmtree(generated_dir)
 
-        print(f"Generated Scribe interface in frontent/src/scribe")
+        print(f"Generated Scribe interface in {frontend_folder}")
 
     asyncio.run(main())
 

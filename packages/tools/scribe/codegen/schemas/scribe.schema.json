@@ -24,6 +24,9 @@
         "npc_thinking_updated": {
             "$ref": "schemas/NPCThinking.schema.json"
         },
+        "time_update": {
+            "$ref": "schemas/SIO_TimeUpdate.schema.json"
+        },
         "__server_on_join_session": {
             "type": "object",
             "properties": {
@@ -71,6 +74,7 @@
         "npc_data",
         "patient_vitals_update",
         "combatlog_update",
-        "npc_thinking_updated"
+        "npc_thinking_updated",
+        "time_update"
     ]
 }
