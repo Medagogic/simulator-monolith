@@ -11,7 +11,7 @@ import Clippy from './Clippy/Clippy';
 import ABCDEList from './ABCDEList/ABCDEList';
 import StaffList from './StaffList/StaffList';
 import PatientVisualization from './Patient/PatientVisualization';
-import { ActionLog, ActionLogEntry } from './ActionLog/ActionLog';
+import { ActionLog } from './ActionLog/ActionLog';
 import TimeDisplay from './TimeDisplay/TimeDisplay';
 import { Objective, ObjectivesList } from './ObjectivesList/ObjectivesList';
 import { SocketProvider } from '../socketio/SocketContext';
@@ -55,13 +55,6 @@ const abcdeData: ExerciseCreationABCDE = {
   d: 'AVPU: A',
   e: 'No external bleeding or rashes.',
 };
-
-const actionLogs: ActionLogEntry[] = [
-  // { timestamp: new Date(), staffName: 'Aragon', action: 'assess capillary refill time', actionType: ActionType.Assessment },
-  // { timestamp: new Date(), staffName: 'Gandalf', action: 'obtained IV access', actionType: ActionType.Intervention },
-  // { timestamp: new Date(), staffName: 'Merry', action: 'called for xray prep', actionType: ActionType.Communication },
-  // { timestamp: new Date(), staffName: 'Pippin', action: 'prepared 1L of saline', actionType: ActionType.Preparation },
-];
 
 const objectives: Objective[] = [
   { description: 'Assess airway as priority.', completed: true },
