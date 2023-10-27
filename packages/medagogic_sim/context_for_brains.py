@@ -6,7 +6,7 @@ from packages.medagogic_sim.exercise.simulation4d import LeafyBlossom
 from packages.medagogic_sim.actions_for_brains import ActionDatabase
 from packages.medagogic_sim.history.sim_history import Evt_ChatMessage, HistoryLog
 from packages.medagogic_sim.iomanager import IOManager, NPCSpeech
-from packages.medagogic_sim.exercise.device_manager import DeviceInterface
+from packages.medagogic_sim.exercise.devices.device_interface import DeviceInterface
     
 
 class ContextForBrains:
