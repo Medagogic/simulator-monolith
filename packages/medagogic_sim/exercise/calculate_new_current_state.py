@@ -1,3 +1,4 @@
+import markdown_to_json
 from packages.medagogic_sim.exercise.markdownexercise import MarkdownExercise
 from packages.medagogic_sim.history.sim_history import HistoryLog
 from packages.medagogic_sim.exercise.simulation4d import NewCurrentStateResponse, LeafyBlossom
@@ -55,8 +56,16 @@ When describing states (eg for ABCDE), write in Telegraph style (ie "Airway open
         logger.error(f"Error calculating new immediate state from update: {e}")
         raise e
 
-    logger.info(full_response)
+    return full_response.strip()
 
+
+def validate_change_response(response: str) -> bool:
+    logger.info(response)
+
+    d = markdown_to_json.dictify(response)
+    
+    for k, v in d.items():
+        print(k, v)
 
 
 if __name__ == "__main__":
@@ -73,6 +82,8 @@ if __name__ == "__main__":
         change_description = """
 Greta's airway immediately opens up with the chin lift. The snoring/gurgling sounds  lessen as the free airway is restored, allowing for better ventilation. Her oxygen saturation, however, remains unchanged at 85%.""".strip()
         
-        await implement_changes(sim, change_description, gpt_model=MODEL_GPT4, cache_skip=True)
+        changes_to_implement = await implement_changes(sim, change_description, gpt_model=MODEL_GPT4, cache_skip=False)
+
+        validate_change_response(changes_to_implement)
 
     asyncio.run(main())
