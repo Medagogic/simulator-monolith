@@ -3,7 +3,7 @@ logger = get_logger(level=logging.WARNING)
 
 
 
-class IVAccessLocation(Enum):
+class IVAccessLocation(str, Enum):
     LEFT_HAND = "left hand"
     RIGHT_HAND = "right hand"
 

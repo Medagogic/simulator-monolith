@@ -52,7 +52,7 @@ class MedicalNPC():
         self.add_actions(actions)
 
     def __handle_brain_error(self, error: str) -> None:
-        self.context.iomanager.npc_speak(self.id, self.definition.name, f"error: {error}")
+        self.context.iomanager.npc_speak(self.id, self.definition.name, f"Right brain found a problem: {error}")
 
     def add_actions(self, actions):
         self.task_queue += actions
@@ -76,8 +76,9 @@ class MedicalNPC():
         try:
             await self.brain.process_user_input(user_input)
         except Exception as e:
-            logger.exception(e)
-            self.on_stop_thinking.on_next(None)
+            logger.error(e)
+            self.context.iomanager.npc_stop_thinking(self.id, self.definition.name)
+            raise e
 
     def markdown_summary(self) -> str:
         name = self.definition.name

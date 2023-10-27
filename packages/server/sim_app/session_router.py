@@ -42,9 +42,7 @@ class Session_MedSim(Session_Chat, Session_Patient, Session_DirectIntervention, 
             )
             team_data.npc_data.append(npc_data)
         return team_data
-    
-    def api_get_vitals(self) -> VitalSigns:
-        return self.medsim.get_vitals()
+
 
 
 class Router_MedSim(SessionRouter[Session_MedSim]):

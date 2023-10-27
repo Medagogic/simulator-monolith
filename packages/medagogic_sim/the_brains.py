@@ -172,6 +172,10 @@ NONE: No instruction.
         actions_list: Optional[List[str]] = None
         if decision == RightBrainDecision.YES:
             actions_list = self.split_actions(info)
+        else:
+            logger.debug(f"Right brain decision: {decision} - {info}")
+            for m in messages:
+                logger.debug(m["content"])
 
         return RightBrainResponse(decision=decision, info=info, actions_list=actions_list, full_response=response)
 
@@ -371,6 +375,7 @@ if __name__ == "__main__":
 
 
         tests = [
+            run_test("get iv access", RightBrainDecision.YES, ["Obtain IV access"]),
             # run_test("Chin lift", RightBrainDecision.YES, ["Chin lift"]),
             # run_test("Check airway and perform chin lift if necessary", RightBrainDecision.YES, ["Assess airway", "Chin lift"]),
             # run_test("Give 0.3mg of epinephrine IV", RightBrainDecision.NO),
@@ -383,7 +388,7 @@ if __name__ == "__main__":
             # # run_test("Start intubation, 4mm ET tube", RightBrainDecision.NO),
             # run_test("Start with assessing the airway and perform a chin lift if needed", RightBrainDecision.YES, ["Assess airway", "Chin lift"]),
             # # run_test("Give albuterol 2.5mg via nebulizer and monitor for improvement", RightBrainDecision.NO),  # No free airway
-            run_test("Get IV access and give 0.3mg epinephrine stat, then monitor for improvement", RightBrainDecision.YES, ["Obtain IV access", "Administer medication", "Monitor for change"]),
+            # run_test("Get IV access and give 0.3mg epinephrine stat, then monitor for improvement", RightBrainDecision.YES, ["Obtain IV access", "Administer medication", "Monitor for change"]),
             # run_test("Prepare bolus of 120 milliliters of ringers lactate", RightBrainDecision.YES, ["Prepare bolus"]),
             # run_test("Prepare bolus of 120 milliliters of ringers lactate and administer when IV access is established", RightBrainDecision.YES, ["Prepare bolus", "Wait", "Administer bolus"]),
             # run_test("Let's get a background history from his mother please", RightBrainDecision.YES, ["Talk to parent"]),

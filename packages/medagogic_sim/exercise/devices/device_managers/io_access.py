@@ -3,12 +3,12 @@ from packages.medagogic_sim.exercise.devices.device_managers.default_device_impo
 logger = get_logger(level=logging.WARNING)
 
 
-class IOAccessLocation(Enum):
+class IOAccessLocation(str, Enum):
     PROXIMAL_TIBIA = "proximal tibia"
     DISTAL_TIBIA = "distal tibia"
     DISTAL_FEMUR = "distal femur"
 
-class IOBodySide(Enum):
+class IOBodySide(str, Enum):
     LEFT = "left"
     RIGHT = "right"
 

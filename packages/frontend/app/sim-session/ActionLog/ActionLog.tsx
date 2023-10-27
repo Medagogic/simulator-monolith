@@ -31,9 +31,9 @@ export const ActionLog: React.FC<ActionLogProps> = ({  }) => {
     }
   }, [logs]);
 
-  useEffect(() => {
-    setLogs(generateCombatLogElements(100));
-  }, []);
+  // useEffect(() => {
+  //   setLogs(generateCombatLogElements(100));
+  // }, []);
 
   return (
     <div ref={containerRef} className="flex flex-col space-y-2 p-3 max-h-96 overflow-auto border border-gray-300 bg-gray-700 text-white h-full">

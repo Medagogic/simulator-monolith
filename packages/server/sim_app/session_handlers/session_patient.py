@@ -64,3 +64,6 @@ class Session_Patient(MedSessionBase):
         task = asyncio.create_task(_loop())
         setattr(self, "emit_vitals_loop_task", task)
       
+    
+    def api_get_vitals(self) -> VitalSigns:
+        return self.medsim.get_vitals()
