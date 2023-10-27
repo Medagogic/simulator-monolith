@@ -1,6 +1,7 @@
 import { ScribeClient, EmitEvent } from "@/src/scribe/ScribeClient";
 import { ChatEvent, CombatLogUpdateData, HumanMessage, MessageFromNPC, NPCThinking, VitalSigns } from "@/src/scribe/scribetypes";
 import { useChatStore, ChatStoreMessage } from "../storage/ChatStore";
+import { useCombatLogStore } from "../storage/CombatLogStore";
 
 export class ChatterIO extends ScribeClient {
     on_chat_message(data: MessageFromNPC) {
@@ -20,9 +21,7 @@ export class ChatterIO extends ScribeClient {
     }
 
     on_combatlog_update(data: CombatLogUpdateData): void {
-        data.log.forEach((m) => {
-            console.log(m);
-        });
+        useCombatLogStore.getState().setLogs(data.log);
     }
 
     joinSession(session_id: string) {
