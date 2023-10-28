@@ -7,6 +7,7 @@ import patientBlueOverlay from "./patient-body-blue.png";
 import { StaticImageData } from 'next/image';
 import { TEST_fullConnectionData, useDeviceStore } from '@/app/storage/DeviceStore';
 import { SIO_ConnectedDevices, IVAccessParams, IVAccessLocation, IOAccessLocation } from '@/src/scribe/scribetypes';
+import PerceptionList from './PerceptionList/PerceptionList';
 
 type LayeredImage = {
     img: StaticImageData;
@@ -244,10 +245,9 @@ const PatientVisualization: React.FC = () => {
 
 
     return (
-        <div className="relative w-full h-full border rounded-lg overflow-hidden" title="Bed">
-            <div className="absolute inset-0 w-full h-full bg-[#ebfff8] text-black"
+        <div className="relative w-full h-full border rounded-lg overflow-hidden bg-[#ebfff8]" title="Bed">
+            <div className="absolute inset-0 w-full h-full text-black left-1/4"
                 style={{ height: "130%", top: "-15%" }}>
-                {/* The background color is using JIT compilation syntax, ensure you are using Tailwind CSS v2.1.0 or later */}
                 {layers.map((layer, index) => (
                     <img
                         key={`layer-${index}`}
@@ -272,10 +272,14 @@ const PatientVisualization: React.FC = () => {
 
             </div>
 
-            <div className="absolute bottom-0 z-30 p-1 text-center w-full">
+            {/* <div className="absolute bottom-0 z-30 p-1 text-center w-full">
                 <span className="bg-black bg-opacity-70 text-white py-1 px-2 rounded">
                     [Snoring sounds]
                 </span>
+            </div> */}
+
+            <div className='absolute top-0 left-2 w-1/2'>
+                <PerceptionList />
             </div>
 
 
