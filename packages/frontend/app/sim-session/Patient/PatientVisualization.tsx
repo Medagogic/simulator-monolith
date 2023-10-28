@@ -246,7 +246,7 @@ const PatientVisualization: React.FC = () => {
 
     return (
         <div className="relative w-full h-full border rounded-lg overflow-hidden bg-[#ebfff8]" title="Bed">
-            <div className="absolute inset-0 w-full h-full text-black left-1/4"
+            <div className="absolute inset-0 w-full h-full text-black left-32"
                 style={{ height: "130%", top: "-15%" }}>
                 {layers.map((layer, index) => (
                     <img
@@ -278,7 +278,7 @@ const PatientVisualization: React.FC = () => {
                 </span>
             </div> */}
 
-            <div className='absolute top-0 left-2 w-1/2'>
+            <div className='absolute top-0 left-2 w-60'>
                 <PerceptionList />
             </div>
 

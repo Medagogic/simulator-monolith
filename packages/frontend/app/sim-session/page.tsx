@@ -86,7 +86,7 @@ const SimSessionPage: React.FC<SimSessionPageProps> = ({ sessionName }) => {
               </div>
 
             </div>
-            <div className='column' style={{ flex: "0 1 auto" }}>
+            <div className='column w-1/6' style={{ flex: "0 1 auto" }}>
               <ObjectivesList objectives={objectives} />
               <div className="self-end w-full">
                 <Clippy onClick={(data) => { handleClippySuggestion(data) }} />

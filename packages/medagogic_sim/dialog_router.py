@@ -34,7 +34,7 @@ class DialogRouter():
     def __init__(self, context: ContextForBrains, npc_manager: NPCManager) -> None:
         self.context = context
         self.npc_manager = npc_manager
-        self.model = MODEL_GPT35
+        self.model = MODEL_GPT4
         logger.info(f"{self.__class__.__name__} initialized using {self.model}")
         self.on_new_routing = Subject()
 
