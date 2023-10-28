@@ -117,7 +117,7 @@ if __name__ == "__main__":
 
         logger.info(sim.get_state_markdown(sim.exercise, include_progression=False))
 
-        perception_dict = await describe_perception(sim, gpt_model=MODEL_GPT4, cache_skip=True)
+        perception_dict = await describe_perception(sim, gpt_model=MODEL_GPT35, cache_skip=True)
 
         import json
         print(json.dumps(perception_dict, indent=4))
