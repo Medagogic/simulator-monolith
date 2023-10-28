@@ -122,8 +122,8 @@ async def validate_and_apply(changes_str: str, exercise: MarkdownExercise) -> No
 
 
 async def calculate_new_current_state(sim: LeafyBlossom, update: str, gpt_model=MODEL_GPT4, cache_skip=False) -> str:
-    change_description = await describe_changes(sim, "Dr Johnson started a Chin Lift", gpt_model=MODEL_GPT4, cache_skip=True)
-    changes_to_implement = await implement_changes(sim, change_description, gpt_model=MODEL_GPT4, cache_skip=True)
+    change_description = await describe_changes(sim, update, gpt_model=gpt_model, cache_skip=cache_skip)
+    changes_to_implement = await implement_changes(sim, change_description, gpt_model=gpt_model, cache_skip=cache_skip)
     await validate_and_apply(changes_to_implement, sim.exercise)
 
     return change_description
