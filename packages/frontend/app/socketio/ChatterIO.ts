@@ -1,5 +1,5 @@
 import { ScribeClient, EmitEvent } from "@/src/scribe/ScribeClient";
-import { ChatEvent, CombatLogUpdateData, HumanMessage, MessageFromNPC, NPCThinking, VitalSigns } from "@/src/scribe/scribetypes";
+import { ChatEvent, CombatLogUpdateData, HumanMessage, MessageFromNPC } from "@/src/scribe/scribetypes";
 import { useChatStore, ChatStoreMessage } from "../storage/ChatStore";
 import { useCombatLogStore } from "../storage/CombatLogStore";
 
@@ -28,10 +28,11 @@ export class ChatterIO extends ScribeClient {
         this.socket.emit(EmitEvent.JOIN_SESSION, session_id);
     }
 
-    sendMessage(message_text: string) {
+    sendMessage(message_text: string, target_npc_id?: string) {
         const m: HumanMessage = {
             message: message_text,
-            timestamp: new Date().toISOString()
+            timestamp: new Date().toISOString(),
+            target_npc_id: target_npc_id
         };
         useChatStore.getState().addMessage({
             message: m,

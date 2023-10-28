@@ -84,7 +84,7 @@ class Session_Chat(MedSessionBase):
     @scribe_handler
     async def on_chat_message(self, sid, data: HumanMessage) -> None:
         print(f"Client {sid} sent message {data} in {self.session_id}")
-        await self.medsim.process_user_input(data["message"])
+        await self.medsim.process_user_input(data["message"], data["target_npc_id"])
 
     @scribe_emits("chat_message", MessageFromNPC)
     async def emit_chat_message(self, data: MessageFromNPC) -> None:

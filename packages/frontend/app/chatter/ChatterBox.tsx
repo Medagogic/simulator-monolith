@@ -2,7 +2,7 @@
 "use client"
 
 import React, { ReactElement, useEffect, useRef, useState } from 'react';
-import { Button, Input, MessageList } from 'react-chat-elements';
+import { Button, MessageList } from 'react-chat-elements';
 import 'react-chat-elements/dist/main.css';
 import "app/chatter/ChatterBox.css"
 import { useChatStore } from '../storage/ChatStore';
@@ -13,14 +13,13 @@ import { ChatEvent, HumanMessage, MessageFromNPC } from "@/src/scribe/scribetype
 
 import { DefaultApi, Configuration } from "@/src/api"
 import { useTeamStore } from '../storage/TeamStore';
+import Input from './Input';
 const api_config = new Configuration({ basePath: process.env.API_HOST })
 const api = new DefaultApi(api_config)
 
 const ChatterBox: React.FC = () => {
   const messages = useChatStore((state) => state.messages);
-  const currentMessage = useChatStore((state) => state.currentMessage);
   const setToNPCId = useChatStore((state) => state.setToNPCId);
-  const setCurrentMessage = useChatStore((state) => state.setCurrentMessage); // Assuming you have this in your store
   const teamById = useTeamStore((state) => state.teamById);
 
   const [showAttachments, setShowAttachments] = useState(false);
@@ -62,6 +61,15 @@ const ChatterBox: React.FC = () => {
           // title = 'User';
           const human = chatStoreMessage.message as HumanMessage;
           content = human.message;
+          if (human.target_npc_id) {
+            const npcName = getNPCName(human.target_npc_id);
+            content = (
+              <div className="flex flex-col">
+                <div>To {npcName}</div>
+                <div className="flex-grow">{human.message}</div>
+              </div>
+            )
+          }
           break;
         case 'npc':
           position = 'left';
@@ -101,20 +109,10 @@ const ChatterBox: React.FC = () => {
     });
   }
 
-  function send_message() {
-    chatterIO.sendMessage(currentMessage);
-    setCurrentMessage("");
+  function send_message(message: string, target_npc_id?: string) {
+    chatterIO.sendMessage(message, target_npc_id);
   }
 
-  function handleKeyPress(event: React.KeyboardEvent) {
-    if (event.key === 'Enter') {
-      send_message();
-    }
-  }
-
-  function handleInputChange(event: React.ChangeEvent<HTMLInputElement>) {
-    setCurrentMessage(event.target.value); // Update the currentMessage in the store
-  }
 
   function handleReplyClick(data: any) {
     setToNPCId(data.npc_id);
@@ -145,13 +143,8 @@ const ChatterBox: React.FC = () => {
       <footer className='flex-shrink'>
         {/* ... any footer content, perhaps a text input and send button for new messages */}
         <Input
-          value={currentMessage}
-          onChange={handleInputChange}
-          onKeyPress={handleKeyPress}
+          onSendMessage={send_message}
           placeholder="Type here..."
-          multiline={false}
-          maxHeight={200}
-          rightButtons={<Button text='Send' onClick={send_message} />}
           className='chat-input'
         />
       </footer>

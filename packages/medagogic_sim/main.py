@@ -24,9 +24,14 @@ class MedagogicSimulator:
         self.context = ContextForBrains(exercise_name)
         self.npc_manager = NPCManager(self.context)
 
-    async def process_user_input(self, input_text: str) -> None:
+    async def process_user_input(self, input_text: str, to_npc_id: Optional[str]=None) -> None:
         self.context.history.add_event(sim_history.Evt_ChatMessage(name="Team Lead", content=input_text))
-        await self.npc_manager.process_dialog(TeamLeadDialog(input_text))
+
+        if to_npc_id and to_npc_id in self.npc_manager.npcs:
+            npc = self.npc_manager.npcs[to_npc_id]
+            await npc.process_input(input_text)
+        else:
+            await self.npc_manager.process_dialog(TeamLeadDialog(input_text))
 
     def get_exposed_vitals(self) -> ExposedVitalSigns:
         vital_signs = self.context.simulation.getCurrentVitals()

@@ -22,7 +22,7 @@ type ChatState = {
   attachments: any[];
   chatterio?: ChatterIO;
   toNPCId?: string;
-  setToNPCId: (npcId: string) => void;
+  setToNPCId: (npcId?: string) => void;
 };
 
 export const useChatStore = create<ChatState>((set, get) => {

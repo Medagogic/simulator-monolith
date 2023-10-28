@@ -11,7 +11,22 @@
     gap: 0.1rem;
     /* Reduced gap for a more condensed look */
     border-radius: 8px;
+    box-sizing: border-box;
+    position: relative;
 }
+
+.staff-member-container.selected::before {
+    content: "";
+    display: block;
+    position: absolute;
+    top: 0;
+    right: 0;
+    bottom: 0;
+    left: 0;
+    border-radius: 8px;
+    border: 2px solid rgb(37, 99, 235);
+    box-sizing: border-box;
+  }
 
 .staff-member-name,
 .staff-member-specialty {
@@ -82,3 +97,4 @@
     display: flex;
     align-items: center;
 }
+
