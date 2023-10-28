@@ -69,7 +69,7 @@ class Router_MedSim(SessionRouter[Session_MedSim]):
     def init_api_routes(self):   
         @self.session_router.get("/medsim/vitals")
         async def medsim_vitals(session: Session_MedSim = Depends(self.get_session)):
-            return session.medsim.get_exposed_vitals()
+            return session.medsim.context.get_exposed_vitals()
         
         @self.session_router.get("/medsim/team")
         async def medsim_team(session: Session_MedSim = Depends(self.get_session)) -> API_TeamData:

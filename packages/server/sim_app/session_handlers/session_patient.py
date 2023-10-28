@@ -2,8 +2,9 @@ from __future__ import annotations
 from typing import List
 from pydantic import BaseModel
 import socketio
+from packages.medagogic_sim.context_for_brains import ExposedVitalSigns
 from packages.medagogic_sim.history.sim_history import Evt_Assessment, Evt_CompletedIntervention, Evt_StartTask, Evt_TaskConsequence, HistoryEvent
-from packages.medagogic_sim.main import ExposedVitalSigns, VitalSigns
+from packages.medagogic_sim.main import VitalSigns
 from packages.tools.scribe import scribe_emits
 import asyncio
 from .med_session_base import MedSessionBase
@@ -57,7 +58,7 @@ class Session_Patient(MedSessionBase):
 
         async def _loop() -> None:
             while True:
-                vitals: ExposedVitalSigns = self.medsim.get_exposed_vitals()
+                vitals: ExposedVitalSigns = self.medsim.context.get_exposed_vitals()
                 await self.emit("patient_vitals_update", vitals)
                 await asyncio.sleep(1)
 

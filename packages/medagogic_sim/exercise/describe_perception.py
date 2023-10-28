@@ -107,7 +107,6 @@ def parse_perception_response(full_response: str) -> PerceptionDict:
     
 
 
-
 if __name__ == "__main__":
     logger.level = logging.DEBUG
 
