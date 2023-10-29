@@ -15,6 +15,8 @@ from packages.medagogic_sim.gpt.medagogic_gpt import MODEL_GPT35, MODEL_GPT4, gp
 from rx.subject import Subject
 from packages.medagogic_sim.action_db.actions_for_brains import ActionDatabase, TaskCall
 
+from packages.medagogic_sim.action_db.input_classifier import ActionClassifier
+
 
 import logging
 from packages.medagogic_sim.logger.logger import get_logger
@@ -30,9 +32,10 @@ class RightBrainDecision(Enum):
 
 class RightBrainResponse(BaseModel):
     decision: RightBrainDecision = RightBrainDecision.NONE
-    info: str
-    actions_list: Optional[List[str]]
-    full_response: str
+    dialog: str
+    actions_list: Optional[List[str]] = None
+    action_models: Optional[List[TaskCall]] = None
+
 
 class LeftBrainResponse(BaseModel):
     dialog: str
@@ -75,144 +78,109 @@ class BrainBase:
         return self.action_db.get_relevant_actions_markdown(user_input)
     
 
+class ReasonableRequestResponse(BaseModel):
+    passed: bool
+    explanation: Optional[str] = None
+    detected_actions: Optional[str] = None
+
+
 class RightBrain(BrainBase):
-    async def do_check(self, check_text: str) -> RightBrainResponse:
-        system_message = f"""
-Decide wether the user's request is possible based on the current simulation state.
+    def __init__(self, *args, **kwargs):
+        super().__init__(*args, **kwargs)
+        self.action_classifier = ActionClassifier.load()
 
-In your explanations, you are to roleplay as a doctor in the simulation. Stay in character as a medical professional in a high-stress acture care emergency room scenario. This is a training simulation, so you can't do anything wrong. Be as realistic as possible. Be concise, and use proper medical terminology. It is best to mirror the user's input for good closed-loop communication. Do not explain medical concepts or reasoning to the user, they are a trained medical professional. You are to only explain why the user's input is not possible, or what additional information is required. Be short. Be concise. Be realistic. Use "Telegraphic Style", where you focus on the most crucial words and omit articles, conjunctions, or other "filler" elements where possible. Telegraphic style: Uses essential words, omits filler, concise, clear.
 
-Your response must be one of the following:
-YES
-MORE INFO
-NO
-NONE
+    async def is_reasonable_request(self, instruction_from_team_lead: str) -> ReasonableRequestResponse:
+        difficulty_nohelp = """
+Decide if the request is logical. This is an educational experience for the Team Lead. Allow the Team Lead to make incorrect treatments, and do not correct them if you believe they are focusing on the wrong thing. Don't think about medical accuracy or treatment methods, only check for logical or logistical problems.
+""".strip()
+        
+        difficulty_fullhelp = """
+Decide if the request is possible and medically sound based on the information above.
+""".strip()
 
-If YES:
-    - Provide a comma separated list of actions to perform, as <action 1 name> (<parameter 1>, <parameter 2>, ...), <action 2 name> (<parameter 1>, <parameter 2>, ...), ...
-    - eg: `Obtain IV access, Administer medication (normal saline, 500mL, IV)`
-    - eg: `Give oxygen via non-rebreather mask (15L/min)`
-    - eg: `Assess airway`
-    - eg: `Prepare bolus, Chin lift`
 
-If MORE INFO:
-    - Provide a brief description of what additional information is required
+        system_prompt = f"""
+This is a virtual simulation training exercise for pediatric emergencies.
 
-If NO:
-    - Provide a brief explanation of why the action is not possible
+{self.full_world_state}
 
-If NONE:
-    - State that there is no instruction
+The user will provide you a request which the Team Lead in the simulation is requesting a medical professional to perform. {difficulty_nohelp} Your reply must be either "Yes" if the full request is okay, or "No".
 
-For example:
+If the request involves multiple actions, they will be enacted by one individual, sequentially. Therefore, you must consider the entire request as a sequence of actions where an earlier action may faciliate a later action.
 
-Example 1: User input is possible, single action
-```
-YES: Obtain IV access
-```
+If you respond with "Yes", you must also include some dialog to the Team Lead to inform of intent to perform the request - it's good to echo the Team Lead's request back, for example if "Let's get IV access" is appropriate, respond "Yes: Starting IV access". If "Let's get the clothes off and check the torso for signs of injuries" is appropriate, respond "Yes: I'll get the clothes removed and then check for injuries".
 
-Example 2: User input is possible, but more information is required
-```
-MORE INFO: What size needle?
-```
+If you respond with "No", you must also include some dialog to the Team Lead to explain why, eg "No: We don't have IV access yet." or "No: That isn't an appropriate action".
 
-Example 3: User input is not possible due to simulation state
-```
-NO: We don't have IV access yet.
-```
+Then provide a markdown list of the relevant actions.
+        """.strip()
 
-Example 4: User input is not possible due to simulation state
-```
-NO: Blood pressure monitor is already connected.
-```
-
-Example 5: User input is possible with multiple actions
-```
-YES: Give oxygen via non-rebreather mask (15L/min), Titrate oxygen (> 94%)
-```
-
-Example 6: User input is impossible because one of the actions is not possible
-```
-NO: We don't have IV access yet.
-```
-
-Example 7: User input is possible due to order of actions
-```
-YES: Obtain IV access, Administer medication (normal saline, 500mL, IV)
-```
-
-Example 8: User input is not an instruction
-```
-NONE: No instruction.
-```
-
-- NOTE: You may re-order the actions if this will help the requirements be filled better.
-- NOTE: All parameters for actions must be specified in the response.
-- NOTE: It may be possible to imply parameters from the user's input, and you should do so if possible.
-- NOTE: Do not spend time asking for superfluous information which you would yourself know in an emergency room setting.
-- NOTE: You should only assess the `requirements` of the first action you would perform.
-        """
+        user_prompt = f"""
+{instruction_from_team_lead}
+        """.strip()
 
         messages = [
-            SystemMessage(content=system_message),
-            SystemMessage(content=self.full_world_state),
-            SystemMessage(content=self.get_actions_markdown(check_text)),
-            UserMessage(content=check_text)
+            SystemMessage(content=system_prompt),
+            # SystemMessage(content=""),
+            UserMessage(content=user_prompt)
         ]
 
-        response = await gpt(messages, self.model, temperature=self.temperature)
+        gpt_response = (await gpt(messages, self.model, temperature=self.temperature)).strip()
 
-        a, b = response.split(":", 1)
+        first_line = gpt_response.split("\n")[0]
+        actions_text = gpt_response[len(first_line):].strip()
 
-        decision: RightBrainDecision = RightBrainDecision(a.strip().upper())
-        info = b.strip()
+        logger.debug(f"`{instruction_from_team_lead}` -> Is reasonable: `{first_line}`")
+        logger.debug(f"Actions: {actions_text}")
 
-        actions_list: Optional[List[str]] = None
-        if decision == RightBrainDecision.YES:
-            actions_list = self.split_actions(info)
+        if not first_line.lower().startswith("no:") and not first_line.lower().startswith("yes:"):
+            logger.error(f"Invalid response: {first_line}")
+            raise ValueError(f"Invalid response: {first_line}")
+        elif first_line.lower().startswith("yes:"):
+            explanation = first_line[4:].strip()
+            return ReasonableRequestResponse(passed=True, explanation=explanation, detected_actions=actions_text)
         else:
-            logger.debug(f"Right brain decision: {decision} - {info}")
-            for m in messages:
-                logger.debug(m["content"])
-
-        return RightBrainResponse(decision=decision, info=info, actions_list=actions_list, full_response=response)
-
-    @staticmethod
-    def split_actions(actions_string) -> List[str]:
-        # The regex pattern matches commas not enclosed by parentheses
-        pattern = r',(?![^()]*\))'
-        actions = re.split(pattern, actions_string)
-        # Strip leading/trailing white spaces
-        actions = [action.strip() for action in actions]
-        return actions
+            explanation = first_line[3:].strip()
+            return ReasonableRequestResponse(passed=False, explanation=explanation)
 
 
+    async def do_check(self, instruction_from_team_lead: str) -> RightBrainResponse:
+        reasonable_result = await self.is_reasonable_request(instruction_from_team_lead)
 
-class LeftBrain(BrainBase):
+        if not reasonable_result.passed:
+            if not reasonable_result.explanation:
+                raise ValueError("No explanation provided for unreasonable request")
+            return RightBrainResponse(decision=RightBrainDecision.NO, dialog=reasonable_result.explanation)
+        
+        input_to_classifier = f"""
+{reasonable_result.detected_actions}
 
-    async def generate_yes(self, user_input: str) -> LeftBrainResponse:
-        messages: List[GPTMessage] = [
-            SystemMessage(content="Reply to the user to confirm that you will take the action they have told you to perform. Stay in character as a medical professional in a high-stress acture care emergency room scenario. This is a training simulation, so you can't do anything wrong. Be as realistic as possible. Be concise, and use proper medical terminology. It is best to mirror the user's input for good closed-loop communication. Do not say 'I will', rather just start with the verbs. For example, if the user said 'Give 2mg of epinephrine IV', you could reply with 'Giving 2mg of epinephrine IV'."),
-            UserMessage(content=user_input)
-        ]
+{instruction_from_team_lead}
+        """.strip()
 
-        response = await gpt(messages, self.model, temperature=self.temperature)
+        classified_function_calls = await self.action_classifier.get_function_calls(input_to_classifier)
 
-        return LeftBrainResponse(dialog=response)
-    
+        if classified_function_calls is None or len(classified_function_calls) == 0:
+            return RightBrainResponse(decision=RightBrainDecision.NOT_A_COMMAND, dialog="There's no command in the instruction text.", actions_list=None)
+        
+        logger.debug(f"Classified function calls: {classified_function_calls}")
 
-    async def generate_more_info(self, user_input: str) -> LeftBrainResponse:
-        messages: List[GPTMessage] = [
-            SystemMessage(content="Reply to the user to ask them for the information required to complete the instructions they are giving, based on the data in the actions list. Be brief and concise, and do not ask for information you don't need. Don't ask for information which the user has already given. You may ask for clarifications if something is unclear. Keep your response as short as possible. For example, if the user said 'We need to get IO access', you could reply with 'What size needle?'. Do not repeat the user's input, they know the context. You are a medical professional in a high-stress acture care emergency room scenario. This is a training simulation, so you can't do anything wrong. Be as realistic as possible. You do not need to include any context in your response, the user already knows the context."),
-            SystemMessage(content=self.full_world_state),
-            SystemMessage(content=self.get_actions_markdown(user_input)),
-            UserMessage(content=user_input)
-        ]
+        task_calls = [self.context.action_db.get_action_from_call(function_call, instruction_from_team_lead) for function_call in classified_function_calls]  
 
-        response = await gpt(messages, self.model, temperature=self.temperature)
+        logger.debug(f"Task calls: {[t.call_data if t else None for t in task_calls]}")
 
-        return LeftBrainResponse(dialog=response)
-    
+        found_all_tasks = len(task_calls) == len(classified_function_calls) and all([task_call is not None for task_call in task_calls])
+
+        logger.debug(f"Found all tasks: {found_all_tasks}")
+
+        decision = RightBrainDecision.YES if found_all_tasks else RightBrainDecision.NO
+        dialog: str = reasonable_result.explanation     # type: ignore
+        actions_list = classified_function_calls
+        action_models: List[TaskCall] = task_calls  # type: ignore
+
+        return RightBrainResponse(decision=decision, dialog=dialog, actions_list=actions_list, action_models=action_models)
+       
 
 class PersonalityBrain:
     def __init__(self, context: ContextForBrains) -> None:
@@ -247,7 +215,6 @@ class NPCBrain:
 
         model: str=MODEL_GPT4
         self.right_brain = RightBrain(context, model=model, action_db=context.action_db, temperature=0)
-        self.left_brain = LeftBrain(context, model=model, action_db=context.action_db, temperature=0)
         self.personality_brain = PersonalityBrain(context)
 
         self.on_error = Subject()
@@ -281,28 +248,15 @@ Do not include any other text in your response.
 
         start_time = time.time()
 
-        tasks = [
-            self.right_brain.do_check(command_text),
-            self.left_brain.generate_yes(command_text),
-            self.left_brain.generate_more_info(command_text),
-        ]
-
-        results = await asyncio.gather(*tasks)
-        result_rb: RightBrainResponse = results[0]
-        result_lb_yes: LeftBrainResponse = results[1]
-        result_lb_moreinfo: LeftBrainResponse = results[2]
+        result_rb: RightBrainResponse = await self.right_brain.do_check(command_text)
 
         if result_rb.decision == RightBrainDecision.YES:
-            self.on_dialog.on_next(result_lb_yes.dialog)
-
+            self.on_dialog.on_next(result_rb.dialog)
             if result_rb.actions_list:
                 logger.debug(f"{command_text} -> {result_rb.actions_list}")
-                action_models = [self.context.action_db.get_action_from_call(action_call, command_text) for action_call in result_rb.actions_list]
-                self.on_actions.on_next(action_models)
-        elif result_rb.decision == RightBrainDecision.MORE_INFO:
-            self.on_dialog.on_next(result_lb_moreinfo.dialog)
+                self.on_actions.on_next(result_rb.action_models)
         else:
-            self.on_error.on_next(result_rb.info)
+            self.on_dialog.on_next(result_rb.dialog)
 
         logger.debug(f"process_user_input took {time.time() - start_time:.2f}s for {command_text}")
 
@@ -373,7 +327,7 @@ if __name__ == "__main__":
 
 
         tests = [
-            run_test("get iv access", RightBrainDecision.YES, ["Obtain IV access"]),
+            # run_test("get iv access", RightBrainDecision.YES, ["Obtain IV access"]),
             # run_test("Chin lift", RightBrainDecision.YES, ["Chin lift"]),
             # run_test("Check airway and perform chin lift if necessary", RightBrainDecision.YES, ["Assess airway", "Chin lift"]),
             # run_test("Give 0.3mg of epinephrine IV", RightBrainDecision.NO),
@@ -390,6 +344,7 @@ if __name__ == "__main__":
             # run_test("Prepare bolus of 120 milliliters of ringers lactate", RightBrainDecision.YES, ["Prepare bolus"]),
             # run_test("Prepare bolus of 120 milliliters of ringers lactate and administer when IV access is established", RightBrainDecision.YES, ["Prepare bolus", "Wait", "Administer bolus"]),
             # run_test("Let's get a background history from his mother please", RightBrainDecision.YES, ["Talk to parent"]),
+            run_test("Prep the amputation kit, we need to amputate the patient's leg", RightBrainDecision.NO),
         ]
 
         for test in tests:

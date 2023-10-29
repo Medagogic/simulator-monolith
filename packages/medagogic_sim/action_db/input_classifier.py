@@ -11,7 +11,7 @@ from sklearn.ensemble import RandomForestClassifier
 from packages.medagogic_sim.logger.logger import get_logger, logging
 from packages.medagogic_sim.gpt.medagogic_gpt import MODEL_GPT4, gpt_streamed_lines, UserMessage, SystemMessage, GPTMessage, gpt, MODEL_GPT35
 
-logger = get_logger(level=logging.DEBUG)
+logger = get_logger(level=logging.INFO)
 
 import os
 

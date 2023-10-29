@@ -52,7 +52,8 @@ class MedicalNPC():
         self.add_actions(actions)
 
     def __handle_brain_error(self, error: str) -> None:
-        self.context.iomanager.npc_speak(self.id, self.definition.name, f"Right brain found a problem: {error}")
+        logger.error(f"Brain error: {error}")
+        # self.context.iomanager.npc_speak(self.id, self.definition.name, f"Right brain found a problem: {error}")
 
     def add_actions(self, actions):
         self.task_queue += actions
