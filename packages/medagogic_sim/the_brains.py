@@ -65,8 +65,6 @@ class BrainBase:
 
 {history}
 
-{self.context.interventions_markdown}
-
 ## Current Patient State
 
 {self.context.simulation.getExercise().to_markdown(include_progression=False)}

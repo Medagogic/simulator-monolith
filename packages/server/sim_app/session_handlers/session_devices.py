@@ -26,7 +26,7 @@ class Session_Devices(MedSessionBase):
         MedSessionBase.__init__(self, session_id=session_id, sio=sio)
         self.medsim.context.device_interface.on_device_change.subscribe(self.handle_on_device_change)
 
-    def handle_on_device_change(self, data: DeviceChangeData) -> None:
+    def get_state_for_emit(self) -> SIO_ConnectedDevices:
         device_interface = self.medsim.context.device_interface
         device_update = SIO_ConnectedDevices(
             iv_access=list(device_interface.iv_manager.connected_ivs.values()),
@@ -37,8 +37,15 @@ class Session_Devices(MedSessionBase):
             ventilator=device_interface.ventilator_manager.connection_params,
             continuous_glucometer=device_interface.continuous_glucometer_manager.connection_params,
         )
-        asyncio.create_task(self.emit_device_update(device_update))
+        return device_update
+
+    async def send_full_state(self, sid: str) -> None:
+        asyncio.create_task(self.emit_device_update(self.get_state_for_emit(), to=sid))
+
+
+    def handle_on_device_change(self, data: DeviceChangeData) -> None:
+        asyncio.create_task(self.emit_device_update(self.get_state_for_emit()))
 
     @scribe_emits("device_update", SIO_ConnectedDevices)
-    async def emit_device_update(self, device_update: SIO_ConnectedDevices) -> None:
-        await self.emit("device_update", device_update.model_dump())
+    async def emit_device_update(self, device_update: SIO_ConnectedDevices, to=None) -> None:
+        await self.emit("device_update", device_update.model_dump(), to=to)

@@ -31,6 +31,25 @@ class Session_Patient(MedSessionBase):
         self.emit_vitals_loop()
 
 
+    async def send_full_state(self, sid: str) -> None:
+        full_combat_log = self.medsim.context.history.get_filtered_log(filter_types=[
+            Evt_Assessment,
+            Evt_StartTask,
+            Evt_TaskConsequence,
+            Evt_CompletedIntervention
+        ])
+
+        data = CombatLogUpdateData(
+            log = [CombatLogElement(
+                timestamp=e.timestamp,
+                npc_name=e.npc_name,
+                content=e.content,
+                type=e.__class__.__name__
+            ) for e in full_combat_log]
+        )
+        asyncio.create_task(self.emit("combatlog_update", data, to=sid))
+        
+
     @scribe_emits("combatlog_update", CombatLogUpdateData)
     def handle_on_new_history_event(self, event: HistoryEvent) -> None:
         full_combat_log = self.medsim.context.history.get_filtered_log(filter_types=[
