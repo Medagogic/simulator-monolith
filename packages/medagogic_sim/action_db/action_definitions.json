@@ -1,0 +1,396 @@
+[
+    {
+        "name": "Assess airway",
+        "description": "A - Airway. Detailed airway assessment to determine if the patient's airway is clear and functioning",
+        "exampleInputs": ["Assess the airway please", "Check airway for obstructions", "Check airway"],
+        "examples": ["Assess the airway please", "Check airway for obstructions", "Check airway"],
+        "requirements": [],
+        "animationId": "assess airway",
+        "type": "assessment"
+    },
+    {
+        "name": "Assess breathing",
+        "description": "B - Breathing. Detailed assessment of breathing to evaluate the quality, rate, and effectiveness of respirations",
+        "exampleInputs": ["Check B", "How's the breathing?", "Listen for abnormal breath sounds"],
+        "examples": ["Check B", "How's the breathing?", "Listen for abnormal breath sounds"],
+        "requirements": [],
+        "animationId": "assess breathing",
+        "type": "assessment"
+    },
+    {
+        "name": "Assess circulation",
+        "description": "C - Circulation. Detailed assessment of the circulatory system to evaluate the patient's heart rate, blood pressure, and perfusion",
+        "exampleInputs": ["Let's move on to C", "Assess the circulation please"],
+        "examples": ["Let's move on to C", "Assess the circulation please"],
+        "requirements": [],
+        "animationId": "assess circulation",
+        "type": "assessment"
+    },
+    {
+        "name": "Assess disability",
+        "description": "D - Disability. Detailed assessment of current level of consciousness, using tools such as the Glasgow Coma Scale",
+        "exampleInputs": ["Start assessing D", "Check the patient's level of consciousness", "Assess disability"],
+        "examples": ["Start assessing D", "Check the patient's level of consciousness", "Assess disability"],
+        "requirements": [],
+        "animationId": "assess disability",
+        "type": "assessment"
+    },
+    {
+        "name": "Assess exposure",
+        "description": "E - Exposure. Detailed assessment for injuries, bruising, rashes, etc by completely exposing the patient while maintaining privacy and warmth",
+        "exampleInputs": ["Check E, exposure", "Look for visible signs of trauma", "Check for abnormalities in skin color or temperature"],
+        "examples": ["Check E, exposure", "Look for visible signs of trauma", "Check for abnormalities in skin color or temperature"],
+        "requirements": [],
+        "animationId": "assess exposure",
+        "type": "assessment"
+    },
+    {
+        "name": "Review ABCDE",
+        "description": "Go over the status of the airway, breathing, circulation, disability, and exposure assessments",
+        "exampleInputs": ["Can you review the ABCDE status?", "Let's review ABCDE", "How are we doing on ABCDE?"],
+        "examples": ["Can you review the ABCDE status?", "Let's review ABCDE", "How are we doing on ABCDE?"],
+        "requirements": [],
+        "animationId": "review abcde",
+        "type": "assessment"
+    },
+    {
+        "name": "Give oxygen via mask ($flow)",
+        "description": "Administer oxygen through a face mask",
+        "exampleInputs": ["Give oxygen via mask at 5 liters per minute", "Give oxygen via mask at 10L/min"],
+        "exampleActions": ["Give oxygen via mask (5L/min)", "Give oxygen via mask (10L/min)"],
+        "examples": [
+            {
+                "input": "Give oxygen via mask at 5 liters per minute",
+                "action": "Give oxygen via mask (5L/min)"
+            },
+            {
+                "input": "Give oxygen via mask at 10L/min",
+                "action": "Give oxygen via mask (10L/min)"
+            }
+        ],
+        "requirements": ["The airway must be clear"],
+        "animationId": "give oxygen mask",
+        "type": "intervention"
+    },
+    {
+        "name": "Give oxygen via nasal cannula ($flow)",
+        "description": "Administer oxygen through a nasal cannula",
+        "exampleInputs": ["Give oxygen via nasal cannula at 2 liters per minute", "Start oxygen therapy, nasal cannula at 4L/min"],
+        "exampleActions": ["Give oxygen via nasal cannula (2L/min)", "Give oxygen via nasal cannula (4L/min)"],
+        "examples": [
+            {
+                "input": "Give oxygen via nasal cannula at 2 liters per minute",
+                "action": "Give oxygen via nasal cannula (2L/min)"
+            },
+            {
+                "input": "Start oxygen therapy, nasal cannula at 4L/min",
+                "action": "Give oxygen via nasal cannula (4L/min)"
+            }
+        ],
+        "requirements": ["The airway must be clear"],
+        "animationId": "give oxygen nasal cannula",
+        "type": "intervention"
+    },
+    {
+        "name": "Give oxygen via non-rebreather mask ($flow)",
+        "description": "Administer oxygen through a non-rebreather mask",
+        "exampleInputs": ["Start oxygen, non-rebreather mask at 10 liters per minute", "Give oxygen via non-rebreather mask at 15L/min"],
+        "exampleActions": ["Give oxygen via non-rebreather mask (10L/min)", "Give oxygen via non-rebreather mask (15L/min)"],
+        "examples": [
+            {
+                "input": "Start oxygen, non-rebreather mask at 10 liters per minute",
+                "action": "Give oxygen via non-rebreather mask (10L/min)"
+            },
+            {
+                "input": "Give oxygen via non-rebreather mask at 15L/min",
+                "action": "Give oxygen via non-rebreather mask (15L/min)"
+            }
+        ],
+        "requirements": ["The airway must be clear"],
+        "animationId": "give oxygen non-rebreather mask",
+        "type": "intervention"
+    },
+    {
+        "name": "Give oxygen via bag valve mask ($flow)",
+        "description": "Administer oxygen through a bag valve mask",
+        "exampleInputs": ["Let's get the BVM on, 15 liters per minute", "Give oxygen via bag valve mask at 15L/min please"],
+        "exampleActions": ["Give oxygen via bag valve mask (15L/min)", "Give oxygen via bag valve mask (15L/min)"],
+        "examples": [
+            {
+                "input": "Let's get the BVM on, 15 liters per minute",
+                "action": "Give oxygen via bag valve mask (15L/min)"
+            },
+            {
+                "input": "Give oxygen via bag valve mask at 15L/min please",
+                "action": "Give oxygen via bag valve mask (15L/min)"
+            }
+        ],
+        "requirements": ["The airway must be clear"],
+        "animationId": "give oxygen bag valve mask",
+        "type": "intervention"
+    },
+    {
+        "name": "Give oxygen via blow-by ($flow)",
+        "description": "Administer oxygen in the vicinity of the patient's nose and mouth without directly attaching to the patient - typically used for children or individuals who do not tolerate other oxygen delivery methods",
+        "exampleInputs": ["Start blow-by oxygen at 5 liters per minute", "Give oxygen via blow-by, 10 liters/minute"],
+        "exampleActions": ["Give oxygen via blow-by (5L/min)", "Give oxygen via blow-by (10L/min)"],
+        "examples": [
+            {
+                "input": "Start blow-by oxygen at 5 liters per minute",
+                "action": "Give oxygen via blow-by (5L/min)"
+            },
+            {
+                "input": "Give oxygen via blow-by, 10 liters/minute",
+                "action": "Give oxygen via blow-by (10L/min)"
+            }
+        ],
+        "requirements": ["The airway must be clear"],
+        "animationId": "give oxygen blow-by",
+        "type": "intervention"
+    },
+    {
+        "name": "Intubate ($size, $type)",
+        "description": "Insert a tube into the patient's trachea to secure the airway and facilitate ventilation",
+        "exampleInputs": ["Intubate with a 7.5mm cuffed tube", "Start intubation, 8.0mm uncuffed"],
+        "exampleActions": ["Intubate (7.5mm, cuffed)", "Intubate (8.0mm, uncuffed)"],
+        "examples": [
+            {
+                "input": "Intubate with a 7.5mm cuffed tube",
+                "action": "Intubate (7.5mm, cuffed)"
+            },
+            {
+                "input": "Start intubation, 8.0mm uncuffed",
+                "action": "Intubate (8.0mm, uncuffed)"
+            }
+        ],
+        "requirements": ["The patient must be unconscious or sedated"],
+        "animationId": "intubate",
+        "type": "intervention"
+    },
+    {
+        "name": "Take blood glucose reading",
+        "description": "Use a glucometer to measure the patient's blood glucose level",
+        "exampleInputs": ["Take a blood glucose reading from patient's finger", "We need to check glucose level"],
+        "examples": ["Take a blood glucose reading from patient's finger", "We need to check glucose level"],
+        "requirements": [],
+        "animationId": "take blood glucose reading",
+        "type": "assessment"
+    },
+    {
+        "name": "Take temperature reading",
+        "description": "Measure the patient's body temperature",
+        "exampleInputs": ["Take a temperature reading", "Let's check for fever", "Can we get a temperature reading?"],
+        "examples": ["Take a temperature reading", "Let's check for fever", "Can we get a temperature reading?"],
+        "requirements": [],
+        "animationId": "take temperature reading",
+        "type": "assessment"
+    },
+    {
+        "name": "Auscultate heart",
+        "description": "Listen to the heart sounds to evaluate rate, rhythm, and the presence of any abnormal sounds",
+        "exampleInputs": ["How's the heart sound?", "Can we get a heart ascultation?", "Any unusual heart sounds?"],
+        "examples": ["How's the heart sound?", "Can we get a heart ascultation?", "Any unusual heart sounds?"],
+        "requirements": [],
+        "animationId": "auscultate heart",
+        "type": "assessment"
+    },
+    {
+        "name": "Auscultate lungs",
+        "description": "Listen to the breath sounds to assess for any abnormal sounds",
+        "exampleInputs": ["Is there anything abnormal in the lungs?", "Auscultate lungs please", "We need to check for any abnormal sounds in the lungs"],
+        "examples": ["Is there anything abnormal in the lungs?", "Auscultate lungs please", "We need to check for any abnormal sounds in the lungs"],
+        "requirements": [],
+        "animationId": "auscultate lungs",
+        "type": "assessment"
+    },
+    {
+        "name": "Auscultate abdomen",
+        "description": "Listen to the bowel sounds to assess for any abnormal sounds",
+        "exampleInputs": ["Is there anything abnormal in the abdomen?", "Auscultate abdomen please", "We need to check for any abnormal sounds in the abdomen"],
+        "examples": ["Is there anything abnormal in the abdomen?", "Auscultate abdomen please", "We need to check for any abnormal sounds in the abdomen"],
+        "requirements": [],
+        "animationId": "auscultate abdomen",
+        "type": "assessment"
+    },
+    {
+        "name": "Check capillary refill",
+        "description": "Evaluate the time it takes for color to return to an external capillary bed after pressure is applied",
+        "exampleInputs": ["Can we check capillary refill?", "What's the cap refill time?", "We need to assess the capillary refill time"],
+        "examples": ["Can we check capillary refill?", "What's the cap refill time?", "We need to assess the capillary refill time"],
+        "requirements": [],
+        "animationId": "check capillary refill",
+        "type": "assessment"
+    },
+    {
+        "name": "Chin lift",
+        "description": "Maneuver used to open the airway by pulling the chin upward while tilting the head back",
+        "exampleInputs": ["Try a chin lift please", "Do a chin lift", "Lift her chin"],
+        "examples": ["Try a chin lift please", "Do a chin lift", "Lift her chin"],
+        "requirements": ["No cervical spine injury"],
+        "animationId": "chin lift",
+        "type": "intervention"
+    },
+    {
+        "name": "Jaw thrust",
+        "description": "Maneuver used to open the airway by moving the jaw forward without moving the neck",
+        "exampleInputs": ["Try a jaw thrust please", "Do a jaw thrust", "Thrust her jaw"],
+        "examples": ["Try a jaw thrust please", "Do a jaw thrust", "Thrust her jaw"],
+        "requirements": [],
+        "animationId": "jaw thrust",
+        "type": "intervention"
+    },
+    {
+        "name": "Head tilt",
+        "description": "Maneuver used to open the airway by tilting the head backward while lifting the chin",
+        "exampleInputs": ["Try a head tilt please", "Do a head tilt", "Tilt her head"],
+        "examples": ["Try a head tilt please", "Do a head tilt", "Tilt her head"],
+        "requirements": ["No cervical spine injury"],
+        "animationId": "head tilt",
+        "type": "intervention"
+    },
+    {
+        "name": "Administer medication ($medication, $dose, $route)",
+        "description": "Give the patient a specific medication at a specified dose and route",
+        "exampleInputs": ["Push 0.1 mg of epinephrine via IV", "We need to give 500 mg of amoxicillin orally"],
+        "exampleActions": ["Administer medication (epinephrine, 0.1mg, IV)", "Administer medication (amoxicillin, 500mg, oral)"],
+        "examples": [
+            {
+                "input": "Push 0.1 mg of epinephrine via IV",
+                "action": "Administer medication (epinephrine, 0.1mg, IV)"
+            },
+            {
+                "input": "We need to give 500 mg of amoxicillin orally",
+                "action": "Administer medication (amoxicillin, 500mg, oral)"
+            }
+        ],
+        "requirements": ["Must have access for the desired route", "Exact dose must be calculated by the user"],
+        "animationId": "administer medication",
+        "type": "intervention"
+    },
+    {
+        "name": "Titrate oxygen ($targetSaturation)",
+        "description": "Adjust the flow rate of oxygen to achieve a target oxygen saturation",
+        "exampleInputs": ["Titrate oxygen to maintain oxygen saturation above 94%", "Titrate for saturation to 98%"],
+        "exampleActions": ["Titrate oxygen (>94%)", "Titrate oxygen (98%)"],
+        "examples": [
+            {
+                "input": "Titrate oxygen to maintain oxygen saturation above 94%",
+                "action": "Titrate oxygen (>94%)"
+            },
+            {
+                "input": "Titrate for saturation to 98%",
+                "action": "Titrate oxygen (98%)"
+            }
+        ],
+        "requirements": ["Patient must be on supplemental oxygen, or oxygen therapy must be in progress"],
+        "animationId": "titrate oxygen",
+        "type": "intervention"
+    },
+    {
+        "name": "Monitor for change ($reason)",
+        "description": "Monitor the patient for a change in condition, usually following from a specific intervention",
+        "exampleInputs": ["<give medication>... and monitor for improvement", "Monitor to see if <intervention> is working"],
+        "exampleActions": ["Monitor for change (after <medication>)", "Monitor for change (after <intervention>)"],
+        "examples": [
+            {
+                "input": "<give medication>... and monitor for improvement",
+                "action": "Monitor for change (after <medication>)"
+            },
+            {
+                "input": "Monitor to see if <intervention> is working",
+                "action": "Monitor for change (after <intervention>)"
+            }
+        ],
+        "requirements": [],
+        "animationId": "monitor for change",
+        "type": "assessment"
+    },
+    {
+        "name": "Check pulse",
+        "description": "Manually assess the patient's pulse rate and rhythm. Will be done at any pulse point.",
+        "exampleInputs": ["Check the pulse", "What's the pulse?", "Can we get a pulse check?"],
+        "examples": ["Check the pulse", "What's the pulse?", "Can we get a pulse check?"],
+        "requirements": [],
+        "animationId": "assess pulse",
+        "type": "assessment"
+    },
+    {
+        "name": "CPR",
+        "description": "Perform chest compressions and rescue breaths to maintain circulation and oxygenation",
+        "exampleInputs": ["Start CPR", "We need to do CPR", "Let's get CPR going"],
+        "examples": ["Start CPR", "We need to do CPR", "Let's get CPR going"],
+        "requirements": ["Patient must be unconscious and not breathing"],
+        "animationId": "perform cpr",
+        "type": "intervention"
+    },
+    {
+        "name": "Prepare bolus ($fluid, $volume)",
+        "description": "Prepare a bolus of a specific fluid at a specific volume",
+        "exampleInputs": ["Prepare a 500 mL bolus of normal saline", "Can you prepare a bolus ringer acetate 120 milliliters"],
+        "exampleActions": ["Prepare bolus (normal saline, 500mL)", "Prepare bolus (ringer acetate, 120mL)"],
+        "examples": [
+            {
+                "input": "Prepare a 500 mL bolus of normal saline",
+                "action": "Prepare bolus (normal saline, 500mL)"
+            },
+            {
+                "input": "Can you prepare a bolus ringer acetate 120 milliliters",
+                "action": "Prepare bolus (ringer acetate, 120mL)"
+            }
+        ],
+        "requirements": [],
+        "animationId": "prepare bolus",
+        "type": "other"
+    },
+    {
+        "name": "Wait ($event)",
+        "description": "Wait for a specific event to occur, for example another nurse preparing IV access.",
+        "exampleInputs": ["Wait for IV access to be established", "Do X when the nurse has prepared the bolus", "Administer bolus once we have IV access"],
+        "exampleActions": ["Wait (IV access established)", "Wait (nurse has prepared bolus)", "Wait (IV access established)"],
+        "examples": [
+            {
+                "input": "Wait for IV access to be established",
+                "action": "Wait (IV access established)"
+            },
+            {
+                "input": "Do X when the nurse has prepared the bolus",
+                "action": "Wait (nurse has prepared bolus)"
+            },
+            {
+                "input": "Administer bolus once we have IV access",
+                "action": "Wait (IV access established)"
+            }
+        ],
+        "requirements": [],
+        "animationId": "wait for event",
+        "type": "other"
+    },
+    {
+        "name": "Administer bolus ($bolus)",
+        "description": "Give the patient a bolus of fluid",
+        "exampleInputs": ["Give the patient the bolus", "Administer the bolus nurse Smith prepared"],
+        "exampleActions": ["Administer bolus (ringers lactate, 120mL)", "Administer bolus (normal saline, 500mL)"],
+        "examples": [
+            {
+                "input": "Give the patient the bolus",
+                "action": "Administer bolus (ringers lactate, 120mL)"
+            },
+            {
+                "input": "Administer the bolus nurse Smith prepared",
+                "action": "Administer bolus (normal saline, 500mL)"
+            }
+        ],
+        "requirements": ["A bolus must be prepared and ready to be administered"],
+        "animationId": "administer bolus",
+        "type": "intervention"
+    },
+    {
+        "name": "Talk to parent",
+        "description": "Talk to the patient's caregiver (ie parent, guardian, etc) to get more information about the patient and their medical history",
+        "exampleInputs": ["Can we get a history from the parent please", "Can we get the patient's caregiver in here?"],
+        "examples": ["Can we get a history from the parent please", "Can we get the patient's caregiver in here?"],
+        "requirements": [],
+        "animationId": "talk to parent",
+        "type": "other"
+    }
+]

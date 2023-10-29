@@ -1,4 +1,4 @@
-from packages.medagogic_sim.actions_for_brains import ActionModel
+from packages.medagogic_sim.action_db.actions_for_brains import ActionModel
 from .default_device_imports import *
 logger = get_logger(level=logging.WARNING)
 

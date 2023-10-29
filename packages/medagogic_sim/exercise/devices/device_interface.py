@@ -9,7 +9,7 @@ if TYPE_CHECKING:
     from packages.medagogic_sim.exercise.devices.device_managers.base_handler import DeviceHandler_Base
     from packages.medagogic_sim.exercise.simulation_types import Vitals
 
-from packages.medagogic_sim.actions_for_brains import ActionDatabase, ActionExample
+from packages.medagogic_sim.action_db.actions_for_brains import ActionDatabase, ActionExample
 from packages.medagogic_sim.exercise.devices.device_managers import *
 
 from packages.medagogic_sim.logger.logger import get_logger, logging

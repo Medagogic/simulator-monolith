@@ -5,7 +5,7 @@ from packages.medagogic_sim.animation_resolver.animation_resolver_base import An
 from packages.medagogic_sim.animation_resolver.dummy_animation_resolver import DummyAnimationResolver
 from packages.medagogic_sim.exercise.exercise_loader import read_metadata
 from packages.medagogic_sim.exercise.simulation4d import LeafyBlossom
-from packages.medagogic_sim.actions_for_brains import ActionDatabase
+from packages.medagogic_sim.action_db.actions_for_brains import ActionDatabase
 from packages.medagogic_sim.exercise.simulation_types import BloodPressureModel
 from packages.medagogic_sim.history.sim_history import Evt_ChatMessage, HistoryLog
 from packages.medagogic_sim.iomanager import IOManager, NPCSpeech

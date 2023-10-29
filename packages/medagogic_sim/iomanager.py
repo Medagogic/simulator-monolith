@@ -8,7 +8,7 @@ import rx.core.typing
 from rx.subject import Subject
 
 if TYPE_CHECKING:
-    from packages.medagogic_sim.actions_for_brains import TaskCall
+    from packages.medagogic_sim.action_db.actions_for_brains import TaskCall
 
 class NPCSpeech(BaseModel):
     npc_id: str

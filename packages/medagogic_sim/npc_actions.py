@@ -4,7 +4,7 @@ from pydantic import BaseModel
 import typing
 
 from packages.medagogic_sim.exercise.simulation_types import ActionType
-from packages.medagogic_sim.actions_for_brains import TaskCall
+from packages.medagogic_sim.action_db.actions_for_brains import TaskCall
 from packages.medagogic_sim.npc_task_runner import TaskRunner
 
 

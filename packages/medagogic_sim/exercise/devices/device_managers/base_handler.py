@@ -2,10 +2,10 @@ from __future__ import annotations
 from abc import ABC, abstractmethod
 from typing import TYPE_CHECKING, Any, List, Dict, Optional, Type
 
-from packages.medagogic_sim.actions_for_brains import ActionModel
+from packages.medagogic_sim.action_db.actions_for_brains import ActionModel
 
 if TYPE_CHECKING:
-    from packages.medagogic_sim.actions_for_brains import ActionDatabase
+    from packages.medagogic_sim.action_db.actions_for_brains import ActionDatabase
 
 from enum import Enum
 from pydantic import BaseModel, Field

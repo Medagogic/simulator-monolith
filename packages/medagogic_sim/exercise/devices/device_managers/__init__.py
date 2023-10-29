@@ -8,7 +8,7 @@ from .continuous_glucometer import ContinuousGlucometer, ContinuousGlucometerPar
 
 
 from typing import List
-from packages.medagogic_sim.actions_for_brains import ActionModel
+from packages.medagogic_sim.action_db.actions_for_brains import ActionModel
 
 def get_device_action_models() -> List[ActionModel]:
     devices = [

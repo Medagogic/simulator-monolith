@@ -13,7 +13,7 @@ if TYPE_CHECKING:
 import asyncio
 from packages.medagogic_sim.gpt.medagogic_gpt import MODEL_GPT35, MODEL_GPT4, gpt, UserMessage, SystemMessage, GPTMessage
 from rx.subject import Subject
-from packages.medagogic_sim.actions_for_brains import ActionDatabase, TaskCall
+from packages.medagogic_sim.action_db.actions_for_brains import ActionDatabase, TaskCall
 
 
 import logging
