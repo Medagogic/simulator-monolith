@@ -3,6 +3,7 @@ from packages.tools.scribe.codegen.codegen import generate_code as generate_scri
 import os
 import shutil
 
+
 if __name__ == "__main__":
     # Delete the folders
     path = os.path.dirname(os.path.realpath(__file__))

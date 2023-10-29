@@ -26,14 +26,18 @@ class SIO_TimeUpdate(BaseModel):
     exercise_time_seconds: int
 
 
-class Session_MedSim(Session_Chat, Session_Patient, Session_DirectIntervention, Session_Devices):
+class Session_MedSim(Session_Chat, Session_Patient, Session_DirectIntervention, Session_Devices, Session_DrClippy):
     def __init__(self, session_id: str, sio: socketio.AsyncServer):
-        Session_Chat.__init__(self, session_id=session_id, sio=sio)
-        Session_Patient.__init__(self, session_id=session_id, sio=sio)
-        Session_DirectIntervention.__init__(self, session_id=session_id, sio=sio)
-        Session_Devices.__init__(self, session_id=session_id, sio=sio)
+        for baseclass in self.__class__.__bases__:
+            baseclass.__init__(self, session_id=session_id, sio=sio)
 
         self.time_loop()
+
+
+    async def send_full_state(self, sid: str):
+        logger.info(f"Sending full state to client {sid}")
+        for baseclass in self.__class__.__bases__:
+            await baseclass.send_full_state(self, sid)
 
 
     def api_get_team(self) -> API_TeamData:
@@ -65,6 +69,7 @@ class Session_MedSim(Session_Chat, Session_Patient, Session_DirectIntervention, 
 class Router_MedSim(SessionRouter[Session_MedSim]):
     def __init__(self, app, sio: socketio.AsyncServer):
         super().__init__(app=app, sio=sio, session_cls=Session_MedSim)
+
 
     def init_api_routes(self):   
         @self.session_router.get("/medsim/vitals")

@@ -65,6 +65,7 @@ export type OxygenSaturation = number | null;
  * The capillary refill time in seconds
  */
 export type CapillaryRefill = number | null;
+export type Advice = string[];
 export type Timestamp2 = number;
 export type NpcName = string;
 export type Content = string;
@@ -84,6 +85,7 @@ export interface ScribeEvents {
   device_update: SIO_ConnectedDevices;
   npc_data: SIO_NPCData;
   patient_vitals_update: ExposedVitalSigns;
+  dr_clippy_update: DrClippyOutput;
   combatlog_update: CombatLogUpdateData;
   npc_thinking_updated: NPCThinking;
   time_update: SIO_TimeUpdate;
@@ -183,6 +185,9 @@ export interface BloodPressureModel {
   systolic: Systolic;
   diastolic: Diastolic;
   [k: string]: unknown;
+}
+export interface DrClippyOutput {
+  advice?: Advice;
 }
 export interface CombatLogUpdateData {
   log: Log;

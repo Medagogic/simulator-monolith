@@ -8,6 +8,7 @@ import human_id
 from pydantic import BaseModel
 import socketio
 from packages.tools.scribe import ScribeMixin_Handler, ScribeEmitSchema, ScribeMixin_Emit, ScribeHandlerSchema, scribe_emits, scribe_handler
+import asyncio
 
 from colorama import Fore
 import colorama
@@ -35,6 +36,10 @@ class AbstractSession(ABC):
     async def emit(self, event_name: str, data: EmittableType) -> None:
         pass
 
+    @abstractmethod
+    async def send_full_state(self, sid: str) -> None:
+        pass
+
 
 class Session(AbstractSession, ScribeMixin_Emit, ScribeMixin_Handler):
     def __init__(self, session_id: str, sio: socketio.AsyncServer):
@@ -50,10 +55,10 @@ class Session(AbstractSession, ScribeMixin_Emit, ScribeMixin_Handler):
     def sio(self) -> socketio.AsyncServer:
         return self._sio
     
-    async def emit(self, event_name: str, data: EmittableType) -> None:
+    async def emit(self, event_name: str, data: EmittableType, to: Optional[Any]=None) -> None:
         if isinstance(data, BaseModel):
             data = data.model_dump()
-        await self.sio.emit(event_name, data, room=self.session_id, namespace="/session")
+        await self.sio.emit(event_name, data, room=self.session_id, to=to, namespace="/session")
 
 
 # Use this protocol to type hint an object (mixins for the SessionRouter) which can emit events
@@ -171,6 +176,11 @@ class SessionRouter(socketio.AsyncNamespace, Generic[T], ScribeMixin_Emit, Scrib
 
         print(f"Client {sid} joined session {session_id}.")
         self.sio.enter_room(sid, session_id, namespace=self.namespace)
+        self.on_sid_join_session(sid, session_id)
+
+    def on_sid_join_session(self, sid: str, seddion_id: str) -> None:
+        session: Session = self.get_session(seddion_id)
+        asyncio.create_task(session.send_full_state(sid))
 
     @scribe_handler
     async def on_leave_session(self, sid, data):
@@ -225,8 +235,6 @@ async def setup_router_for_test(router_class: Type[SessionRouter] = SessionRoute
 
 
 if __name__ == "__main__":
-    import asyncio
-
     class TestSession(Session):
         @scribe_emits("test_event_from_session", str)
         def somefunc(self):

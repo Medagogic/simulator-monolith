@@ -7,6 +7,7 @@ from pathlib import Path
 import re
 from packages.tools.scribe import ScribeEmitSchema, ScribeHandlerSchema
 from packages.tools.scribe.src.scribe_helpers import get_field_info
+from packages.medagogic_sim.gpt.medagogic_gpt import gpt, MODEL_GPT35, GPTMessage, MODEL_GPT4, SystemMessage, UserMessage
 import asyncio
 import shutil
 
@@ -191,13 +192,8 @@ export enum EmitEvent {{
 }}
     """.strip()
 
-    from packages.server.gpt.gpt_api import gpt, MODEL_GPT35, GPTMessage, Role, MODEL_GPT4
-
     async def main():
-        show_progress="Generating ScribeClient..."
-        # if not verbose:
-        show_progress = True
-        response = await gpt([GPTMessage(role=Role.USER, content=formatted_prompt)], model=MODEL_GPT4, show_progress=show_progress, max_tokens=1000)
+        response = await gpt([UserMessage(formatted_prompt)], model=MODEL_GPT4, max_tokens=1000)
 
         response = response.strip()
         response = response.replace("```typescript", "").replace("```", "").strip()

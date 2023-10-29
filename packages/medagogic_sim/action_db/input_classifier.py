@@ -235,7 +235,7 @@ class ActionClassifier:
         return ActionClassifier(db=db, classifier=classifier)
 
 
-    async def get_function_calls(self, input_text: str) -> Optional[str]:
+    async def get_function_calls(self, input_text: str) -> Optional[List[str]]:
         start_time = time.time()
 
         prediction = self.predict(input_text, top_n=5)

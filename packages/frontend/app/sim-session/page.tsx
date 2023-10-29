@@ -4,7 +4,7 @@ import React from 'react';
 import { StaffDefinition } from './StaffCard';
 import ChatterBox from '../chatter/page';
 import "./page.css"
-import Clippy from './Clippy/Clippy';
+import DrClippySuggestions from './DrClippy/DrClippy';
 import StaffList from './StaffList/StaffList';
 import PatientVisualization from './Patient/PatientVisualization';
 import { ActionLog } from './ActionLog/ActionLog';
@@ -46,7 +46,7 @@ const SimSessionPage: React.FC<SimSessionPageProps> = ({ sessionName }) => {
   return (
     <SocketProvider session_id={sessionName}>
       <APIProvider sessionId={sessionName}>
-        <div className='page-container'>
+        <div className='page-container pl-2 pr-2 pb-2'>
           <div className='toolbar'>
             <div style={{ flex: 1 }}>
               Medagogic Simulator - {sessionName}
@@ -86,10 +86,10 @@ const SimSessionPage: React.FC<SimSessionPageProps> = ({ sessionName }) => {
               </div>
 
             </div>
-            <div className='column w-1/6' style={{ flex: "0 1 auto" }}>
+            <div className='column w-1/6 gap-2' style={{ flex: "0 1 auto" }}>
               <ObjectivesList objectives={objectives} />
               <div className="self-end w-full">
-                <Clippy onClick={(data) => { handleClippySuggestion(data) }} />
+                <DrClippySuggestions onClick={(data) => { handleClippySuggestion(data) }} />
               </div>
             </div>
 

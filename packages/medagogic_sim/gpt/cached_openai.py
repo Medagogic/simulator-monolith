@@ -62,7 +62,7 @@ def configure_cached_openai(directory=None):
     data_manager.hit_cache_callback = hit_cache_callback
 
     def cache_enable_func(*args, **kwargs):
-        return False
+        return True
 
     cache.cache_enable_func = cache_enable_func
 

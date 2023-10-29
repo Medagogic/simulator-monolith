@@ -1,0 +1,16 @@
+{
+    "properties": {
+        "advice": {
+            "default": [],
+            "items": {
+                "type": "string"
+            },
+            "title": "Advice",
+            "type": "array"
+        }
+    },
+    "title": "DrClippyOutput",
+    "type": "object",
+    "$id": "DrClippyOutput.schema.json",
+    "additionalProperties": false
+}

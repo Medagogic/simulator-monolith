@@ -2,6 +2,7 @@ from typing import Optional
 from pydantic import BaseModel, Field
 from packages.medagogic_sim.context_for_brains import ContextForBrains
 from packages.medagogic_sim.dialog_router import TeamLeadDialog
+from packages.medagogic_sim.dr_clippy import DrClippy
 from packages.medagogic_sim.exercise.simulation_types import BloodPressureModel, VitalSigns
 from packages.medagogic_sim.history import sim_history
 import asyncio
@@ -16,6 +17,8 @@ class MedagogicSimulator:
         self.exercise_name = exercise_name
         self.context = ContextForBrains(exercise_name)
         self.npc_manager = NPCManager(self.context)
+        self.dr_clippy = DrClippy(self.context, self.npc_manager)
+
 
     async def process_user_input(self, input_text: str, to_npc_id: Optional[str]=None) -> None:
         self.context.history.add_event(sim_history.Evt_ChatMessage(name="Team Lead", content=input_text))

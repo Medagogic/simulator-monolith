@@ -12,7 +12,8 @@ else:
 
 import os, json
 
-load_dotenv()
+load_dotenv(".env")
+openai.api_key = os.getenv("OPENAI_API_KEY")
 
 MODEL_GPT4 = "gpt-4"
 MODEL_GPT35 = "gpt-3.5-turbo"

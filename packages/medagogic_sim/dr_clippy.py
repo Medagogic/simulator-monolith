@@ -10,11 +10,12 @@ from packages.medagogic_sim.exercise.simulation4d import NewCurrentStateResponse
 from packages.medagogic_sim.gpt import MODEL_GPT4, gpt, UserMessage, SystemMessage, GPTMessage, MODEL_GPT35
 import asyncio
 import nltk
+from rx.subject import Subject
 
 
 from packages.medagogic_sim.logger.logger import get_logger, logging
 from packages.medagogic_sim.npc_manager import NPCManager
-logger = get_logger(level=logging.INFO)
+logger = get_logger(level=logging.DEBUG)
 
 
 async def get_suggestions(context: ContextForBrains, npc_manager: NPCManager, gpt_model=MODEL_GPT4, cache_skip=False):
@@ -92,6 +93,35 @@ Your reply must be MAX 3 SENTENCES. Anything more will be ignored. Use "Telegrap
     return sentences
 
 
+class DrClippyOutput(BaseModel):
+    advice: List[str] = []
+
+
+class DrClippy:
+    def __init__(self, context: ContextForBrains, npc_manager: NPCManager):
+        self.context = context
+        self.npc_manager = npc_manager
+        self.context.simulation.on_state_change.subscribe(self.handle_sim_state_change)
+        self.cached_output: Optional[DrClippyOutput] = None
+        self.update_advice_task = asyncio.create_task(self.recalculate_advice())
+        self.on_new_advice = Subject()
+
+
+    def handle_sim_state_change(self, new_exercise: MarkdownExercise):
+        self.update_advice_task = asyncio.create_task(self.recalculate_advice())
+
+
+    async def recalculate_advice(self):
+        logger.debug("Recalculating advice...")
+        advice_sentences = await get_suggestions(self.context, self.npc_manager, cache_skip=False)
+        self.cached_output = DrClippyOutput(advice=advice_sentences)
+        self.on_new_advice.on_next(self.cached_output)
+
+    
+    @property
+    def latest_advice(self):
+        return self.cached_output
+
 
 if __name__ == "__main__":
     logger.level = logging.DEBUG
@@ -100,9 +130,16 @@ if __name__ == "__main__":
         context = ContextForBrains("pediatric_septic_shock")
         npc_manager = NPCManager(context)
 
-        advice_sentences = await get_suggestions(context, npc_manager, cache_skip=True)
+        dr_clippy = DrClippy(context, npc_manager)
 
-        for sentence in advice_sentences:
-            logger.info(sentence)
+        await dr_clippy.update_advice_task
+
+        logger.info(dr_clippy.cached_output)
+
+
+        # advice_sentences = await get_suggestions(context, npc_manager, cache_skip=True)
+
+        # for sentence in advice_sentences:
+        #     logger.info(sentence)
 
     asyncio.run(main())

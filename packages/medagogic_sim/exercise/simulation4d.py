@@ -183,6 +183,7 @@ class LeafyBlossom(IBlackBoxSimulation):
         self.loop = asyncio.create_task(self.__loop())
         self.on_alert = Subject()
         self.gpt_model = MODEL_GPT4
+        self.on_state_change = Subject()
 
 
     def getCurrentVitals(self, seconds_in_future: float = 0) -> VitalSigns:
@@ -281,6 +282,8 @@ class LeafyBlossom(IBlackBoxSimulation):
             exercise.progression.events = state_update_dict[HEADER_EVENTS]
         if "Alert" in state_update_dict:
             self.on_alert.on_next(state_update_dict["Alert"])
+
+        self.on_state_change.on_next(exercise)
 
         return exercise
 

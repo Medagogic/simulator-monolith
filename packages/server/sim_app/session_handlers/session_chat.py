@@ -44,6 +44,15 @@ class Session_Chat(MedSessionBase):
         self.medsim.context.iomanager.on_npc_finished_action.subscribe(self.handle_on_npc_finished_action)
         self.medsim.context.iomanager.on_npc_thinking_updated.subscribe(self.handle_on_npc_thinking_updated)
 
+    async def send_full_state(self, sid: str) -> None:
+        for npc in self.medsim.npc_manager.npcs.values():
+            npc_update_data = SIO_NPCData(
+                id=npc.id,
+                definition=npc.definition,
+                current_task=None
+            )
+            asyncio.create_task(self.emit_npc_data(npc_update_data, to=sid))
+
     @scribe_emits("npc_thinking_updated", iomanager.NPCThinking)
     def handle_on_npc_thinking_updated(self, data: iomanager.NPCThinking) -> None:
         asyncio.create_task(self.emit("npc_thinking_updated", data))
@@ -97,5 +106,5 @@ class Session_Chat(MedSessionBase):
         await self.emit("chat_event", data)
     
     @scribe_emits("npc_data", SIO_NPCData)
-    async def emit_npc_data(self, data: SIO_NPCData) -> None:
-        await self.emit("npc_data", data)
+    async def emit_npc_data(self, data: SIO_NPCData, to=None) -> None:
+        await self.emit("npc_data", data, to=to)

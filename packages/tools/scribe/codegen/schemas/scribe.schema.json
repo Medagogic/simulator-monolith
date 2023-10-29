@@ -18,6 +18,9 @@
         "patient_vitals_update": {
             "$ref": "schemas/ExposedVitalSigns.schema.json"
         },
+        "dr_clippy_update": {
+            "$ref": "schemas/DrClippyOutput.schema.json"
+        },
         "combatlog_update": {
             "$ref": "schemas/CombatLogUpdateData.schema.json"
         },
@@ -73,6 +76,7 @@
         "device_update",
         "npc_data",
         "patient_vitals_update",
+        "dr_clippy_update",
         "combatlog_update",
         "npc_thinking_updated",
         "time_update"
