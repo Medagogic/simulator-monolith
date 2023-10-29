@@ -1,10 +1,17 @@
+import asyncio
 import json
-from typing import Dict, List
+import pickle
+import time
+from typing import Dict, List, Optional
 import numpy as np
 import openai
 from pydantic import BaseModel
 from tqdm import tqdm
 from sklearn.ensemble import RandomForestClassifier
+from packages.medagogic_sim.logger.logger import get_logger, logging
+from packages.medagogic_sim.gpt.medagogic_gpt import MODEL_GPT4, gpt_streamed_lines, UserMessage, SystemMessage, GPTMessage, gpt, MODEL_GPT35
+
+logger = get_logger(level=logging.DEBUG)
 
 import os
 
@@ -113,7 +120,7 @@ possible_inputs = [x.strip() for x in possible_inputs if x.strip() != ""]
 possible_inputs = [x.replace('"', '') for x in possible_inputs]
 
 
-from packages.medagogic_sim.action_db.actions_for_brains import ActionDatabase
+from packages.medagogic_sim.action_db.actions_for_brains import ActionDatabase, TaskCall
 
 def ExampleDBFromActionDB(action_db: ActionDatabase) -> ExampleDatabase:
     example_db = ExampleDatabase(examples={})
@@ -150,11 +157,19 @@ class PredictionResults(BaseModel):
     def results_str(self) -> str:
         return "\n".join([f"{r.label} ({r.probability:.2f})" for r in self.sorted_results])
 
+    @property
+    def actions_list(self) -> str:
+        return "\n".join([f"{r.label}" for r in self.sorted_results])
+
+
 
 class ActionClassifier:
-    def __init__(self, db: ExampleDatabase):
+    def __init__(self, db: ExampleDatabase, classifier: RandomForestClassifier = None):
         self.db = db
-        self.classifier = self.train_classifier()
+        if classifier is None:
+            self.classifier = self.train_classifier()
+        else:
+            self.classifier = classifier
 
 
     def train_classifier(self) -> RandomForestClassifier:
@@ -205,24 +220,82 @@ class ActionClassifier:
         example_db = ExampleDBFromActionDB(action_db)
         return ActionClassifier(example_db)
 
+    def save(self):
+        with open(f"{folder}/action_classifier.json", "w") as f:
+            json.dump(self.db.model_dump(), f, indent=4)
+        with open(f"{folder}/action_classifier.pkl", "wb") as f:
+            pickle.dump(self.classifier, f)
+
+    @staticmethod
+    def load():
+        with open(f"{folder}/action_classifier.json", "r") as f:
+            db = ExampleDatabase(**json.load(f))
+        with open(f"{folder}/action_classifier.pkl", "rb") as f:
+            classifier = pickle.load(f)
+        return ActionClassifier(db=db, classifier=classifier)
 
 
+    async def get_function_calls(self, input_text: str) -> Optional[str]:
+        start_time = time.time()
 
-# db = load_embeddings()
-# classifier = ActionClassifier(db)
+        prediction = self.predict(input_text, top_n=5)
 
-action_db = ActionDatabase()
-classifier = ActionClassifier.from_action_db(action_db)
+        logger.debug(input_text)
+        logger.debug(prediction.results_str)
 
-for input_text in possible_inputs:
-    print(input_text)
+        system_prompt = f"""
+Map the user's input to an action from the following list, or select "None" if no action is appropriate.
 
-    result = classifier.predict(input_text, top_n=3)
+{prediction.actions_list}
 
-    print(result.results_str)
+Your response must be either a selection of actions from the list (one per line, same order as user input), or "None". Include no other text.
+        """.strip()
 
-    print("-----------------")
+        user_prompt = f"""
+{input_text}
+        """.strip()
+
+        gpt_start_time = time.time()
+
+        response = await gpt(messages=[SystemMessage(system_prompt), UserMessage(user_prompt)],
+            model=MODEL_GPT35,
+            max_tokens=100,
+            cache_skip=False
+            )
+        response = response.strip()
+
+        end_time = time.time()
+
+        logger.debug(response)
+
+        logger.debug(f"Total time taken: {end_time - start_time:.2f} seconds")
+        logger.debug(f"GPT Time taken: {end_time - gpt_start_time:.2f} seconds")
+
+        if response is None or response == "" or response.lower() == "none":
+            return None
+        else:
+            return [l.strip() for l in response.split("\n") if l.strip() != ""]
 
 
+if __name__ == "__main__":
 
-    
+    async def main():
+        try:
+            classifier = ActionClassifier.load()
+        except Exception as e:
+            print(f"Could not load classifier ({e}), creating new one.")
+            # db = load_embeddings()
+            # classifier = ActionClassifier(db)
+            action_db = ActionDatabase()
+            classifier = ActionClassifier.from_action_db(action_db)
+            classifier.save()
+
+
+        good_input = "Intubate with a 4.5mm tube of cuffed endotracheal. Confirm placement."
+        bad_input = "Amputate the left leg"
+        hard_input = "Get IV access and give 200mg epinephrine stat"
+
+        logger.info(await classifier.get_function_calls(hard_input))
+        
+
+    asyncio.run(main())

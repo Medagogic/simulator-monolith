@@ -2,7 +2,7 @@ from typing import List, TypedDict
 from tenacity import retry, wait_fixed
 from dotenv import load_dotenv
 
-USE_CACHE = True
+USE_CACHE = False
 
 if USE_CACHE:
     from packages.medagogic_sim.gpt.cached_openai import openai, configure_cached_openai
@@ -33,9 +33,13 @@ async def gpt(messages: List[GPTMessage], model=MODEL_GPT4, max_tokens=500, temp
         "messages": messages,
         "max_tokens": max_tokens,
         "n": 1,
-        "temperature": temperature,
+        "temperature": temperature
     }
-    response = await openai.ChatCompletion.acreate(**kwargs, cache_skip=cache_skip)
+
+    if USE_CACHE:
+        kwargs["cache_skip"] = cache_skip
+
+    response = await openai.ChatCompletion.acreate(**kwargs)
 
     return response["choices"][0]["message"]["content"]
 

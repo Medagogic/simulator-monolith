@@ -6,10 +6,11 @@ from gptcache.manager.scalar_data.sql_storage import SQLStorage
 from gptcache.manager.vector_data.faiss import Faiss
 from gptcache.embedding.openai import OpenAI
 from gptcache.adapter import openai
+from gptcache.utils.log import gptcache_log
 
 from packages.medagogic_sim.logger.logger import get_logger, logging
 
-logger = get_logger(level=logging.WARN)
+logger = get_logger(level=logging.DEBUG)
 
 import dotenv
 
@@ -41,14 +42,14 @@ def configure_cached_openai(directory=None):
     )
 
     def pre_embedding_func(queries, *args, **kwargs):
-        print(queries, args, kwargs)
+        # print(queries, args, kwargs)
         r = concat_all_queries(queries, *args, **kwargs)
-        print(r)
+        # print(r)
         return r
 
     cache.init(
         config=config,
-        pre_embedding_func=concat_all_queries,
+        pre_embedding_func=pre_embedding_func,
         embedding_func=embedder.to_embeddings,
         data_manager=data_manager,
     )
@@ -59,4 +60,10 @@ def configure_cached_openai(directory=None):
         logger.debug(f"Hit cache id {id} ({time}s)")
 
     data_manager.hit_cache_callback = hit_cache_callback
+
+    def cache_enable_func(*args, **kwargs):
+        return False
+
+    cache.cache_enable_func = cache_enable_func
+
 
