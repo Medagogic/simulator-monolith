@@ -9,7 +9,7 @@ import StaffList from './StaffList/StaffList';
 import PatientVisualization from './Patient/PatientVisualization';
 import { ActionLog } from './ActionLog/ActionLog';
 import TimeDisplay from './TimeDisplay/TimeDisplay';
-import { Objective, ObjectivesList } from './ObjectivesList/ObjectivesList';
+import { Objective, LearnerActionsList } from './LearnerActions/LearnerActionsList';
 import { SocketProvider } from '../socketio/SocketContext';
 import PatientMonitor from './Monitor/PatientMonitor';
 import { APIProvider } from '../socketio/APIContext';
@@ -87,7 +87,7 @@ const SimSessionPage: React.FC<SimSessionPageProps> = ({ sessionName }) => {
 
             </div>
             <div className='column w-1/6 gap-2' style={{ flex: "0 1 auto" }}>
-              <ObjectivesList objectives={objectives} />
+              <LearnerActionsList objectives={objectives} />
               <div className="self-end w-full">
                 <DrClippySuggestions onClick={(data) => { handleClippySuggestion(data) }} />
               </div>

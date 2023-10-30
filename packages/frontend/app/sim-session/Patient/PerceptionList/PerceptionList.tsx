@@ -72,8 +72,8 @@ const PerceptionList: React.FC = () => {
                     <div className={`shimmer`} style={{ animationDelay: `${index / 10}s` }}></div>
                     {getIconForPerception(key)}
                     <div>
-                        <div className="font-bold text-lg">{key}</div>
-                        <div className="text-sm text-gray-300">{value}</div>
+                        <div className="font-bold text-m">{key}</div>
+                        <div className="text-xs text-gray-300">{value}</div>
                     </div>
                 </div>
             ))}

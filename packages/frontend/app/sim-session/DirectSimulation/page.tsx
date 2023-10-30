@@ -7,7 +7,7 @@ import "../page.css"
 import PatientVisualization from '../Patient/PatientVisualization';
 import { ActionLog, ActionLogEntry } from '../ActionLog/ActionLog';
 import TimeDisplay from '../TimeDisplay/TimeDisplay';
-import { Objective, ObjectivesList } from '../ObjectivesList/ObjectivesList';
+import { Objective, LearnerActionsList } from '../LearnerActions/LearnerActionsList';
 import { SocketProvider, useSocket } from '../../socketio/SocketContext';
 import PatientMonitor from '../Monitor/PatientMonitor';
 import DirectInput from './DirectInput';
@@ -139,7 +139,7 @@ export const DirectSimulation: React.FC = () => {
 
           </div>
           <div className='flex-auto m-2 flex flex-col justify-between' style={{ "width": "50%" }}>
-            <ObjectivesList objectives={objectives} />
+            <LearnerActionsList objectives={objectives} />
           </div>
 
         </div>
