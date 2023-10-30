@@ -10,6 +10,7 @@ import { DeviceIO } from "./DeviceIO";
 import { SessionIO } from "./SessionIO";
 import { DrClippyIO } from "./DrClippyIO";
 import { LearnerActionEvaluatorIO } from "./LearnerActionEvaluatorIO";
+import { useSessionStore } from "../storage/SessionStore";
 
 // Defining the context shape
 interface ISocketContext {
@@ -74,6 +75,8 @@ const getContextSingleton = () => {
 };
 
 export const SocketProvider: React.FC<SocketProviderProps> = ({ session_id, children }) => {
+    const sessionStore = useSessionStore();
+
     const [socket, setSocket] = useState<Socket | null>(null);
     const [sessionIO, setSessionIO] = useState<SessionIO | null>(null);
     const [patientIO, setPatientIO] = useState<PatientIO | null>(null);
@@ -100,6 +103,7 @@ export const SocketProvider: React.FC<SocketProviderProps> = ({ session_id, chil
                 contextSingleton.session_id = session_id;
                 contextSingleton.socket!.on("connect", () => {
                     console.log("Socket connected");
+                    sessionStore.setConnected(true);
                     contextSingleton.socket!.emit(EmitEvent.JOIN_SESSION, session_id, () => {console.log(`Joined session ${session_id}`)});
                 });
             }
