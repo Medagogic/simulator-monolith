@@ -3,7 +3,7 @@ from fastapi import APIRouter
 
 from packages.server.sim_app.exercise_creation.imported.simulation_types_old import Vitals
 from packages.server.sim_app.exercise_creation.exercise_creation_types import ExerciseCreationParams, GeneratedExerciseData, ExerciseCreationVitalSigns, ExerciseCreationABCDE, ExerciseCreationFutureState
-from packages.server.gpt.gpt_api import gpt, GPTMessage, MODEL_GPT4
+from packages.medagogic_sim.gpt.medagogic_gpt import gpt, GPTMessage, MODEL_GPT4
 import asyncio
 
 
