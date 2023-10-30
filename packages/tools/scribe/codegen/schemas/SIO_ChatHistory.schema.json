@@ -1,0 +1,128 @@
+{
+    "$defs": {
+        "Evt_Chat_Event": {
+            "properties": {
+                "timestamp": {
+                    "default": null,
+                    "title": "Timestamp",
+                    "type": "number"
+                },
+                "content": {
+                    "title": "Content",
+                    "type": "string"
+                },
+                "type": {
+                    "default": "event",
+                    "title": "Type",
+                    "type": "string"
+                },
+                "npc_id": {
+                    "anyOf": [
+                        {
+                            "type": "string"
+                        },
+                        {
+                            "type": "null"
+                        }
+                    ],
+                    "default": null,
+                    "title": "Npc Id"
+                }
+            },
+            "required": [
+                "content"
+            ],
+            "title": "Evt_Chat_Event",
+            "type": "object"
+        },
+        "Evt_Chat_HumanMessage": {
+            "properties": {
+                "timestamp": {
+                    "default": null,
+                    "title": "Timestamp",
+                    "type": "number"
+                },
+                "content": {
+                    "title": "Content",
+                    "type": "string"
+                },
+                "type": {
+                    "default": "human_message",
+                    "title": "Type",
+                    "type": "string"
+                },
+                "target_npc_id": {
+                    "anyOf": [
+                        {
+                            "type": "string"
+                        },
+                        {
+                            "type": "null"
+                        }
+                    ],
+                    "default": null,
+                    "title": "Target Npc Id"
+                }
+            },
+            "required": [
+                "content"
+            ],
+            "title": "Evt_Chat_HumanMessage",
+            "type": "object"
+        },
+        "Evt_Chat_NPCMessage": {
+            "properties": {
+                "timestamp": {
+                    "default": null,
+                    "title": "Timestamp",
+                    "type": "number"
+                },
+                "content": {
+                    "title": "Content",
+                    "type": "string"
+                },
+                "type": {
+                    "default": "npc_message",
+                    "title": "Type",
+                    "type": "string"
+                },
+                "npc_id": {
+                    "title": "Npc Id",
+                    "type": "string"
+                }
+            },
+            "required": [
+                "content",
+                "npc_id"
+            ],
+            "title": "Evt_Chat_NPCMessage",
+            "type": "object"
+        }
+    },
+    "properties": {
+        "messages": {
+            "items": {
+                "anyOf": [
+                    {
+                        "$ref": "#/$defs/Evt_Chat_HumanMessage"
+                    },
+                    {
+                        "$ref": "#/$defs/Evt_Chat_Event"
+                    },
+                    {
+                        "$ref": "#/$defs/Evt_Chat_NPCMessage"
+                    }
+                ]
+            },
+            "title": "Messages",
+            "type": "array"
+        }
+    },
+    "required": [
+        "messages"
+    ],
+    "title": "SIO_ChatHistory",
+    "type": "object",
+    "$id": "SIO_ChatHistory.schema.json",
+    "additionalProperties": false
+}

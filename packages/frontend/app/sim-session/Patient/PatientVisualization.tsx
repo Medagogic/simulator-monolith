@@ -183,7 +183,7 @@ const PatientVisualization: React.FC = () => {
     const [labels, setLabels] = React.useState<Label[]>([]);
 
     useEffect(() => {
-        console.log("Connected devices: ", connectedDevices);
+        // console.log("Connected devices: ", connectedDevices);
 
         setLabels(
             getIVLabels(connectedDevices)

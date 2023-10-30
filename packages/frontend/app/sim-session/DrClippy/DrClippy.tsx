@@ -29,7 +29,7 @@ const DrClippySuggestions: React.FC<ClippyProps> = ({ onClick }) => {
     const chatterIO = useChatterIO();
 
     useEffect(() => {
-        console.log("drClippyOutput", drClippyOutput);
+        // console.log("drClippyOutput", drClippyOutput);
     }, [drClippyOutput]);
 
     function handleClick(advice: string) {

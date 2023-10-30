@@ -5,8 +5,8 @@ import { useDrClippyStore } from "../storage/DrClippyStore";
 
 export class DrClippyIO extends ScribeClient {
     on_dr_clippy_update(data: DrClippyOutput): void {
-        console.log("DrClippyIO.on_dr_clippy_update", data);
-        console.log(data);
+        // console.log("DrClippyIO.on_dr_clippy_update", data);
+        // console.log(data);
         useDrClippyStore.getState().setDrClippyOutput(data);
     }
 }

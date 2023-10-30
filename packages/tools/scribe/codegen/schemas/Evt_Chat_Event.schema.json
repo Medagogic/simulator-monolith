@@ -1,14 +1,20 @@
 {
     "properties": {
-        "message": {
-            "title": "Message",
-            "type": "string"
-        },
         "timestamp": {
+            "default": null,
             "title": "Timestamp",
+            "type": "number"
+        },
+        "content": {
+            "title": "Content",
             "type": "string"
         },
-        "target_npc_id": {
+        "type": {
+            "default": "event",
+            "title": "Type",
+            "type": "string"
+        },
+        "npc_id": {
             "anyOf": [
                 {
                     "type": "string"
@@ -18,15 +24,14 @@
                 }
             ],
             "default": null,
-            "title": "Target Npc Id"
+            "title": "Npc Id"
         }
     },
     "required": [
-        "message",
-        "timestamp"
+        "content"
     ],
-    "title": "HumanMessage",
+    "title": "Evt_Chat_Event",
     "type": "object",
-    "$id": "HumanMessage.schema.json",
+    "$id": "Evt_Chat_Event.schema.json",
     "additionalProperties": false
 }

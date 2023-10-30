@@ -84,7 +84,7 @@ const StaffList: React.FC<StaffListProps> = ({ }) => {
     ).then((response: APITeamData) => {
       response.npcData.forEach((npc: APINPCData) => {
         // setStaffData(staffData => [...staffData, npc]);
-        console.log("Setting teamById", npc.id);
+        // console.log("Setting teamById", npc.id);
         setNPCData(npc.id, npc);
       });
     }).catch((err: any) => {

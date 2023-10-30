@@ -1,0 +1,30 @@
+{
+    "properties": {
+        "timestamp": {
+            "default": null,
+            "title": "Timestamp",
+            "type": "number"
+        },
+        "content": {
+            "title": "Content",
+            "type": "string"
+        },
+        "type": {
+            "default": "npc_message",
+            "title": "Type",
+            "type": "string"
+        },
+        "npc_id": {
+            "title": "Npc Id",
+            "type": "string"
+        }
+    },
+    "required": [
+        "content",
+        "npc_id"
+    ],
+    "title": "Evt_Chat_NPCMessage",
+    "type": "object",
+    "$id": "Evt_Chat_NPCMessage.schema.json",
+    "additionalProperties": false
+}

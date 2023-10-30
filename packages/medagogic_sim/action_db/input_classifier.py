@@ -56,70 +56,6 @@ def load_embeddings() -> ExampleDatabase:
     return example_db
 
 
-
-possible_inputs = '''
-"Initiate CPR, 15 compressions to 2 breaths. Continue till told."
-"Administer 0.01mg/kg epinephrine, IV push."
-"Get the crash cart ready."
-"Oxygen mask, 5 liters per minute."
-"Prepare for intubation."
-"Start the IO line, right tibia."
-"Draw blood for CBC, BMP, and ABG."
-"Two-person bag-mask-ventilate."
-"Set up the defibrillator, pediatric pads."
-"Deliver one shock at 2 J/kg."
-"Check for carotid pulse."
-"Administer 20 mL/kg isotonic fluids, rapid bolus."
-"Switch to one-person bag-mask-ventilation."
-"Set up for lumbar puncture."
-"Call for immediate surgical consult."
-"Prepare the child for transport to ICU."
-"Administer 0.1mg/kg Midazolam for sedation."
-"Attach limb leads for ECG."
-"Prepare to administer second epinephrine dose."
-"Time to reassess vitals, everyone pause."
-"Assess the airway for obstructions and alertness. Report back."
-"Check the child's breathing rate and depth. Let me know immediately."
-"Evaluate circulation by checking pulse and skin color. Update me."
-"Assess for disability. Check pupil response and level of consciousness."
-"Expose the chest and limbs for a full assessment. Cover afterward."
-"Quickly review ABCDE and report any red flags."
-"Administer oxygen via mask at a flow rate of 5 L/min."
-"Start oxygen via nasal cannula, set the flow to 3 L/min."
-"Use a non-rebreather mask for oxygen delivery at 8 L/min."
-"Switch to bag valve mask for oxygen. Set flow at 10 L/min."
-"Start blow-by oxygen administration. Keep flow rate at 2 L/min."
-"Intubate with a 4.5mm tube of cuffed endotracheal. Confirm placement."
-"Get a blood glucose reading and report the levels."
-"Take a temperature reading, rectal."
-"Auscultate the heart and note any irregularities."
-"Listen to lung sounds. Inform me of wheezing or crackles."
-"Auscultate the abdomen and report on bowel sounds."
-"Check capillary refill time on nail beds. Update me."
-"Perform a chin lift to secure the airway."
-"Initiate a jaw thrust for airway management."
-"Execute a head tilt to align the airway."
-"Administer Amoxicillin at 20 mg/kg via oral suspension."
-"Titrate oxygen to reach a target saturation of 95%."
-"Monitor for changes due to sepsis and report."
-"Check pulse at the wrist and neck. Relay the rate."
-"Prepare a bolus of Normal Saline at 200 mL."
-"Wait for blood test results before proceeding."
-"Administer the prepared bolus."
-"Speak to the parent and explain the situation and steps being taken."
-"Obtain IV access, make sure it's secure."
-"Insert an IO needle at left tibia using a 16 gauge."
-"Connect to EKG and monitor heart rate."
-"Hook up the BP monitor and get a reading."
-"Connect pulse oximeter and report O2 saturation."
-"Connect the ventilator, set to SIMV and FiO2 at 50%."
-"Connect a continuous glucometer and monitor sugar levels."
-'''.strip().split("\n")
-
-possible_inputs = [x.strip() for x in possible_inputs if x.strip() != ""]
-possible_inputs = [x.replace('"', '') for x in possible_inputs]
-
-
 from packages.medagogic_sim.action_db.actions_for_brains import ActionDatabase, TaskCall
 
 def ExampleDBFromActionDB(action_db: ActionDatabase) -> ExampleDatabase:
@@ -278,6 +214,67 @@ Your response must be either a selection of actions from the list (one per line,
 
 
 if __name__ == "__main__":
+    test_inputs = '''
+    "Initiate CPR, 15 compressions to 2 breaths. Continue till told."
+    "Administer 0.01mg/kg epinephrine, IV push."
+    "Get the crash cart ready."
+    "Oxygen mask, 5 liters per minute."
+    "Prepare for intubation."
+    "Start the IO line, right tibia."
+    "Draw blood for CBC, BMP, and ABG."
+    "Two-person bag-mask-ventilate."
+    "Set up the defibrillator, pediatric pads."
+    "Deliver one shock at 2 J/kg."
+    "Check for carotid pulse."
+    "Administer 20 mL/kg isotonic fluids, rapid bolus."
+    "Switch to one-person bag-mask-ventilation."
+    "Set up for lumbar puncture."
+    "Call for immediate surgical consult."
+    "Prepare the child for transport to ICU."
+    "Administer 0.1mg/kg Midazolam for sedation."
+    "Attach limb leads for ECG."
+    "Prepare to administer second epinephrine dose."
+    "Time to reassess vitals, everyone pause."
+    "Assess the airway for obstructions and alertness. Report back."
+    "Check the child's breathing rate and depth. Let me know immediately."
+    "Evaluate circulation by checking pulse and skin color. Update me."
+    "Assess for disability. Check pupil response and level of consciousness."
+    "Expose the chest and limbs for a full assessment. Cover afterward."
+    "Quickly review ABCDE and report any red flags."
+    "Administer oxygen via mask at a flow rate of 5 L/min."
+    "Start oxygen via nasal cannula, set the flow to 3 L/min."
+    "Use a non-rebreather mask for oxygen delivery at 8 L/min."
+    "Switch to bag valve mask for oxygen. Set flow at 10 L/min."
+    "Start blow-by oxygen administration. Keep flow rate at 2 L/min."
+    "Intubate with a 4.5mm tube of cuffed endotracheal. Confirm placement."
+    "Get a blood glucose reading and report the levels."
+    "Take a temperature reading, rectal."
+    "Auscultate the heart and note any irregularities."
+    "Listen to lung sounds. Inform me of wheezing or crackles."
+    "Auscultate the abdomen and report on bowel sounds."
+    "Check capillary refill time on nail beds. Update me."
+    "Perform a chin lift to secure the airway."
+    "Initiate a jaw thrust for airway management."
+    "Execute a head tilt to align the airway."
+    "Administer Amoxicillin at 20 mg/kg via oral suspension."
+    "Titrate oxygen to reach a target saturation of 95%."
+    "Monitor for changes due to sepsis and report."
+    "Check pulse at the wrist and neck. Relay the rate."
+    "Prepare a bolus of Normal Saline at 200 mL."
+    "Wait for blood test results before proceeding."
+    "Administer the prepared bolus."
+    "Speak to the parent and explain the situation and steps being taken."
+    "Obtain IV access, make sure it's secure."
+    "Insert an IO needle at left tibia using a 16 gauge."
+    "Connect to EKG and monitor heart rate."
+    "Hook up the BP monitor and get a reading."
+    "Connect pulse oximeter and report O2 saturation."
+    "Connect the ventilator, set to SIMV and FiO2 at 50%."
+    "Connect a continuous glucometer and monitor sugar levels."
+    '''.strip().split("\n")
+
+    test_inputs = [x.strip() for x in test_inputs if x.strip() != ""]
+    test_inputs = [x.replace('"', '') for x in test_inputs]
 
     async def main():
         try:

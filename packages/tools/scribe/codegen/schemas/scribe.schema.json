@@ -4,13 +4,16 @@
     "type": "object",
     "properties": {
         "chat_event": {
-            "$ref": "schemas/ChatEvent.schema.json"
+            "$ref": "schemas/Evt_Chat_Event.schema.json"
         },
         "chat_message": {
-            "$ref": "schemas/MessageFromNPC.schema.json"
+            "$ref": "schemas/Evt_Chat_NPCMessage.schema.json"
         },
         "device_update": {
             "$ref": "schemas/SIO_ConnectedDevices.schema.json"
+        },
+        "dr_clippy_update": {
+            "$ref": "schemas/DrClippyOutput.schema.json"
         },
         "npc_data": {
             "$ref": "schemas/SIO_NPCData.schema.json"
@@ -18,14 +21,14 @@
         "patient_vitals_update": {
             "$ref": "schemas/ExposedVitalSigns.schema.json"
         },
-        "dr_clippy_update": {
-            "$ref": "schemas/DrClippyOutput.schema.json"
-        },
         "combatlog_update": {
             "$ref": "schemas/CombatLogUpdateData.schema.json"
         },
         "npc_thinking_updated": {
             "$ref": "schemas/NPCThinking.schema.json"
+        },
+        "full_chat_history": {
+            "$ref": "schemas/SIO_ChatHistory.schema.json"
         },
         "time_update": {
             "$ref": "schemas/SIO_TimeUpdate.schema.json"
@@ -48,7 +51,7 @@
             "type": "object",
             "properties": {
                 "data": {
-                    "$ref": "schemas/HumanMessage.schema.json"
+                    "$ref": "schemas/Evt_Chat_HumanMessage.schema.json"
                 },
                 "return": {
                     "type": "object"
@@ -74,11 +77,12 @@
         "chat_event",
         "chat_message",
         "device_update",
+        "dr_clippy_update",
         "npc_data",
         "patient_vitals_update",
-        "dr_clippy_update",
         "combatlog_update",
         "npc_thinking_updated",
+        "full_chat_history",
         "time_update"
     ]
 }

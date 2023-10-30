@@ -5,11 +5,13 @@
  * and run json-schema-to-typescript to regenerate this file.
  */
 
-export type Event = string;
-export type Timestamp = string;
+export type Timestamp = number;
+export type Content = string;
+export type Type = string;
 export type NpcId = string | null;
-export type Message = string;
-export type Timestamp1 = string;
+export type Timestamp1 = number;
+export type Content1 = string;
+export type Type1 = string;
 export type NpcId1 = string;
 export type IVAccessLocation = "left hand" | "right hand";
 export type IvAccess = IVAccessParams[];
@@ -33,6 +35,7 @@ export type Mode = string;
  * Fraction of Inspired Oxygen, a value between 0.21 and 1.0
  */
 export type Fio2 = number;
+export type Advice = string[];
 export type Id = string;
 export type Name = string;
 export type Role = string;
@@ -65,29 +68,43 @@ export type OxygenSaturation = number | null;
  * The capillary refill time in seconds
  */
 export type CapillaryRefill = number | null;
-export type Advice = string[];
 export type Timestamp2 = number;
 export type NpcName = string;
-export type Content = string;
-export type Type = string;
+export type Content2 = string;
+export type Type2 = string;
 export type Log = CombatLogElement[];
 export type NpcId2 = string;
 export type NpcName1 = string;
 export type About = string | null;
-export type ExerciseTimeSeconds = number;
-export type Message1 = string;
-export type Timestamp3 = string;
+export type Timestamp3 = number;
+export type Content3 = string;
+export type Type3 = string;
 export type TargetNpcId = string | null;
+export type Timestamp4 = number;
+export type Content4 = string;
+export type Type4 = string;
+export type NpcId3 = string | null;
+export type Timestamp5 = number;
+export type Content5 = string;
+export type Type5 = string;
+export type NpcId4 = string;
+export type Messages = (Evt_Chat_HumanMessage | Evt_Chat_Event1 | Evt_Chat_NPCMessage1)[];
+export type ExerciseTimeSeconds = number;
+export type Timestamp6 = number;
+export type Content6 = string;
+export type Type6 = string;
+export type TargetNpcId1 = string | null;
 
 export interface ScribeEvents {
-  chat_event: ChatEvent;
-  chat_message: MessageFromNPC;
+  chat_event: Evt_Chat_Event;
+  chat_message: Evt_Chat_NPCMessage;
   device_update: SIO_ConnectedDevices;
+  dr_clippy_update: DrClippyOutput;
   npc_data: SIO_NPCData;
   patient_vitals_update: ExposedVitalSigns;
-  dr_clippy_update: DrClippyOutput;
   combatlog_update: CombatLogUpdateData;
   npc_thinking_updated: NPCThinking;
+  full_chat_history: SIO_ChatHistory;
   time_update: SIO_TimeUpdate;
   __server_on_join_session?: {
     session_id?: {
@@ -96,7 +113,7 @@ export interface ScribeEvents {
   };
   __server_on_leave_session?: {};
   __server_on_chat_message?: {
-    data?: HumanMessage;
+    data?: Evt_Chat_HumanMessage1;
     return?: {
       [k: string]: unknown;
     };
@@ -110,14 +127,16 @@ export interface ScribeEvents {
     };
   };
 }
-export interface ChatEvent {
-  event: Event;
-  timestamp: Timestamp;
+export interface Evt_Chat_Event {
+  timestamp?: Timestamp;
+  content: Content;
+  type?: Type;
   npc_id?: NpcId;
 }
-export interface MessageFromNPC {
-  message: Message;
-  timestamp: Timestamp1;
+export interface Evt_Chat_NPCMessage {
+  timestamp?: Timestamp1;
+  content: Content1;
+  type?: Type1;
   npc_id: NpcId1;
 }
 export interface SIO_ConnectedDevices {
@@ -157,6 +176,9 @@ export interface VentilatorParams {
 export interface ContinuousGlucometerParams {
   [k: string]: unknown;
 }
+export interface DrClippyOutput {
+  advice?: Advice;
+}
 export interface SIO_NPCData {
   id: Id;
   definition: NPCDefinition;
@@ -186,17 +208,14 @@ export interface BloodPressureModel {
   diastolic: Diastolic;
   [k: string]: unknown;
 }
-export interface DrClippyOutput {
-  advice?: Advice;
-}
 export interface CombatLogUpdateData {
   log: Log;
 }
 export interface CombatLogElement {
   timestamp: Timestamp2;
   npc_name: NpcName;
-  content: Content;
-  type: Type;
+  content: Content2;
+  type: Type2;
   [k: string]: unknown;
 }
 export interface NPCThinking {
@@ -204,11 +223,36 @@ export interface NPCThinking {
   npc_name: NpcName1;
   about?: About;
 }
+export interface SIO_ChatHistory {
+  messages: Messages;
+}
+export interface Evt_Chat_HumanMessage {
+  timestamp?: Timestamp3;
+  content: Content3;
+  type?: Type3;
+  target_npc_id?: TargetNpcId;
+  [k: string]: unknown;
+}
+export interface Evt_Chat_Event1 {
+  timestamp?: Timestamp4;
+  content: Content4;
+  type?: Type4;
+  npc_id?: NpcId3;
+  [k: string]: unknown;
+}
+export interface Evt_Chat_NPCMessage1 {
+  timestamp?: Timestamp5;
+  content: Content5;
+  type?: Type5;
+  npc_id: NpcId4;
+  [k: string]: unknown;
+}
 export interface SIO_TimeUpdate {
   exercise_time_seconds: ExerciseTimeSeconds;
 }
-export interface HumanMessage {
-  message: Message1;
-  timestamp: Timestamp3;
-  target_npc_id?: TargetNpcId;
+export interface Evt_Chat_HumanMessage1 {
+  timestamp?: Timestamp6;
+  content: Content6;
+  type?: Type6;
+  target_npc_id?: TargetNpcId1;
 }

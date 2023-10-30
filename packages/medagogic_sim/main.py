@@ -19,9 +19,11 @@ class MedagogicSimulator:
         self.npc_manager = NPCManager(self.context)
         self.dr_clippy = DrClippy(self.context, self.npc_manager)
 
+        self.context.history.add_event(sim_history.Evt_Chat_Event(content="Welcome to the Medagogic Simulator!"))
+
 
     async def process_user_input(self, input_text: str, to_npc_id: Optional[str]=None) -> None:
-        self.context.history.add_event(sim_history.Evt_ChatMessage(name="Team Lead", content=input_text))
+        self.context.history.add_event(sim_history.Evt_Chat_HumanMessage(content=input_text))
 
         if to_npc_id and to_npc_id in self.npc_manager.npcs:
             npc = self.npc_manager.npcs[to_npc_id]

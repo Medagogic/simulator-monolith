@@ -7,7 +7,7 @@ from packages.medagogic_sim.exercise.exercise_loader import read_metadata
 from packages.medagogic_sim.exercise.simulation4d import LeafyBlossom
 from packages.medagogic_sim.action_db.actions_for_brains import ActionDatabase
 from packages.medagogic_sim.exercise.simulation_types import BloodPressureModel
-from packages.medagogic_sim.history.sim_history import Evt_ChatMessage, HistoryLog
+from packages.medagogic_sim.history.sim_history import HistoryLog, Evt_Chat_NPCMessage
 from packages.medagogic_sim.iomanager import IOManager, NPCSpeech
 from packages.medagogic_sim.exercise.devices.device_interface import DeviceInterface
     
@@ -57,7 +57,7 @@ class ContextForBrains:
         self.iomanager.on_npc_speak.subscribe(self.on_npc_speak)
 
     def on_npc_speak(self, npc_speech: NPCSpeech):
-        self.history.add_event(Evt_ChatMessage(name=npc_speech.npc_name, content=npc_speech.text))
+        self.history.add_event(Evt_Chat_NPCMessage(npc_id=npc_speech.npc_id, content=npc_speech.text))
 
     def get_exposed_vitals(self) -> ExposedVitalSigns:
         vital_signs = self.simulation.getCurrentVitals()

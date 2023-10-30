@@ -5,7 +5,7 @@ import { APINPCData } from "@/src/api";
 
 export class TeamIO extends ScribeClient {
     on_npc_data(data: SIO_NPCData): void {
-        console.log(`Received NPC data for ${data.id}`);
+        // console.log(`Received NPC data for ${data.id}`);
 
         const npc_data: APINPCData = {
             id: data.id,
@@ -21,7 +21,7 @@ export class TeamIO extends ScribeClient {
         // useTeamStore.getState().teamById[data.id] = npc_data;
         useTeamStore.getState().setNPCData(data.id, npc_data);
 
-        console.log(`Updated storage for NPC ${data.id}`, npc_data);
+        // console.log(`Updated storage for NPC ${data.id}`, npc_data);
     }
 
     on_npc_thinking_updated(data: NPCThinking): void {

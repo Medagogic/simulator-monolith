@@ -3,12 +3,12 @@
 
 import { create } from 'zustand';
 import { ChatterIO } from '../socketio/ChatterIO';
-import { MessageFromNPC, ChatEvent, HumanMessage } from "@/src/scribe/scribetypes";
+import { Evt_Chat_HumanMessage, Evt_Chat_NPCMessage, Evt_Chat_Event } from "@/src/scribe/scribetypes";
 import { getDummyMessages } from './_DummyChatData';
 
 export type ChatStoreMessage = {
-  message: MessageFromNPC | HumanMessage | ChatEvent;
-  type: "npc" | "human" | "event";
+  message: Evt_Chat_HumanMessage | Evt_Chat_NPCMessage | Evt_Chat_Event;
+  type: string;
 };
 
 

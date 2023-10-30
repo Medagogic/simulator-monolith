@@ -9,7 +9,7 @@ import { useChatStore } from '../storage/ChatStore';
 import { FiPaperclip } from 'react-icons/fi';
 import AttachmentList from '../sim-session/AttachmentList/AttachmentList';
 import { useChatterIO } from '../socketio/SocketContext';
-import { ChatEvent, HumanMessage, MessageFromNPC } from "@/src/scribe/scribetypes"
+import { Evt_Chat_Event, Evt_Chat_HumanMessage, Evt_Chat_NPCMessage } from "@/src/scribe/scribetypes"
 
 import { DefaultApi, Configuration } from "@/src/api"
 import { useTeamStore } from '../storage/TeamStore';
@@ -55,33 +55,35 @@ const ChatterBox: React.FC = () => {
       let replyButton: boolean = false;
       let npc_id: string | undefined;
 
+      console.log(chatStoreMessage.type);
+
       switch (chatStoreMessage.type) {
         case 'human':
           position = 'right';
           // title = 'User';
-          const human = chatStoreMessage.message as HumanMessage;
-          content = human.message;
+          const human = chatStoreMessage.message as Evt_Chat_HumanMessage;
+          content = human.content;
           if (human.target_npc_id) {
             const npcName = getNPCName(human.target_npc_id);
             content = (
               <div className="flex flex-col">
                 <div>To {npcName}</div>
-                <div className="flex-grow">{human.message}</div>
+                <div className="flex-grow">{human.content}</div>
               </div>
             )
           }
           break;
         case 'npc':
           position = 'left';
-          const npc = chatStoreMessage.message as MessageFromNPC;
+          const npc = chatStoreMessage.message as Evt_Chat_NPCMessage;
           title = getNPCName(npc.npc_id);
           npc_id = npc.npc_id;
-          content = npc.message;
+          content = npc.content;
           className = `${className} npc-message ${npc.npc_id}`
           // replyButton = true;
           break;
         case 'event':
-          const evt = chatStoreMessage.message as ChatEvent;
+          const evt = chatStoreMessage.message as Evt_Chat_Event;
           position = 'center';
           if (evt.npc_id) {
             title = getNPCName(evt.npc_id);
@@ -90,7 +92,7 @@ const ChatterBox: React.FC = () => {
             title = "System"
             className = `${className} system-event`
           }
-          content = evt.event;
+          content = evt.content;
           type = "system";
           break;
         default:

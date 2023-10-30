@@ -1,24 +1,47 @@
 import asyncio
 from pydantic import BaseModel
-from typing import List, Optional, Union, Type
+from typing import List, Optional, Tuple, Union, Type
 from packages.medagogic_sim.history.sim_history_summary import HistoryCondenser
 from packages.medagogic_sim.logger.logger import get_logger, logging
 from rx.subject import Subject
 
+
 logger = get_logger(level=logging.INFO)
+
 
 class HistoryEvent(BaseModel):
     timestamp: float = None # type: ignore
 
     def __str__(self):
         return "Generic event"
+    
 
-class Evt_ChatMessage(HistoryEvent):
-    name: str
+class Evt_Chat_Base(HistoryEvent):
     content: str
+    type: str
+
+
+class Evt_Chat_NPCMessage(Evt_Chat_Base):
+    npc_id: str
+    type: str = "npc_message"
 
     def __str__(self):
-        return f"{self.name}: {self.content}"
+        return f"{self.npc_id}: {self.content}"
+
+class Evt_Chat_Event(Evt_Chat_Base):
+    npc_id: Optional[str] = None
+    type: str = "event"
+
+    def __str__(self):
+        return f"{self.content}"
+
+class Evt_Chat_HumanMessage(Evt_Chat_Base):
+    target_npc_id: Optional[str] = None
+    type: str = "human_message"
+
+    def __str__(self):
+        return f"Team Lead: {self.content}"
+
 
 class Evt_Assessment(HistoryEvent):
     npc_name: str
@@ -48,7 +71,7 @@ class Evt_CompletedIntervention(HistoryEvent):
     def __str__(self):
         return f"{self.npc_name}: {self.content}"
 
-EventTypes = Union[Evt_ChatMessage, Evt_Assessment, Evt_CompletedIntervention, Evt_StartTask, Evt_TaskConsequence]
+EventTypes = Union[Evt_Chat_Base, Evt_Assessment, Evt_CompletedIntervention, Evt_StartTask, Evt_TaskConsequence]
 
 class HistoryLog:
     def __init__(self) -> None:
@@ -115,14 +138,14 @@ class HistoryLog:
 if __name__ == "__main__":
     async def main():
         history_log = HistoryLog()
-        history_log.add_event(Evt_ChatMessage(name="Alice", content="Hi"))
-        history_log.add_event(Evt_Assessment(npc_name="npc_1", content="System update"))
+        history_log.add_event(Evt_Chat_HumanMessage(content="Hi"))
+        history_log.add_event(Evt_Assessment(npc_name="npc_1", content="Some assessment"))
 
         # Get history filtered by multiple types
-        print(history_log.get_filtered_log(filter_types=[Evt_ChatMessage, Evt_Assessment]))
+        print(history_log.get_filtered_log(filter_types=[Evt_Chat_Base, Evt_Assessment]))
 
         # Get markdown for specific event types
-        print(history_log.get_markdown(filter_types=[Evt_ChatMessage, Evt_Assessment], last_n=1))
+        print(history_log.get_markdown(filter_types=[Evt_Chat_Base, Evt_Assessment], last_n=5))
 
     asyncio.run(main())
 
