@@ -1,0 +1,20 @@
+{
+    "properties": {
+        "text": {
+            "title": "Text",
+            "type": "string"
+        },
+        "completed": {
+            "default": false,
+            "title": "Completed",
+            "type": "boolean"
+        }
+    },
+    "required": [
+        "text"
+    ],
+    "title": "EvaluationChecklistItem",
+    "type": "object",
+    "$id": "EvaluationChecklistItem.schema.json",
+    "additionalProperties": false
+}

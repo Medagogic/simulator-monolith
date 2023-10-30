@@ -1,0 +1,20 @@
+Action,Optional/Mandatory
+A: Do head tilt/chin lift/jaw thrust,Mandatory
+A:Insert oropharyngeal / /nasopharyngeal airway,Optional
+B: Give oxygen by mask,Mandatory
+"B: Give Inhaled ventolin 1 ml of 5mg/ml and atrovent 1 ml of 0,25mg/ml (bronchodilators)",Optional
+C: Establish IV access,Mandatory
+C: Ask for second IV access,optional
+C: prepare for IO access,Optional
+C: Give 1st fluid bolus with Ringer Acetate or NaCl 9% 10-20 ml/kg,Mandatory
+C: Give 2nd fluid bolus with Ringer acetate or NaCl 9% 10-20 ml/kg,Mandatory
+"C: Order appropriate blood work: Full blood count, blood gas, CRP, blood cultures",Optional
+C/D: Check blood glucose,Mandatory
+C/D: Give IV 10% glucose 2-3 ml/kg,Mandatory
+C/D: Give glucose infusion IV glucose 10% 3 ml/kg/h after giving glucose bolus,optional
+Recheck glucose after bolus and infusion,Optional
+Ask for ICU team to come,Optional
+"Get previous medical history from caregiver, including birth weight",Mandatory
+Order broad-spectrum antibiotics: Cefotaxim 50-75 mg/kg or Meropenem 20-40 mg/kg or ceftriaxone 100mg/kg,Mandatory
+Give paracetamol IV 15-20 mg/kg for fever,Optional
+Order Chest x-ray,Optional

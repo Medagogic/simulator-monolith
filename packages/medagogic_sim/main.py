@@ -6,6 +6,7 @@ from packages.medagogic_sim.dr_clippy import DrClippy
 from packages.medagogic_sim.exercise.simulation_types import BloodPressureModel, VitalSigns
 from packages.medagogic_sim.history import sim_history
 import asyncio
+from packages.medagogic_sim.learner_actions.learner_action_evaluator import LearnerActionEvaluator
 
 from packages.medagogic_sim.npc_manager import NPCManager
 
@@ -18,6 +19,7 @@ class MedagogicSimulator:
         self.context = ContextForBrains(exercise_name)
         self.npc_manager = NPCManager(self.context)
         self.dr_clippy = DrClippy(self.context, self.npc_manager)
+        self.learner_action_evaluator = LearnerActionEvaluator(self.context)
 
         self.context.history.add_event(sim_history.Evt_Chat_Event(content="Welcome to the Medagogic Simulator!"))
 

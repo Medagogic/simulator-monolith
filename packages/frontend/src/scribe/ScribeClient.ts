@@ -21,7 +21,7 @@ function subscribe(obj: ScribeClient, event: string, callback?: (data: any) => v
     }
 }
 
-import { Evt_Chat_Event, Evt_Chat_NPCMessage, SIO_ConnectedDevices, DrClippyOutput, SIO_NPCData, ExposedVitalSigns, CombatLogUpdateData, NPCThinking, SIO_ChatHistory, SIO_TimeUpdate } from "./scribetypes";
+import { Evt_Chat_Event, Evt_Chat_NPCMessage, SIO_ConnectedDevices, DrClippyOutput, SIO_NPCData, ExposedVitalSigns, CombatLogUpdateData, NPCThinking, EvaluationChecklistItem, EvaluationChecklist, SIO_ChatHistory, SIO_TimeUpdate } from "./scribetypes";
 
 export abstract class ScribeClient {
     socket: Socket;
@@ -33,6 +33,8 @@ export abstract class ScribeClient {
     on_patient_vitals_update?(data: ExposedVitalSigns): void;
     on_combatlog_update?(data: CombatLogUpdateData): void;
     on_npc_thinking_updated?(data: NPCThinking): void;
+    on_learner_action_complete?(data: EvaluationChecklistItem): void;
+    on_learner_action_checklist?(data: EvaluationChecklist): void;
     on_full_chat_history?(data: SIO_ChatHistory): void;
     on_time_update?(data: SIO_TimeUpdate): void;
 
@@ -46,6 +48,8 @@ export abstract class ScribeClient {
         subscribe(this, "patient_vitals_update", this.on_patient_vitals_update);
         subscribe(this, "combatlog_update", this.on_combatlog_update);
         subscribe(this, "npc_thinking_updated", this.on_npc_thinking_updated);
+        subscribe(this, "learner_action_complete", this.on_learner_action_complete);
+        subscribe(this, "learner_action_checklist", this.on_learner_action_checklist);
         subscribe(this, "full_chat_history", this.on_full_chat_history);
         subscribe(this, "time_update", this.on_time_update);
     }

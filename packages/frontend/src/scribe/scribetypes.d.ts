@@ -76,6 +76,11 @@ export type Log = CombatLogElement[];
 export type NpcId2 = string;
 export type NpcName1 = string;
 export type About = string | null;
+export type Text = string;
+export type Completed = boolean;
+export type Text1 = string;
+export type Completed1 = boolean;
+export type Items = EvaluationChecklistItem1[];
 export type Timestamp3 = number;
 export type Content3 = string;
 export type Type3 = string;
@@ -104,6 +109,8 @@ export interface ScribeEvents {
   patient_vitals_update: ExposedVitalSigns;
   combatlog_update: CombatLogUpdateData;
   npc_thinking_updated: NPCThinking;
+  learner_action_complete: EvaluationChecklistItem;
+  learner_action_checklist: EvaluationChecklist;
   full_chat_history: SIO_ChatHistory;
   time_update: SIO_TimeUpdate;
   __server_on_join_session?: {
@@ -222,6 +229,18 @@ export interface NPCThinking {
   npc_id: NpcId2;
   npc_name: NpcName1;
   about?: About;
+}
+export interface EvaluationChecklistItem {
+  text: Text;
+  completed?: Completed;
+}
+export interface EvaluationChecklist {
+  items?: Items;
+}
+export interface EvaluationChecklistItem1 {
+  text: Text1;
+  completed?: Completed1;
+  [k: string]: unknown;
 }
 export interface SIO_ChatHistory {
   messages: Messages;

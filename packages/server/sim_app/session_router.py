@@ -5,6 +5,7 @@ from pydantic import BaseModel
 import socketio
 from packages.medagogic_sim.npc_definitions import NPCDefinition
 from packages.medagogic_sim.main import VitalSigns
+from packages.server.sim_app.session_handlers.session_learner_action_evaluator import Session_LearnerActionEvaluator
 from packages.server.web_architecture.sessionrouter import SessionRouter
 import asyncio
 from packages.server.sim_app.session_handlers import *
@@ -26,7 +27,7 @@ class SIO_TimeUpdate(BaseModel):
     exercise_time_seconds: int
 
 
-class Session_MedSim(Session_Chat, Session_Patient, Session_DirectIntervention, Session_Devices, Session_DrClippy):
+class Session_MedSim(Session_Chat, Session_Patient, Session_DirectIntervention, Session_Devices, Session_DrClippy, Session_LearnerActionEvaluator):
     def __init__(self, session_id: str, sio: socketio.AsyncServer):
         for baseclass in self.__class__.__bases__:
             baseclass.__init__(self, session_id=session_id, sio=sio)

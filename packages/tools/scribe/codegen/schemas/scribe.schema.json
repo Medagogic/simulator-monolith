@@ -27,6 +27,12 @@
         "npc_thinking_updated": {
             "$ref": "schemas/NPCThinking.schema.json"
         },
+        "learner_action_complete": {
+            "$ref": "schemas/EvaluationChecklistItem.schema.json"
+        },
+        "learner_action_checklist": {
+            "$ref": "schemas/EvaluationChecklist.schema.json"
+        },
         "full_chat_history": {
             "$ref": "schemas/SIO_ChatHistory.schema.json"
         },
@@ -82,6 +88,8 @@
         "patient_vitals_update",
         "combatlog_update",
         "npc_thinking_updated",
+        "learner_action_complete",
+        "learner_action_checklist",
         "full_chat_history",
         "time_update"
     ]

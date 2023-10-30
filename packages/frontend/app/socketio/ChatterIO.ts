@@ -5,7 +5,7 @@ import { useCombatLogStore } from "../storage/CombatLogStore";
 
 export class ChatterIO extends ScribeClient {
     on_full_chat_history(data: SIO_ChatHistory): void {
-        console.log("on_full_chat_history", data);
+        // console.log("on_full_chat_history", data);
         data.messages.forEach((m: any) => {
             const chatStoreMsg: ChatStoreMessage = {
                 message: m,

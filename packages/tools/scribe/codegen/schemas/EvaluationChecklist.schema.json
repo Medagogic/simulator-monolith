@@ -1,0 +1,36 @@
+{
+    "$defs": {
+        "EvaluationChecklistItem": {
+            "properties": {
+                "text": {
+                    "title": "Text",
+                    "type": "string"
+                },
+                "completed": {
+                    "default": false,
+                    "title": "Completed",
+                    "type": "boolean"
+                }
+            },
+            "required": [
+                "text"
+            ],
+            "title": "EvaluationChecklistItem",
+            "type": "object"
+        }
+    },
+    "properties": {
+        "items": {
+            "default": [],
+            "items": {
+                "$ref": "#/$defs/EvaluationChecklistItem"
+            },
+            "title": "Items",
+            "type": "array"
+        }
+    },
+    "title": "EvaluationChecklist",
+    "type": "object",
+    "$id": "EvaluationChecklist.schema.json",
+    "additionalProperties": false
+}

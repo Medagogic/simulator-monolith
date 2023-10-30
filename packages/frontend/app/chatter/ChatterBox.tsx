@@ -55,10 +55,8 @@ const ChatterBox: React.FC = () => {
       let replyButton: boolean = false;
       let npc_id: string | undefined;
 
-      console.log(chatStoreMessage.type);
-
       switch (chatStoreMessage.type) {
-        case 'human':
+        case 'human_message':
           position = 'right';
           // title = 'User';
           const human = chatStoreMessage.message as Evt_Chat_HumanMessage;
@@ -73,7 +71,7 @@ const ChatterBox: React.FC = () => {
             )
           }
           break;
-        case 'npc':
+        case 'npc_message':
           position = 'left';
           const npc = chatStoreMessage.message as Evt_Chat_NPCMessage;
           title = getNPCName(npc.npc_id);
@@ -96,7 +94,7 @@ const ChatterBox: React.FC = () => {
           type = "system";
           break;
         default:
-          throw new Error('Unsupported message type');
+          throw new Error('Unsupported message type: ' + chatStoreMessage.type);
       }
 
       return {

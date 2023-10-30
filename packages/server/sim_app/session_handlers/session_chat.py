@@ -61,7 +61,7 @@ class Session_Chat(MedSessionBase):
     def handle_on_npc_speak(self, data: iomanager.NPCSpeech) -> None:
         m = Evt_Chat_NPCMessage(
             content=data.text,
-            timestamp=datetime.now().isoformat(),
+            timestamp=self.medsim.context.history.get_time(),
             npc_id=data.npc_id,
         )
         asyncio.create_task(self.emit_chat_message(m))
@@ -70,7 +70,7 @@ class Session_Chat(MedSessionBase):
         m = Evt_Chat_Event(
             content=f"{data.npc_name}: {data.task_info}",
             npc_id=data.npc_id,
-            timestamp=datetime.now().isoformat(),
+            timestamp=self.medsim.context.history.get_time(),
         )
         asyncio.create_task(self.emit_chat_event(m))
 
@@ -93,10 +93,10 @@ class Session_Chat(MedSessionBase):
 
     @scribe_handler
     async def on_chat_message(self, sid, data: Evt_Chat_HumanMessage) -> None:
-        print(f"Client {sid} sent message {data} in {self.session_id}")
+        logger.debug(f"Client {sid} sent message {data} in {self.session_id}")
         if "target_npc_id" not in data:
             data["target_npc_id"] = None
-        await self.medsim.process_user_input(data["message"], data["target_npc_id"])
+        await self.medsim.process_user_input(data["content"], data["target_npc_id"])
 
     @scribe_emits("chat_message", Evt_Chat_NPCMessage)
     async def emit_chat_message(self, data: Evt_Chat_NPCMessage) -> None:

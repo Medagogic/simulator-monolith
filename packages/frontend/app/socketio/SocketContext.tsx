@@ -9,6 +9,7 @@ import { TeamIO } from "./TeamIO";
 import { DeviceIO } from "./DeviceIO";
 import { SessionIO } from "./SessionIO";
 import { DrClippyIO } from "./DrClippyIO";
+import { LearnerActionEvaluatorIO } from "./LearnerActionEvaluatorIO";
 
 // Defining the context shape
 interface ISocketContext {
@@ -19,6 +20,7 @@ interface ISocketContext {
     teamIO: TeamIO | null;
     deviceIO: DeviceIO | null;
     drClippyIO: DrClippyIO | null;
+    learnerActionEvaluatorIO: LearnerActionEvaluatorIO | null;
 }
 
 const SocketContext = createContext<ISocketContext | null>(null);
@@ -29,14 +31,16 @@ interface SocketProviderProps {
 }
 
 interface ContextSingleton {
+    session_id: string | null;
     socket: Socket;
+
     sessionIO: SessionIO;
     patientIO: PatientIO;
     chatterIO: ChatterIO;
     teamIO: TeamIO;
     deviceIO: DeviceIO;
     drClippyIO: DrClippyIO;
-    session_id: string | null;
+    learnerActionEvaluatorIO: LearnerActionEvaluatorIO;
 }
 
 let context_singleton: ContextSingleton | null = null;
@@ -51,15 +55,19 @@ const getContextSingleton = () => {
     const teamIO = new TeamIO(socket);
     const deviceIO = new DeviceIO(socket);
     const drClippyIO = new DrClippyIO(socket);
+    const learnerActionEvaluatorIO = new LearnerActionEvaluatorIO(socket);
+
     context_singleton = {
         socket: socket,
+        session_id: null,
+
         sessionIO: sessionIO,
         patientIO: patientIO,
         chatterIO: chatterIO,
         teamIO: teamIO,
         deviceIO: deviceIO,
         drClippyIO: drClippyIO,
-        session_id: null
+        learnerActionEvaluatorIO: learnerActionEvaluatorIO,
     };
   }
   return context_singleton;
@@ -73,6 +81,7 @@ export const SocketProvider: React.FC<SocketProviderProps> = ({ session_id, chil
     const [teamIO, setTeamIO] = useState<TeamIO | null>(null);
     const [deviceIO, setDeviceIO] = useState<DeviceIO | null>(null);
     const [drClippyIO, setDrClippyIO] = useState<DrClippyIO | null>(null);
+    const [learnerActionEvaluatorIO, setLearnerActionEvaluatorIO] = useState<LearnerActionEvaluatorIO | null>(null);
 
     useEffect(() => {
         if (typeof window !== "undefined") {
@@ -85,6 +94,7 @@ export const SocketProvider: React.FC<SocketProviderProps> = ({ session_id, chil
             setTeamIO(contextSingleton.teamIO);
             setDeviceIO(contextSingleton.deviceIO);
             setDrClippyIO(contextSingleton.drClippyIO);
+            setLearnerActionEvaluatorIO(contextSingleton.learnerActionEvaluatorIO);
 
             if (contextSingleton.session_id != session_id) {
                 contextSingleton.session_id = session_id;
@@ -108,6 +118,7 @@ export const SocketProvider: React.FC<SocketProviderProps> = ({ session_id, chil
             teamIO: teamIO,
             deviceIO: deviceIO,
             drClippyIO: drClippyIO,
+            learnerActionEvaluatorIO: learnerActionEvaluatorIO,
             }}>
             {children}
         </SocketContext.Provider>
@@ -172,4 +183,14 @@ export const useDrClippyIO = (): DrClippyIO | null => {
     }
 
     return context.drClippyIO;
+}
+
+export const useLearnerActionEvaluatorIO = (): LearnerActionEvaluatorIO | null => {
+    const context = useContext(SocketContext);
+
+    if (!context) {
+        throw new Error("useLearnerActionEvaluatorIO must be used within a SocketProvider");
+    }
+
+    return context.learnerActionEvaluatorIO;
 }
