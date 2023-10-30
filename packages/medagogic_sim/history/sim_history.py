@@ -53,6 +53,7 @@ class Evt_Assessment(HistoryEvent):
 class Evt_StartTask(HistoryEvent):
     npc_name: str
     content: str
+    task_data: str
 
     def __str__(self):
         return f"{self.npc_name}: {self.content}"

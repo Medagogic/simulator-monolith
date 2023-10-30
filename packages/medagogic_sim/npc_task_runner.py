@@ -61,7 +61,11 @@ class TaskRunner:
         else:
             raise Exception(f"Unknown task type {self.task.type}")
         
-        self.context.history.add_event(Evt_StartTask(npc_name=self.npc.definition.name, content=self.getStartingString()))
+        self.context.history.add_event(Evt_StartTask(
+            npc_name=self.npc.definition.name,
+            content=self.getStartingString(),
+            task_data=str(self.task.call_data)
+        ))
 
         # First kickoff the sim update
         if action_type in [ActionType.INTERVENTION, ActionType.PREPARATION]:

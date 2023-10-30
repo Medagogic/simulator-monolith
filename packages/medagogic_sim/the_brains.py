@@ -162,6 +162,7 @@ Then provide a markdown list of the relevant actions.
         classified_function_calls = await self.action_classifier.get_function_calls(input_to_classifier)
 
         if classified_function_calls is None or len(classified_function_calls) == 0:
+            logger.warning(f"No function calls detected for input: `{input_to_classifier}`")
             return RightBrainResponse(decision=RightBrainDecision.NOT_A_COMMAND, dialog="There's no command in the instruction text.", actions_list=None)
         
         logger.debug(f"Classified function calls: {classified_function_calls}")

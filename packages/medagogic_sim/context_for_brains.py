@@ -1,3 +1,4 @@
+import asyncio
 from typing import List, Optional
 
 from pydantic import BaseModel, Field
@@ -66,7 +67,16 @@ class ContextForBrains:
 
         exposed_dict = {}
         for vital_type in exposed_vital_types:
+            vital_key = vital_type.value
             if vital_type in as_dict:
-                exposed_dict[str(vital_type)] = as_dict[vital_type]
+                exposed_dict[vital_key] = as_dict[vital_key]
 
         return ExposedVitalSigns(**exposed_dict)
+    
+
+if __name__ == "__main__":
+    async def main():
+        context = ContextForBrains()
+        print(context.get_exposed_vitals())
+
+    asyncio.run(main())

@@ -288,11 +288,11 @@ if __name__ == "__main__":
             classifier.save()
 
 
-        good_input = "Intubate with a 4.5mm tube of cuffed endotracheal. Confirm placement."
-        bad_input = "Amputate the left leg"
-        hard_input = "Get IV access and give 200mg epinephrine stat"
+        # good_input = "Intubate with a 4.5mm tube of cuffed endotracheal. Confirm placement."
+        # bad_input = "Amputate the left leg"
+        # hard_input = "Get IV access and give 200mg epinephrine stat"
 
-        logger.info(await classifier.get_function_calls(hard_input))
+        logger.info(await classifier.get_function_calls("Assess the airway"))
         
 
     asyncio.run(main())

@@ -153,6 +153,9 @@ class ActionDatabase:
         name: str
         params: List[str]
 
+        def __str__(self) -> str:
+            return f"{self.name}({', '.join(self.params)})"
+
 
     def __parse_call(self, call: str) -> CallData:
             pure_name: str = call

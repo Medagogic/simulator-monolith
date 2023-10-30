@@ -9,7 +9,7 @@ from rx.subject import Subject
 
 
 from packages.medagogic_sim.logger.logger import get_logger, logging
-logger = get_logger(level=logging.DEBUG)
+logger = get_logger(level=logging.INFO)
 
 
 class EvaluationChecklistItem(BaseModel):
@@ -52,7 +52,7 @@ class LearnerActionEvaluator:
         elif isinstance(event, Evt_CompletedIntervention):
             asyncio.create_task(self.evaluate_action(event.content))
         elif isinstance(event, Evt_StartTask):
-            asyncio.create_task(self.evaluate_action(event.content))
+            asyncio.create_task(self.evaluate_action(event.task_data))
 
 
     def get_markdown(self):
@@ -87,8 +87,8 @@ class LearnerActionEvaluator:
 {self.checklist.to_markdown()}
 
 You are acting as an evaluator for a virtual simulation training scenario. Determine if the user's action fulfills one of the above checklist items.
-Pay attention to dosages, timing, and other details.
-The user's action may only fulfill one of the checklist items.
+Pay attention to dosages, timing, and other details. Be precise. For example, the action "Assess airway()" would fulfill the checklist item "2. B. Assess airway" but not "1: A: Resolve airway issues".
+The user's action may fulfill one or zero of the checklist items.
 
 If the user's action fulfills one of the checklist items, respond with "Yes: <id>", eg. "Yes: 8"
 If the user's action does not fulfill one of the checklist items, respond with "No"
