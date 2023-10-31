@@ -39,7 +39,7 @@
     ],
     "compounds": [
         {
-            "name": "Full Stack: Frontend & Backend",
+            "name": "FULL STACK",
             "configurations": ["SERVER: Dev Mode with --no-frontend", "FRONTEND: Start NextJS dev server"],
             "stopAll": true,
         }
