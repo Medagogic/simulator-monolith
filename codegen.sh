@@ -8,7 +8,7 @@ function runScript() {
     export PYTHONPATH="$WORKING_DIR"
 
     if [ -f "$SCRIPT_PATH" ]; then
-      python "$SCRIPT_PATH"
+      python "$SCRIPT_PATH" "$@"
       local script_status=$?
 
       if [ $script_status -eq 0 ]; then
@@ -31,4 +31,4 @@ function runScript() {
   fi
 }
 
-runScript
+runScript "$@"

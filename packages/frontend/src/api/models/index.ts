@@ -7,6 +7,7 @@ export * from './ExerciseCreationFutureState';
 export * from './ExerciseCreationParams';
 export * from './ExerciseCreationPatientBasicInfo';
 export * from './ExerciseCreationVitalSigns';
+export * from './ExerciseModel';
 export * from './GeneratedExerciseData';
 export * from './HTTPValidationError';
 export * from './NPCDefinition';

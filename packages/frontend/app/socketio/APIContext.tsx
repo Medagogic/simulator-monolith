@@ -5,24 +5,24 @@ import { DefaultApi, Configuration } from "@/src/api";
 
 interface IAPIContext {
   apiInstance: DefaultApi;
-  sessionId: string;
+  sessionId?: string;
 }
 
 interface APIProviderProps {
-  sessionId: string;
+  sessionId?: string;
   children: ReactNode;
 }
 
 interface APIContextSingleton {
   apiInstance: DefaultApi;
-  sessionId: string;
+  sessionId?: string;
 }
 
 const APIContext = createContext<IAPIContext | null>(null);
 
 let context_singleton: APIContextSingleton | null = null;
 
-function getContextSingleton(sessionID: string) {
+function getContextSingleton(sessionID?: string) {
   if (context_singleton === null) {
     console.log("Creating new API context singleton at", process.env.NEXT_PUBLIC_API_HOST);
     const apiConfig = new Configuration({
@@ -36,8 +36,8 @@ function getContextSingleton(sessionID: string) {
   return context_singleton;
 }
 
-export const APIProvider: React.FC<APIProviderProps> = ({ sessionId: sessionID, children }) => {
-  const apiSingleton = getContextSingleton(sessionID);
+export const APIProvider: React.FC<APIProviderProps> = ({ sessionId , children }) => {
+  const apiSingleton = getContextSingleton(sessionId);
 
   return (
     <APIContext.Provider value={{apiInstance: apiSingleton.apiInstance, sessionId: apiSingleton.sessionId}}>

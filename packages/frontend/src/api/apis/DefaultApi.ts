@@ -17,6 +17,7 @@ import * as runtime from '../runtime';
 import type {
   APITeamData,
   ExerciseCreationParams,
+  ExerciseModel,
   GeneratedExerciseData,
   HTTPValidationError,
 } from '../models/index';
@@ -25,6 +26,8 @@ import {
     APITeamDataToJSON,
     ExerciseCreationParamsFromJSON,
     ExerciseCreationParamsToJSON,
+    ExerciseModelFromJSON,
+    ExerciseModelToJSON,
     GeneratedExerciseDataFromJSON,
     GeneratedExerciseDataToJSON,
     HTTPValidationErrorFromJSON,
@@ -41,6 +44,11 @@ export interface MedsimTeamNewSessionRouterSessionSessionIdMedsimTeamGetRequest 
 
 export interface MedsimVitalsNewSessionRouterSessionSessionIdMedsimVitalsGetRequest {
     sessionId: string;
+}
+
+export interface SearchExercisesStaticApiExercisesListGetRequest {
+    nameFilter?: string;
+    tagFilter?: Array<string>;
 }
 
 export interface TestEndpointNewSessionRouterSessionSessionIdTestSessionGetRequest {
@@ -192,6 +200,40 @@ export class DefaultApi extends runtime.BaseAPI {
      */
     async medsimVitalsNewSessionRouterSessionSessionIdMedsimVitalsGet(requestParameters: MedsimVitalsNewSessionRouterSessionSessionIdMedsimVitalsGetRequest, initOverrides?: RequestInit | runtime.InitOverrideFunction): Promise<void> {
         await this.medsimVitalsNewSessionRouterSessionSessionIdMedsimVitalsGetRaw(requestParameters, initOverrides);
+    }
+
+    /**
+     * Search Exercises
+     */
+    async searchExercisesStaticApiExercisesListGetRaw(requestParameters: SearchExercisesStaticApiExercisesListGetRequest, initOverrides?: RequestInit | runtime.InitOverrideFunction): Promise<runtime.ApiResponse<Array<ExerciseModel>>> {
+        const queryParameters: any = {};
+
+        if (requestParameters.nameFilter !== undefined) {
+            queryParameters['name_filter'] = requestParameters.nameFilter;
+        }
+
+        if (requestParameters.tagFilter) {
+            queryParameters['tag_filter'] = requestParameters.tagFilter;
+        }
+
+        const headerParameters: runtime.HTTPHeaders = {};
+
+        const response = await this.request({
+            path: `/static_api/exercises/list`,
+            method: 'GET',
+            headers: headerParameters,
+            query: queryParameters,
+        }, initOverrides);
+
+        return new runtime.JSONApiResponse(response, (jsonValue) => jsonValue.map(ExerciseModelFromJSON));
+    }
+
+    /**
+     * Search Exercises
+     */
+    async searchExercisesStaticApiExercisesListGet(requestParameters: SearchExercisesStaticApiExercisesListGetRequest = {}, initOverrides?: RequestInit | runtime.InitOverrideFunction): Promise<Array<ExerciseModel>> {
+        const response = await this.searchExercisesStaticApiExercisesListGetRaw(requestParameters, initOverrides);
+        return await response.value();
     }
 
     /**

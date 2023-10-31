@@ -43,6 +43,63 @@
                 }
             }
         },
+        "/static_api/exercises/list": {
+            "get": {
+                "summary": "Search Exercises",
+                "operationId": "search_exercises_static_api_exercises_list_get",
+                "parameters": [
+                    {
+                        "name": "name_filter",
+                        "in": "query",
+                        "required": false,
+                        "schema": {
+                            "type": "string",
+                            "default": "",
+                            "title": "Name Filter"
+                        }
+                    },
+                    {
+                        "name": "tag_filter",
+                        "in": "query",
+                        "required": false,
+                        "schema": {
+                            "type": "array",
+                            "items": {
+                                "type": "string"
+                            },
+                            "default": [],
+                            "title": "Tag Filter"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "Successful Response",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "type": "array",
+                                    "items": {
+                                        "$ref": "#/components/schemas/ExerciseModel"
+                                    },
+                                    "title": "Response Search Exercises Static Api Exercises List Get"
+                                }
+                            }
+                        }
+                    },
+                    "422": {
+                        "description": "Validation Error",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/HTTPValidationError"
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+        },
         "/new-session-router/list-sessions": {
             "get": {
                 "summary": "List Sessions",
@@ -382,6 +439,37 @@
                     "capillaryRefill"
                 ],
                 "title": "ExerciseCreationVitalSigns"
+            },
+            "ExerciseModel": {
+                "properties": {
+                    "exerciseName": {
+                        "type": "string",
+                        "title": "Exercisename"
+                    },
+                    "exerciseData": {
+                        "type": "string",
+                        "title": "Exercisedata"
+                    },
+                    "exerciseMetadata": {
+                        "type": "string",
+                        "title": "Exercisemetadata"
+                    },
+                    "tags": {
+                        "items": {
+                            "type": "string"
+                        },
+                        "type": "array",
+                        "title": "Tags"
+                    }
+                },
+                "type": "object",
+                "required": [
+                    "exerciseName",
+                    "exerciseData",
+                    "exerciseMetadata",
+                    "tags"
+                ],
+                "title": "ExerciseModel"
             },
             "GeneratedExerciseData": {
                 "properties": {
