@@ -7,10 +7,19 @@ import ExerciseUploader from './ExerciseUploader';
 
 
 const ExerciseListPage: React.FC = () => {
+    const adminMode = false;
+
     return (
         <APIProvider>
-            {/* <ExerciseList /> */}
-            <ExerciseUploader />
+            {adminMode &&
+                <h1>ADMIN MODE</h1>
+            }
+            <div className='flex flex-col items-center justify-center h-full'>
+            <ExerciseList isAdmin={adminMode} />
+            {adminMode && 
+                <ExerciseUploader />
+            }
+            </div>
         </APIProvider>
     )
 }

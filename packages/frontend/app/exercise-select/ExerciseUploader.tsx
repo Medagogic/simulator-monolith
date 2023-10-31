@@ -98,14 +98,14 @@ const ExerciseUploader: React.FC = () => {
     }
 
     return (
-        <div className="bg-gray-800 p-10 text-white w-full h-full flex items-center justify-center">
-            <div className="bg-gray-900 p-8 rounded-lg shadow-lg w-full max-w-md">
+        <div className="bg-gray-800 p-2 text-white w-full h-full flex items-center justify-center text-sm">
+            <div className="bg-gray-800 p-2 rounded-lg shadow-lg w-full max-w-md text">
                 <h1 className="text-2xl mb-6 text-center">Upload Exercise</h1>
-                <div className="flex flex-col gap-6">
+                <div className="flex flex-col gap-2">
                     <div className="flex flex-col gap-2">
-                        <label htmlFor="exerciseFile" className="font-semibold">Upload exercise.txt:</label>
+                        <label htmlFor="exerciseFile" className="font-semibold">Choose exercise.txt:</label>
                         <input
-                            className="p-2 rounded bg-gray-200 text-black focus:outline-none focus:border-blue-500"
+                            className="p-1 rounded bg-gray-200 text-black focus:outline-none focus:border-blue-500"
                             type="file"
                             id="exerciseFile"
                             onChange={(e) => handleFileChange(e, 'exercise')}
@@ -113,9 +113,9 @@ const ExerciseUploader: React.FC = () => {
                     </div>
 
                     <div className="flex flex-col gap-2">
-                        <label htmlFor="metadataFile" className="font-semibold">Upload exercise_metadata.txt:</label>
+                        <label htmlFor="metadataFile" className="font-semibold">Choose metadata.txt:</label>
                         <input
-                            className="p-2 rounded bg-gray-200 text-black focus:outline-none focus:border-blue-500"
+                            className="p-1 rounded bg-gray-200 text-black focus:outline-none focus:border-blue-500"
                             type="file"
                             id="metadataFile"
                             onChange={(e) => handleFileChange(e, 'metadata')}
