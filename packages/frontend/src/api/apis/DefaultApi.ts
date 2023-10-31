@@ -55,6 +55,10 @@ export interface TestEndpointNewSessionRouterSessionSessionIdTestSessionGetReque
     sessionId: string;
 }
 
+export interface UploadExerciseStaticApiExercisesUploadPostRequest {
+    exerciseModel: ExerciseModel;
+}
+
 /**
  * 
  */
@@ -263,6 +267,39 @@ export class DefaultApi extends runtime.BaseAPI {
      */
     async testEndpointNewSessionRouterSessionSessionIdTestSessionGet(requestParameters: TestEndpointNewSessionRouterSessionSessionIdTestSessionGetRequest, initOverrides?: RequestInit | runtime.InitOverrideFunction): Promise<void> {
         await this.testEndpointNewSessionRouterSessionSessionIdTestSessionGetRaw(requestParameters, initOverrides);
+    }
+
+    /**
+     * Upload Exercise
+     */
+    async uploadExerciseStaticApiExercisesUploadPostRaw(requestParameters: UploadExerciseStaticApiExercisesUploadPostRequest, initOverrides?: RequestInit | runtime.InitOverrideFunction): Promise<runtime.ApiResponse<object>> {
+        if (requestParameters.exerciseModel === null || requestParameters.exerciseModel === undefined) {
+            throw new runtime.RequiredError('exerciseModel','Required parameter requestParameters.exerciseModel was null or undefined when calling uploadExerciseStaticApiExercisesUploadPost.');
+        }
+
+        const queryParameters: any = {};
+
+        const headerParameters: runtime.HTTPHeaders = {};
+
+        headerParameters['Content-Type'] = 'application/json';
+
+        const response = await this.request({
+            path: `/static_api/exercises/upload`,
+            method: 'POST',
+            headers: headerParameters,
+            query: queryParameters,
+            body: ExerciseModelToJSON(requestParameters.exerciseModel),
+        }, initOverrides);
+
+        return new runtime.JSONApiResponse<any>(response);
+    }
+
+    /**
+     * Upload Exercise
+     */
+    async uploadExerciseStaticApiExercisesUploadPost(requestParameters: UploadExerciseStaticApiExercisesUploadPostRequest, initOverrides?: RequestInit | runtime.InitOverrideFunction): Promise<object> {
+        const response = await this.uploadExerciseStaticApiExercisesUploadPostRaw(requestParameters, initOverrides);
+        return await response.value();
     }
 
 }

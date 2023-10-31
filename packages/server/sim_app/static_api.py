@@ -1,4 +1,4 @@
-from typing import List, Union
+from typing import Dict, List, Union
 
 from fastapi import Query
 from packages.medagogic_sim.exercise_storage.exercise_storage import ExerciseModel, ExerciseStorage
@@ -15,6 +15,7 @@ class MedagogicAPI(StaticAPI):
         self.exercise_storage = ExerciseStorage()
 
         self.router.add_api_route("/exercises/list", self.search_exercises, methods=["GET"])
+        self.router.add_api_route("/exercises/upload", self.upload_exercise, methods=["POST"])
 
 
     def search_exercises(self, name_filter: str = Query(""), tag_filter: List[str] = Query([])) -> List[ExerciseModel]:
@@ -25,3 +26,7 @@ class MedagogicAPI(StaticAPI):
         results = self.exercise_storage.ListExerciseModels(name_filter, tag_filter)
         logger.info(f"Found {len(results)} exercises")
         return results
+    
+
+    def upload_exercise(self, exercise: ExerciseModel) -> Dict:
+        return self.exercise_storage.SaveExercise(exercise)
