@@ -11,6 +11,7 @@ import TimeDisplay from './TimeDisplay/TimeDisplay';
 import { LearnerActionsList } from './LearnerActions/LearnerActionsList';
 import PatientMonitor from './Monitor/PatientMonitor';
 import { useSessionStore } from '../storage/SessionStore';
+import BriefingModal from './Briefing/BriefingModal';
 
 
 export interface SimSessionPageProps {
@@ -20,6 +21,11 @@ export interface SimSessionPageProps {
 
 const SimSessionPage: React.FC<SimSessionPageProps> = ({ }) => {
   const sessionName = useSessionStore((state) => state.sessionName);
+  const [showBriefingModal, setShowBriefingModal] = React.useState(true);
+
+  function closeBriefingModal() {
+    setShowBriefingModal(false);
+  }
 
   function handleClippySuggestion(data: { description: string, command: string }) {
     console.log(data.command);
@@ -27,6 +33,8 @@ const SimSessionPage: React.FC<SimSessionPageProps> = ({ }) => {
 
   return (
     <div className='page-container pl-2 pr-2 pb-2'>
+      <BriefingModal isOpen={showBriefingModal} onClose={closeBriefingModal}/>
+
       <div className='toolbar'>
         <div style={{ flex: 1 }}>
           Medagogic Simulator - {sessionName}

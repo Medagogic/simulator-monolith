@@ -1,0 +1,17 @@
+.backdrop {
+    backdrop-filter: blur(10px);
+}
+
+.fade-out-briefing {
+    animation: fadeOutBackdrop 0.3s ease-out forwards;
+}
+
+@keyframes fadeOutBackdrop {
+    from {
+        opacity: 1;
+    }
+
+    to {
+        opacity: 0;
+    }
+}

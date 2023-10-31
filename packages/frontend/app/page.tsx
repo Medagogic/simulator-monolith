@@ -12,7 +12,8 @@ import "./page.css"
 
 const ConnectedSwitcher: FC = () => {
   const [isFading, setIsFading] = useState(true);
-  const connected = useSessionIO()?.socket.connected;
+  const connected = true; // useSessionIO()?.socket.connected;
+
 
   useEffect(() => {
     if (connected) {
