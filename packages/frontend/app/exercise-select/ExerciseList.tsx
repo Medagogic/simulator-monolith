@@ -9,28 +9,28 @@ import "./ExerciseList.css";
 
 const confirmDelete = (itemName: string): Promise<boolean> => {
     return new Promise((resolve) => {
-      confirmAlert({
-        title: 'Confirm to delete',
-        message: `Are you sure you want to delete ${itemName}?`,
-        buttons: [
-          {
-            label: 'Yes',
-            id: 'yes',
-            onClick: () => {
-              resolve(true);
-            }
-          },
-          {
-            label: 'No',
-            id: 'no',
-            onClick: () => {
-              resolve(false);
-            }
-          }
-        ]
-      });
+        confirmAlert({
+            title: 'Confirm to delete',
+            message: `Are you sure you want to delete ${itemName}?`,
+            buttons: [
+                {
+                    label: 'Yes',
+                    id: 'yes',
+                    onClick: () => {
+                        resolve(true);
+                    }
+                },
+                {
+                    label: 'No',
+                    id: 'no',
+                    onClick: () => {
+                        resolve(false);
+                    }
+                }
+            ]
+        });
     });
-  };
+};
 
 interface ExerciseListEntryProps {
     exerciseModel: ExerciseModel;
@@ -50,7 +50,7 @@ const ExerciseListEntry: React.FC<ExerciseListEntryProps> = ({ exerciseModel, on
 
         const result = await confirmDelete(exerciseModel.exerciseName);
         if (result) {
-          console.log("Deleting exercise: " + exerciseModel.exerciseName);
+            console.log("Deleting exercise: " + exerciseModel.exerciseName);
         } else {
             console.log("Cancelled deleting exercise: " + exerciseModel.exerciseName);
         }
