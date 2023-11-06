@@ -45,18 +45,26 @@ const FileDropZone: FC<Props> = ({ onFileProcessed }) => {
 };
 
 
+const Overlay: FC<{ imageSrc: string; onClose: () => void }> = ({ imageSrc, onClose }) => (
+    <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center p-4 z-50" onClick={onClose}>
+        <img src={imageSrc} alt="Overlay" className="max-w-full max-h-full" />
+    </div>
+);
+
+
 type DragDropPageProps = {
     onFileProcessedCallback: (newThumbnail: string) => void;
-  };
+};
 
 
 const DragDropPage: FC<DragDropPageProps> = ({ onFileProcessedCallback }) => {
     const [thumbnailVisible, setThumbnailVisible] = useState(true);
+    const [overlayVisible, setOverlayVisible] = useState(false);
     const dragImageRef = useRef<HTMLImageElement | null>(null);
-  
+
     const onFileProcessed = (newThumbnail: string) => {
-      setThumbnailVisible(false);
-      onFileProcessedCallback(newThumbnail);
+        setThumbnailVisible(false);
+        onFileProcessedCallback(newThumbnail);
     };
 
     const handleDragStart = (e: React.DragEvent<HTMLImageElement>, thumbnail: string) => {
@@ -66,19 +74,25 @@ const DragDropPage: FC<DragDropPageProps> = ({ onFileProcessedCallback }) => {
         }
     };
 
+    const toggleOverlay = () => {
+        setOverlayVisible(!overlayVisible);
+    };
+
     return (
         <div className="relative h-screen w-screen bg-gray-700 flex items-center justify-center">
             {thumbnailVisible && (
-            <img
-                src={file_thumbnail.src}
-                alt="File"
-                draggable
-                onDragStart={(e) => handleDragStart(e, 'Thumbnail Data')}
-                className="absolute top-1/2 left-4 transform -translate-y-1/2 max-h-60"
-                ref={dragImageRef}
-            />
+                <img
+                    src={file_thumbnail.src}
+                    alt="File"
+                    draggable
+                    onDragStart={(e) => handleDragStart(e, 'Thumbnail Data')}
+                    onClick={toggleOverlay}
+                    className="absolute top-1/2 left-4 transform -translate-y-1/2 max-h-60"
+                    ref={dragImageRef}
+                />
             )}
             <FileDropZone onFileProcessed={onFileProcessed} />
+            {overlayVisible && <Overlay imageSrc={file_thumbnail.src} onClose={toggleOverlay} />}
         </div>
     );
 };

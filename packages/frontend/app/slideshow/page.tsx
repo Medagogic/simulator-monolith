@@ -1,18 +1,65 @@
 "use client"
-import React, { useState, useEffect } from 'react';
+
+import React, { useState, useEffect, useCallback } from 'react';
+
 import DragDropPage from "./DragDropPage";
 import ScenarioReviewPage from './scenario-review/page';
 import Slideshow from './Slideshow';
+import { useSearchParams, useRouter, usePathname } from 'next/navigation';
 
 enum SlideshowState {
-    Slideshow1,
-    DragDropDocument,
-    GeneratingExercise,
-    ReviewingScenarios,
+    Slideshow1 = 'slideshow1',
+    DragDropDocument = 'dragdrop',
+    GeneratingExercise = 'generating',
+    ReviewingScenarios = 'reviewing',
 }
 
 const SlideshowPage: React.FC = () => {
+    const router = useRouter();
+    const searchParams = useSearchParams();
+    const pathname = usePathname();
+
     const [currentState, setCurrentState] = useState(SlideshowState.Slideshow1);
+
+    const createQueryString = useCallback(
+        (name: string, value: string) => {
+            const params = new URLSearchParams(searchParams)
+            params.set(name, value)
+            return params.toString()
+        },
+        [searchParams]
+    )
+
+    function toSlideshowState(value: string): SlideshowState {
+        const state = (Object.values(SlideshowState) as string[]).includes(value) ? value as SlideshowState : undefined;
+        if (state) {
+            return state;
+        } else {
+            return SlideshowState.Slideshow1;
+        }
+      }
+
+    const getInitialState = (): SlideshowState => {
+        const stateParam = searchParams.get('state');
+        if (!stateParam) {
+            return SlideshowState.Slideshow1;
+        }
+
+        console.log("State param: `" + stateParam + "`");
+        return toSlideshowState(stateParam);
+    };
+
+    useEffect(() => {
+        const nextState = getInitialState();
+        if (currentState !== nextState) {
+            goToState(nextState);
+        }
+    }, [searchParams]);
+
+    function goToState(state: SlideshowState) {
+        router.push(pathname + '?' + createQueryString('state', state));
+        setCurrentState(state);
+    }
 
     useEffect(() => {
         const fadeGap = 500;
@@ -28,11 +75,10 @@ const SlideshowPage: React.FC = () => {
 
             case SlideshowState.GeneratingExercise:
                 const generationTime = 2000;
-                timers.push(setTimeout(() => setCurrentState(SlideshowState.ReviewingScenarios), generationTime));
+                timers.push(setTimeout(() => goToState(SlideshowState.ReviewingScenarios), generationTime));
                 break;
 
             case SlideshowState.ReviewingScenarios:
-                // Additional logic if any
                 break;
 
             default:
@@ -44,12 +90,12 @@ const SlideshowPage: React.FC = () => {
     }, [currentState]);
 
     const handleFileDropped = () => {
-        setCurrentState(SlideshowState.GeneratingExercise);
+        goToState(SlideshowState.GeneratingExercise);
     };
 
     function handleFirstSlidshowEnd() {
         console.log("First slideshow ended");
-        setCurrentState(SlideshowState.DragDropDocument)
+        goToState(SlideshowState.DragDropDocument)
     }
 
     function stateClassName(state: SlideshowState): string {
@@ -59,7 +105,7 @@ const SlideshowPage: React.FC = () => {
     return (
         <div className="h-screen w-screen flex items-center justify-center bg-gray-700">
             <div className={`${stateClassName(SlideshowState.Slideshow1)}`}>
-                <Slideshow onEnd={handleFirstSlidshowEnd} start_index={0} end_index={4}/>
+                <Slideshow onEnd={handleFirstSlidshowEnd} start_index={0} end_index={4} />
             </div>
             <div className={`${stateClassName(SlideshowState.DragDropDocument)}`}>
                 <DragDropPage onFileProcessedCallback={handleFileDropped} />
