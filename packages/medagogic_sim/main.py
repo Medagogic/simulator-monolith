@@ -42,12 +42,12 @@ if __name__ == "__main__":
     async def main():
         simulator = MedagogicSimulator()
 
-        simulator.context.device_interface.nibp_manager.connect({})
+        # simulator.context.device_interface.nibp_manager.connect({})
 
 
         # await simulator.process_user_input("Get IV access")
 
-        # while True:
-        #     await asyncio.sleep(1)
+        while True:
+            await asyncio.sleep(1)
 
     asyncio.run(main())

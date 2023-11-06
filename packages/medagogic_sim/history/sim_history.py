@@ -1,6 +1,6 @@
 import asyncio
 from pydantic import BaseModel
-from typing import List, Optional, Tuple, Union, Type
+from typing import Dict, List, Optional, Tuple, Union, Type
 from packages.medagogic_sim.history.sim_history_summary import HistoryCondenser
 from packages.medagogic_sim.logger.logger import get_logger, logging
 from rx.subject import Subject
@@ -11,33 +11,31 @@ logger = get_logger(level=logging.INFO)
 
 class HistoryEvent(BaseModel):
     timestamp: float = None # type: ignore
+    type: str = "base_event"
 
-    def __str__(self):
-        return "Generic event"
     
 
 class Evt_Chat_Base(HistoryEvent):
     content: str
-    type: str
 
 
 class Evt_Chat_NPCMessage(Evt_Chat_Base):
     npc_id: str
-    type: str = "npc_message"
+    type: str = "chat_npc_message"
 
     def __str__(self):
         return f"{self.npc_id}: {self.content}"
 
 class Evt_Chat_Event(Evt_Chat_Base):
     npc_id: Optional[str] = None
-    type: str = "event"
+    type: str = "chat_event"
 
     def __str__(self):
         return f"{self.content}"
 
 class Evt_Chat_HumanMessage(Evt_Chat_Base):
     target_npc_id: Optional[str] = None
-    type: str = "human_message"
+    type: str = "chat_human_message"
 
     def __str__(self):
         return f"Team Lead: {self.content}"
@@ -46,6 +44,7 @@ class Evt_Chat_HumanMessage(Evt_Chat_Base):
 class Evt_Assessment(HistoryEvent):
     npc_name: str
     content: str
+    type: str = "assessment"
 
     def __str__(self):
         return f"{self.npc_name}: {self.content}"
@@ -54,6 +53,7 @@ class Evt_StartTask(HistoryEvent):
     npc_name: str
     content: str
     task_data: str
+    type: str = "start_task"
 
     def __str__(self):
         return f"{self.npc_name}: {self.content}"
@@ -61,6 +61,7 @@ class Evt_StartTask(HistoryEvent):
 class Evt_TaskConsequence(HistoryEvent):
     npc_name: str
     content: str
+    type: str = "task_consequence"
 
     def __str__(self):
         return f"{self.npc_name}: {self.content}"
@@ -68,11 +69,20 @@ class Evt_TaskConsequence(HistoryEvent):
 class Evt_CompletedIntervention(HistoryEvent):
     npc_name: str
     content: str
+    type: str = "completed_intervention"
 
     def __str__(self):
         return f"{self.npc_name}: {self.content}"
 
-EventTypes = Union[Evt_Chat_Base, Evt_Assessment, Evt_CompletedIntervention, Evt_StartTask, Evt_TaskConsequence]
+EventTypes = Union[Evt_Chat_HumanMessage, Evt_Chat_NPCMessage, Evt_Chat_Event, Evt_Assessment, Evt_CompletedIntervention, Evt_StartTask, Evt_TaskConsequence]
+EventTypeList: List[Type[HistoryEvent]] = [Evt_Chat_HumanMessage, Evt_Chat_NPCMessage, Evt_Chat_Event, Evt_Assessment, Evt_CompletedIntervention, Evt_StartTask, Evt_TaskConsequence]
+
+EventTypesByTypeName: Dict[str, Type[HistoryEvent]] = {e.model_fields["type"].default: e for e in EventTypeList}
+
+def dict_to_history_event(event_dict: Dict) -> EventTypes:
+    event_type = EventTypesByTypeName[event_dict['type']]
+    event = event_type(**event_dict)
+    return event
 
 class HistoryLog:
     def __init__(self) -> None:

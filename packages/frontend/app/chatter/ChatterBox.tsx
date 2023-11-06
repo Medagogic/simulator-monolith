@@ -56,7 +56,7 @@ const ChatterBox: React.FC = () => {
       let npc_id: string | undefined;
 
       switch (chatStoreMessage.type) {
-        case 'human_message':
+        case 'chat_human_message':
           position = 'right';
           // title = 'User';
           const human = chatStoreMessage.message as Evt_Chat_HumanMessage;
@@ -71,7 +71,7 @@ const ChatterBox: React.FC = () => {
             )
           }
           break;
-        case 'npc_message':
+        case 'chat_npc_message':
           position = 'left';
           const npc = chatStoreMessage.message as Evt_Chat_NPCMessage;
           title = getNPCName(npc.npc_id);
@@ -80,7 +80,7 @@ const ChatterBox: React.FC = () => {
           className = `${className} npc-message ${npc.npc_id}`
           // replyButton = true;
           break;
-        case 'event':
+        case 'chat_event':
           const evt = chatStoreMessage.message as Evt_Chat_Event;
           position = 'center';
           if (evt.npc_id) {

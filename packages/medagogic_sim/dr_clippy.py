@@ -79,7 +79,7 @@ Your reply must be MAX 3 SENTENCES. Anything more will be ignored. Use "Telegrap
 
     try:
         messages = [SystemMessage(instructions), UserMessage(sim_state)]
-        full_response = await gpt(messages, model=gpt_model, max_tokens=200, temperature=0, cache_skip=cache_skip)
+        full_response = await gpt(messages, model=gpt_model)
     except Exception as e:
         logger.error(f"Error calculating new immediate state from update: {e}")
         raise e
