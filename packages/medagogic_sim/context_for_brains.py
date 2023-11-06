@@ -4,10 +4,12 @@ from typing import List, Optional
 from pydantic import BaseModel, Field
 from packages.medagogic_sim.animation_resolver.animation_resolver_base import AnimationResolver_Base
 from packages.medagogic_sim.animation_resolver.dummy_animation_resolver import DummyAnimationResolver
-from packages.medagogic_sim.exercise.exercise_loader import read_metadata
+from packages.medagogic_sim.exercise.markdownexercise import MarkdownExercise
+# from packages.medagogic_sim.exercise.exercise_loader import read_metadata
 from packages.medagogic_sim.exercise.simulation4d import LeafyBlossom
 from packages.medagogic_sim.action_db.actions_for_brains import ActionDatabase
 from packages.medagogic_sim.exercise.simulation_types import BloodPressureModel
+from packages.medagogic_sim.exercise_storage.exercise_storage import ExerciseStorage
 from packages.medagogic_sim.history.sim_history import HistoryLog, Evt_Chat_NPCMessage
 from packages.medagogic_sim.iomanager import IOManager, NPCSpeech
 from packages.medagogic_sim.exercise.devices.device_interface import DeviceInterface
@@ -46,8 +48,13 @@ class ContextForBrains:
     def __init__(self, exercise_name="pediatric_septic_shock") -> None:
         self.history = HistoryLog()
 
-        self.simulation = LeafyBlossom(exercise_name, self.history)
-        self.metadata = read_metadata(exercise_name)
+        storage = ExerciseStorage()
+        self.exercise_data = storage.LoadExercise(exercise_name)
+        self.metadata = self.exercise_data.exerciseMetadata
+
+        markdown_exercise = MarkdownExercise.from_markdown(self.exercise_data.exerciseData)
+        self.simulation = LeafyBlossom(markdown_exercise, self.history)
+        
         self.animation_resolver: AnimationResolver_Base = DummyAnimationResolver()
         self.action_db  = ActionDatabase()
         self.iomanager = IOManager()
@@ -56,6 +63,7 @@ class ContextForBrains:
         self.simulation.on_alert.subscribe(self.iomanager.simulation_alert)
 
         self.iomanager.on_npc_speak.subscribe(self.on_npc_speak)
+
 
     def on_npc_speak(self, npc_speech: NPCSpeech):
         self.history.add_event(Evt_Chat_NPCMessage(npc_id=npc_speech.npc_id, content=npc_speech.text))

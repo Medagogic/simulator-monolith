@@ -15,7 +15,6 @@ from packages.medagogic_sim.gpt import MODEL_GPT4, gpt, UserMessage, SystemMessa
 from packages.medagogic_sim.exercise.markdownexercise import HEADER_EVENTS, MarkdownExercise, VitalSigns, VitalSignsInterpolation
 from packages.medagogic_sim.exercise.simulation_types import Vitals, abcde_list_to_dict, vitals_list_to_dict
 from packages.medagogic_sim.history.sim_history import Evt_CompletedIntervention
-from packages.medagogic_sim.exercise.exercise_loader import read_exercise
 
 
 if TYPE_CHECKING:
@@ -170,10 +169,10 @@ class TimeKeeper:
 
 
 class LeafyBlossom(IBlackBoxSimulation):
-    def __init__(self, exercise_name: str, history_log: HistoryLog) -> None:
-        self.exercise_name = exercise_name
+    def __init__(self, exercise: MarkdownExercise, history_log: HistoryLog) -> None:
+        self.exercise = exercise
         self.timekeeper = TimeKeeper()
-        self.exercise = MarkdownExercise.from_markdown(read_exercise(exercise_name))
+
         self.history_log = history_log
         self.interpolation_start_time: float = 0
         self.vitals_interpolation = self.resetInterpolation()

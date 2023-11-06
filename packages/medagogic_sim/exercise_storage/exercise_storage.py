@@ -2,6 +2,8 @@ from typing import List, Optional, Union
 import boto3
 from mypy_boto3_dynamodb import ServiceResource
 import os, dotenv
+from packages.medagogic_sim.logger.logger import get_logger, logging
+logger = get_logger(level=logging.INFO)
 
 dotenv.load_dotenv()
 
@@ -36,6 +38,7 @@ class ExerciseStorage:
             }
         )
         item = response.get('Item')
+        logger.info(f"Loaded exercise {exerciseName}")
         if item:
             return ExerciseModel(**item)
         else:
