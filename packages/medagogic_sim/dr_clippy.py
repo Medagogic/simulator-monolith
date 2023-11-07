@@ -14,7 +14,7 @@ from rx.subject import Subject
 
 
 from packages.medagogic_sim.logger.logger import get_logger, logging
-from packages.medagogic_sim.npc_manager import NPCManager
+from packages.medagogic_sim.npcs.npc_manager import NPCManager
 logger = get_logger(level=logging.DEBUG)
 
 

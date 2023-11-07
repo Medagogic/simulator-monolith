@@ -2,9 +2,9 @@ from __future__ import annotations
 import asyncio
 from typing import List, TYPE_CHECKING, Optional
 
-from packages.medagogic_sim.npc_actions import BraniacActioner
+from packages.medagogic_sim.npcs.npc_actions import BraniacActioner
 from packages.medagogic_sim.npc_definitions import NPCDefinition
-from packages.medagogic_sim.the_brains import NPCBrain
+from packages.medagogic_sim.npcs.the_brains import NPCBrain
 from packages.medagogic_sim.action_db.actions_for_brains import TaskCall
 
 if TYPE_CHECKING:
@@ -111,7 +111,7 @@ class MedicalNPC():
     
 if __name__ == "__main__":
     from packages.medagogic_sim.context_for_brains import ContextForBrains
-    from packages.medagogic_sim.npc_manager import NPCManager
+    from packages.medagogic_sim.npcs.npc_manager import NPCManager
 
     logger.setLevel(logging.DEBUG)
 

@@ -5,7 +5,7 @@ if TYPE_CHECKING:
 
 from typing import Dict
 import asyncio
-from packages.medagogic_sim.npc import MedicalNPC
+from packages.medagogic_sim.npcs.npc import MedicalNPC
 from packages.medagogic_sim.npc_definitions import NPC_DEFINITIONS
 from packages.medagogic_sim.dialog_router import TEAM_LEAD_ID, Dialog, DialogRouter
 

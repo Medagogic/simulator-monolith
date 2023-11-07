@@ -5,7 +5,7 @@ from typing import TYPE_CHECKING, Final, Optional, Tuple
 from pydantic import BaseModel
 if TYPE_CHECKING:
     from packages.medagogic_sim.context_for_brains import ContextForBrains
-    from packages.medagogic_sim.npc_manager import NPCManager
+    from packages.medagogic_sim.npcs.npc_manager import NPCManager
 
 from typing import List
 from packages.medagogic_sim.gpt.medagogic_gpt import MODEL_GPT4, gpt_streamed_lines, UserMessage, SystemMessage, GPTMessage, gpt, MODEL_GPT35
@@ -181,7 +181,7 @@ INPUT:
 
 if __name__ == "__main__":
     from packages.medagogic_sim.context_for_brains import ContextForBrains
-    from packages.medagogic_sim.npc_manager import NPCManager
+    from packages.medagogic_sim.npcs.npc_manager import NPCManager
     logger.setLevel(logging.DEBUG)
     async def main():
         context = ContextForBrains()

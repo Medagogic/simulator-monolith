@@ -5,11 +5,11 @@ import typing
 
 from packages.medagogic_sim.exercise.simulation_types import ActionType
 from packages.medagogic_sim.action_db.actions_for_brains import TaskCall
-from packages.medagogic_sim.npc_task_runner import TaskRunner
+from packages.medagogic_sim.npcs.npc_task_runner import TaskRunner
 
 
 if typing.TYPE_CHECKING:
-    from packages.medagogic_sim.npc import MedicalNPC
+    from packages.medagogic_sim.npcs.npc import MedicalNPC
     
 
 from rx.subject import Subject
@@ -68,7 +68,7 @@ class BraniacActioner:
 
 if __name__ == "__main__":
     from packages.medagogic_sim.context_for_brains import ContextForBrains
-    from packages.medagogic_sim.npc import MedicalNPC
+    from packages.medagogic_sim.npcs.npc import MedicalNPC
     logger.setLevel(logging.DEBUG)
 
     async def main():

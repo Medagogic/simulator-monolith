@@ -8,7 +8,7 @@ from pydantic import BaseModel
 
 if TYPE_CHECKING:
     from packages.medagogic_sim.context_for_brains import ContextForBrains
-    from packages.medagogic_sim.npc import MedicalNPC
+    from packages.medagogic_sim.npcs.npc import MedicalNPC
 
 import asyncio
 from packages.medagogic_sim.gpt.medagogic_gpt import MODEL_GPT35, MODEL_GPT4, gpt, UserMessage, SystemMessage, GPTMessage
@@ -266,7 +266,7 @@ Do not include any other text in your response.
 
 if __name__ == "__main__":
     from packages.medagogic_sim.context_for_brains import ContextForBrains
-    from packages.medagogic_sim.npc import get_test_npc
+    from packages.medagogic_sim.npcs.npc import get_test_npc
 
     logger.setLevel(logging.DEBUG)
 

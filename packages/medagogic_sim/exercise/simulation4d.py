@@ -487,8 +487,8 @@ First, provide a description of what you expect to happen as a result of the upd
 if __name__ == "__main__":
     DEBUG_LIVE_OUTPUT = False
     from packages.medagogic_sim.context_for_brains import ContextForBrains
-    from packages.medagogic_sim.npc_manager import NPCManager
-    from packages.medagogic_sim.the_brains import RightBrainDecision
+    from packages.medagogic_sim.npcs.npc_manager import NPCManager
+    from packages.medagogic_sim.npcs.the_brains import RightBrainDecision
     import asyncio
 
     async def main() -> None:

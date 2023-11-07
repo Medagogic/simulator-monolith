@@ -8,7 +8,7 @@ from packages.medagogic_sim.history import sim_history
 import asyncio
 from packages.medagogic_sim.learner_actions.learner_action_evaluator import LearnerActionEvaluator
 
-from packages.medagogic_sim.npc_manager import NPCManager
+from packages.medagogic_sim.npcs.npc_manager import NPCManager
 
 
 
@@ -35,7 +35,7 @@ class MedagogicSimulator:
 
 if __name__ == "__main__":
     import logging
-    from packages.medagogic_sim.npc import logger as npc_logger
+    from packages.medagogic_sim.npcs.npc import logger as npc_logger
 
     npc_logger.setLevel(logging.DEBUG)
 

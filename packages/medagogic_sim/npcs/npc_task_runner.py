@@ -10,7 +10,7 @@ from packages.medagogic_sim.history.sim_history import Evt_StartTask, Evt_TaskCo
 if TYPE_CHECKING:
     from packages.medagogic_sim.action_db.actions_for_brains import TaskCall
     from packages.medagogic_sim.exercise.markdownexercise import MarkdownExercise
-    from packages.medagogic_sim.npc import MedicalNPC
+    from packages.medagogic_sim.npcs.npc import MedicalNPC
     from packages.medagogic_sim.context_for_brains import ContextForBrains
 
 from packages.medagogic_sim.gpt.medagogic_gpt import MODEL_GPT4, gpt, UserMessage, SystemMessage, GPTMessage
@@ -203,8 +203,8 @@ What do you say? Max one sentence.
 
 if __name__ == "__main__":
     from packages.medagogic_sim.context_for_brains import ContextForBrains
-    from packages.medagogic_sim.npc import MedicalNPC
-    from packages.medagogic_sim.npc_manager import NPCManager
+    from packages.medagogic_sim.npcs.npc import MedicalNPC
+    from packages.medagogic_sim.npcs.npc_manager import NPCManager
     logger.setLevel(logging.DEBUG)
 
     async def main():
