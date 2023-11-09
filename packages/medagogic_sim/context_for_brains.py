@@ -5,6 +5,7 @@ from pydantic import BaseModel, Field
 from packages.medagogic_sim.animation_resolver.animation_resolver_base import AnimationResolver_Base
 from packages.medagogic_sim.animation_resolver.dummy_animation_resolver import DummyAnimationResolver
 from packages.medagogic_sim.exercise.markdownexercise import MarkdownExercise
+from packages.medagogic_sim.exercise.metadata_loader import ExerciseMetadata
 # from packages.medagogic_sim.exercise.exercise_loader import read_metadata
 from packages.medagogic_sim.exercise.simulation4d import LeafyBlossom
 from packages.medagogic_sim.action_db.actions_for_brains import ActionDatabase
@@ -50,7 +51,7 @@ class ContextForBrains:
 
         storage = ExerciseStorage()
         self.exercise_data = storage.LoadExercise(exercise_name)
-        self.metadata = self.exercise_data.exerciseMetadata
+        self.metadata = ExerciseMetadata.from_markdown_str(self.exercise_data.exerciseMetadata)
 
         markdown_exercise = MarkdownExercise.from_markdown(self.exercise_data.exerciseData)
         self.simulation = LeafyBlossom(markdown_exercise, self.history)

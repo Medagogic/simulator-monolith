@@ -44,11 +44,11 @@ export class ChatterIO extends ScribeClient {
         const m: Evt_Chat_HumanMessage = {
             content: message_text,
             target_npc_id: target_npc_id,
-            type: "human_message"
+            type: "chat_human_message"
         };
         useChatStore.getState().addMessage({
             message: m,
-            type: "human_message"
+            type: "chat_human_message"
         });
         this.socket.emit(EmitEvent.CHAT_MESSAGE, m);
     }
