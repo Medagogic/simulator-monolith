@@ -68,9 +68,9 @@ const SimSessionPage: React.FC<SimSessionPageProps> = ({ }) => {
             <div className="flex-auto">
               <ChatterBox />
             </div>
-            <div className="flex-shrink">
+            {/* <div className="flex-shrink">
               <StaffList />
-            </div>
+            </div> */}
           </div>
 
         </div>

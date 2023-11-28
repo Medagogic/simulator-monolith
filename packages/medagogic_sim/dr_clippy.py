@@ -18,14 +18,9 @@ from packages.medagogic_sim.npcs.npc_manager import NPCManager
 logger = get_logger(level=logging.DEBUG)
 
 
-async def get_suggestions(context: ContextForBrains, npc_manager: NPCManager, gpt_model=MODEL_GPT4, cache_skip=False):
+async def get_suggestions(context: ContextForBrains, gpt_model=MODEL_GPT4, cache_skip=False):
     sim = context.simulation
     exercise = sim.exercise
-
-    npc_summaries: List[str] = []
-    for id, npc in npc_manager.npcs.items():
-        npc_summaries.append(npc.markdown_summary())
-    npc_summary_str = "\n\n".join(npc_summaries)
 
     connected_device_lines = context.device_interface.full_state_markdown(only_connected=True)
     if len(connected_device_lines) == 0:
@@ -98,9 +93,8 @@ class DrClippyOutput(BaseModel):
 
 
 class DrClippy:
-    def __init__(self, context: ContextForBrains, npc_manager: NPCManager):
+    def __init__(self, context: ContextForBrains):
         self.context = context
-        self.npc_manager = npc_manager
         self.context.simulation.on_state_change.subscribe(self.handle_sim_state_change)
         self.cached_output: Optional[DrClippyOutput] = None
         self.update_advice_task = asyncio.create_task(self.recalculate_advice())
@@ -113,7 +107,7 @@ class DrClippy:
 
     async def recalculate_advice(self):
         logger.debug("Recalculating advice...")
-        advice_sentences = await get_suggestions(self.context, self.npc_manager, cache_skip=False)
+        advice_sentences = await get_suggestions(self.context, cache_skip=False)
         self.cached_output = DrClippyOutput(advice=advice_sentences)
         self.on_new_advice.on_next(self.cached_output)
 
