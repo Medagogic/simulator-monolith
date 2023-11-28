@@ -1,26 +1,33 @@
 @keyframes spin {
-    0% { transform: rotate(0deg); }
-    100% { transform: rotate(360deg); }
+  0% {
+    transform: rotate(0deg);
   }
 
-  .connecting-page {
-    position: absolute;
-    z-index: 1000; /* or any value that suits your layout */
+  100% {
+    transform: rotate(360deg);
   }
-  
-  .fade-out {
-    animation: fadeOut 1s ease-in-out forwards;
+}
+
+.connecting-page {
+  position: absolute;
+  z-index: 1000;
+  /* or any value that suits your layout */
+}
+
+.fade-out {
+  animation: fadeOut 1s ease-in-out forwards;
+}
+
+.pointer-events-none {
+  pointer-events: none;
+}
+
+@keyframes fadeOut {
+  from {
+    opacity: 1;
   }
 
-  .pointer-events-none {
-    pointer-events: none;
+  to {
+    opacity: 0;
   }
-  
-  @keyframes fadeOut {
-    from {
-      opacity: 1;
-    }
-    to {
-      opacity: 0;
-    }
-  }
+}

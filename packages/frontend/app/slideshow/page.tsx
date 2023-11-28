@@ -7,6 +7,9 @@ import ScenarioReviewPage from './scenario-review/page';
 import Slideshow from './Slideshow';
 import { useSearchParams, useRouter, usePathname } from 'next/navigation';
 import { ScenarioInfoProps } from './scenario-review/ScenarioInfo';
+import { FaSpinner } from "react-icons/fa";
+import "./page.css"
+
 
 enum SlideshowState {
     Slideshow1 = 'slideshow1',
@@ -75,7 +78,7 @@ const SlideshowPage: React.FC = () => {
                 return;
 
             case SlideshowState.GeneratingExercise:
-                const generationTime = 2000;
+                const generationTime = 10000;
                 timers.push(setTimeout(() => goToState(SlideshowState.ReviewingScenarios), generationTime));
                 break;
 
@@ -107,6 +110,13 @@ const SlideshowPage: React.FC = () => {
         router.push('/');
     }
 
+    const spinnerStyle = {
+        animation: 'spin 1s linear infinite',
+        marginRight: '10px',
+        display: 'inline',
+    };
+      
+
     return (
         <div className="h-screen w-screen flex items-center justify-center bg-gray-700">
             <div className={`${stateClassName(SlideshowState.Slideshow1)}`}>
@@ -115,7 +125,8 @@ const SlideshowPage: React.FC = () => {
             <div className={`${stateClassName(SlideshowState.DragDropDocument)}`}>
                 <DragDropPage onFileProcessedCallback={handleFileDropped} />
             </div>
-            <div className={`${stateClassName(SlideshowState.GeneratingExercise)} text-white text-xl`}>
+            <div className={`${stateClassName(SlideshowState.GeneratingExercise)} text-white text-xl`}>      
+                <FaSpinner style={spinnerStyle} />
                 Generating scenarios...
             </div>
             <div className={`${stateClassName(SlideshowState.ReviewingScenarios)} text-white`}>
