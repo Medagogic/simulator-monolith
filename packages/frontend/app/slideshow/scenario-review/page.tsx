@@ -4,7 +4,11 @@ import React, { useState } from 'react';
 import ScenarioInfo, { ScenarioInfoProps, scenarios } from './ScenarioInfo';
 import { FiArrowRight } from 'react-icons/fi';
 
-const ScenarioReviewPage: React.FC = () => {
+interface ScenarioReviewPageProps {
+  onSelectButtonClick: (selectedScenario: ScenarioInfoProps | null) => void;
+}
+
+const ScenarioReviewPage: React.FC<ScenarioReviewPageProps> = ({ onSelectButtonClick }) => {
   const [selectedScenario, setSelectedScenario] = useState<ScenarioInfoProps | null>(null);
 
   const handleScenarioClick = (scenario: ScenarioInfoProps) => {
@@ -12,7 +16,7 @@ const ScenarioReviewPage: React.FC = () => {
   };
 
   const handleSelectButtonClick = () => {
-    // Add your logic here for when the select button is clicked
+    onSelectButtonClick(selectedScenario);
   };
 
   return (

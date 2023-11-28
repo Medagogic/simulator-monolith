@@ -6,6 +6,7 @@ import DragDropPage from "./DragDropPage";
 import ScenarioReviewPage from './scenario-review/page';
 import Slideshow from './Slideshow';
 import { useSearchParams, useRouter, usePathname } from 'next/navigation';
+import { ScenarioInfoProps } from './scenario-review/ScenarioInfo';
 
 enum SlideshowState {
     Slideshow1 = 'slideshow1',
@@ -102,6 +103,10 @@ const SlideshowPage: React.FC = () => {
         return `${currentState === state ? 'opacity-100 z-10' : 'opacity-0'} transition-opacity duration-500 absolute`;
     }
 
+    function goToSimSession(scenario: ScenarioInfoProps | null) {
+        router.push('/');
+    }
+
     return (
         <div className="h-screen w-screen flex items-center justify-center bg-gray-700">
             <div className={`${stateClassName(SlideshowState.Slideshow1)}`}>
@@ -114,7 +119,7 @@ const SlideshowPage: React.FC = () => {
                 Generating scenarios...
             </div>
             <div className={`${stateClassName(SlideshowState.ReviewingScenarios)} text-white`}>
-                <ScenarioReviewPage />
+                <ScenarioReviewPage onSelectButtonClick={goToSimSession} />
             </div>
         </div>
     );

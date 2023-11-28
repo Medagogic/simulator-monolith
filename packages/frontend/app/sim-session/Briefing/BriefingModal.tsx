@@ -11,13 +11,13 @@ interface Props {
 }
 
 const BriefingModal: React.FC<Props> = ({ isOpen, onClose }) => {
-  const caseDescription = '3 year old boy with broken arm.';
-  const vignette = 'A 3-year-old boy is brought to the ED by his mother after falling from a playground equipment. He is holding his left arm and appears to be in significant pain. The arm is slightly swollen and has an obvious deformity.';
+  const caseDescription = 'Toddler - Dravet Syndrome';
+  const vignette = 'A 2 year old girl child with known Dravet syndrome presents with a prolonged seizure episode likely triggered by fever.';
   const basicInfo: ExerciseCreationPatientBasicInfo = {
-    age: '3 years old',
-    sex: 'Male',
-    weight: '15 kg',
-    height: '80 cm',
+    age: '2 years old',
+    sex: 'Female',
+    weight: '12.5 kg',
+    height: '83 cm',
   };
 
   const [isFadingOut, setIsFadingOut] = useState(false);
