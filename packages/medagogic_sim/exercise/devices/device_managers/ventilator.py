@@ -19,6 +19,10 @@ class Ventilator(DeviceHandler_Base):
             raise Exception("Ventilator already connected")
         self.connection_params = params
         return f"Ventilator connected in {params.mode} mode, FiO2: {params.fio2}"
+    
+    @property
+    def action_name(self) -> str:
+        return "Connect ventilator"
 
     @staticmethod
     def connection_params_markdown() -> List[str]:

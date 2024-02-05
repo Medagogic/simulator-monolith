@@ -2,7 +2,7 @@ from typing import List, TypedDict
 from tenacity import retry, wait_fixed
 from dotenv import load_dotenv
 
-USE_CACHE = False
+USE_CACHE = True
 
 if USE_CACHE:
     from packages.medagogic_sim.gpt.cached_openai import openai, configure_cached_openai
@@ -15,7 +15,7 @@ import os, json
 load_dotenv(".env")
 openai.api_key = os.getenv("OPENAI_API_KEY")
 
-MODEL_GPT4 = "gpt-4"
+MODEL_GPT4 = "gpt-4-turbo-preview"
 MODEL_GPT35 = "gpt-3.5-turbo"
 TEMPERATURE = 0    # 0 = predictable, 2 = chaotic
 

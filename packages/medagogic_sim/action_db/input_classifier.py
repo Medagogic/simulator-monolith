@@ -210,7 +210,7 @@ Your response must be either a selection of actions from the list (one per line,
         if response is None or response == "" or response.lower() == "none":
             return None
         else:
-            return [l.strip() for l in response.split("\n") if l.strip() != ""]
+            return [l.strip() for l in response.split("\n") if l.strip() != "" and l.strip().lower() != "none"]
 
 
 if __name__ == "__main__":

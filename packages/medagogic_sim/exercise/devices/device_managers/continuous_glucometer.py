@@ -18,6 +18,10 @@ class ContinuousGlucometer(DeviceHandler_Base):
             raise Exception("Continuous Glucometer already connected")
         self.connection_params = params
         return f"Continuous Glucometer connected"
+    
+    @property
+    def action_name(self) -> str:
+        return "Connect continuous glucometer"
 
     @staticmethod
     def connection_params_markdown() -> List[str]:
