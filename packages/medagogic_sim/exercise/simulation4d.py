@@ -234,31 +234,8 @@ class LeafyBlossom(IBlackBoxSimulation):
         return current_exercise.to_markdown(include_progression=False)
 
 
-    def validate_update_markdown(self, update_markdown: str) -> Optional[str]:
-        try:
-            state_update_dict = markdown_to_json.dictify(update_markdown)
-            if "Current Patient State" in state_update_dict:
-                state_update_dict = state_update_dict["Current Patient State"]
-            elif "State Progression" in state_update_dict:
-                state_update_dict = state_update_dict["State Progression"]
-            else:
-                return f"Invalid update markdown (no state progression or current patient state): {update_markdown}"
-        except Exception as e:
-            logger.error(f"Error validating update markdown: {e}")
-            return f"Invalid update markdown: {update_markdown}"
-        
-        return None
-
-
     def apply_update_markdown(self, exercise: MarkdownExercise, update_markdown: str, future_state: bool = False) -> MarkdownExercise:
         state_update_dict = markdown_to_json.dictify(update_markdown)
-        if "Current Patient State" in state_update_dict:
-            state_update_dict = state_update_dict["Current Patient State"]
-        elif "State Progression" in state_update_dict:
-            state_update_dict = state_update_dict["State Progression"]
-        else:
-            logger.error(update_markdown)
-            raise ValueError("Invalid update markdown (no state progression or current patient state)")
 
         if "Vital Signs" in state_update_dict:
             vitals_update_dict = state_update_dict["Vital Signs"]
@@ -336,6 +313,7 @@ class LeafyBlossom(IBlackBoxSimulation):
         self.resetInterpolation()
 
         logger.info(f"Finished processing updates: {updates_cache}")
+        logger.info(json.dumps(update_log.get_changes().model_dump(), indent=4))
 
         # for update in updates_cache:
         #     # self.intervention_tracker.recordEvent(self.simulationTimeSeconds, update)
@@ -401,16 +379,10 @@ Then, provide your updates. Use your description above when deciding on changes.
             logger.error(f"Error calculating new immediate state from update: {e}")
             raise e
 
-        logger.info(f"Calculated new immediate state from updte: {update}")
+        logger.info(f"Calculated new immediate state from update: {update}")
 
         update_markdown = full_response.strip()
-        markdown_error = self.validate_update_markdown(update_markdown)
-        if markdown_error is not None:
-            logger.error(markdown_error)
-            logger.error(update_markdown)
-            exit()
             
-
         return NewCurrentStateResponse(
             gpt_messages=messages,  # type: ignore
             gpt_response=full_response,
@@ -444,8 +416,6 @@ Provide updates for:
 
 DO NOT PROVIDE VALUES WHICH YOU ARE NOT CHANGING. ONLY PROVIDE VALUES WHICH ARE CHANGING. SKIP THESE SUB-SECTIONS FROM THE RESPONSE.
 YOU MUST PROVIDE A FULL DESCRIPTION OF THE DESIRED STATE PROGRESSION FOR EACH SUB-SECTION YOU ARE MODIFIYING (ie include info from the old state progression too)
-If there is to be no change over time from the current state, then you can simply write "No change from current state" for that variable.
-Any of the existing ABCDE state progressions which are unaffected by this update must be included in your response.
 
 ======================
 

@@ -28,12 +28,12 @@ def UserMessage(content: str) -> GPTMessage:
     return {"role": "user", "content": content}
 
 
-async def gpt(messages: List[GPTMessage], model=MODEL_GPT4, max_tokens=500, temperature=TEMPERATURE, cache_skip=False) -> str:
+async def gpt(messages: List[GPTMessage], model=MODEL_GPT4, max_tokens=500, temperature=TEMPERATURE, cache_skip=False, n=1) -> str:
     kwargs = {
         "model": model,
         "messages": messages,
         "max_tokens": max_tokens,
-        "n": 1,
+        "n": n,
         "temperature": temperature
     }
 
@@ -42,7 +42,10 @@ async def gpt(messages: List[GPTMessage], model=MODEL_GPT4, max_tokens=500, temp
 
     response = await openai.ChatCompletion.acreate(**kwargs)
 
-    return response["choices"][0]["message"]["content"]
+    if n == 1:
+        return response["choices"][0]["message"]["content"]
+    else:
+        return [r["message"]["content"] for r in response["choices"]]
 
 
 async def gpt_streamed_lines(messages: List[GPTMessage], model=MODEL_GPT4, max_tokens=500, temperature=TEMPERATURE):

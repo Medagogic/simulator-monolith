@@ -103,15 +103,20 @@ class DrClippy:
         self.npc_manager = npc_manager
         self.context.simulation.on_state_change.subscribe(self.handle_sim_state_change)
         self.cached_output: Optional[DrClippyOutput] = None
-        self.update_advice_task = asyncio.create_task(self.recalculate_advice())
+        self.update_advice_task = asyncio.create_task(self.__recalculate_advice())
         self.on_new_advice = Subject()
 
 
     def handle_sim_state_change(self, new_exercise: MarkdownExercise):
-        self.update_advice_task = asyncio.create_task(self.recalculate_advice())
-
+        self.update_advice_task = asyncio.create_task(self.__recalculate_advice())
 
     async def recalculate_advice(self):
+        if self.update_advice_task is None:
+            self.update_advice_task = self.__recalculate_advice()
+
+        await self.update_advice_task
+
+    async def __recalculate_advice(self):
         logger.debug("Recalculating advice...")
         advice_sentences = await get_suggestions(self.context, self.npc_manager, cache_skip=False)
         self.cached_output = DrClippyOutput(advice=advice_sentences)

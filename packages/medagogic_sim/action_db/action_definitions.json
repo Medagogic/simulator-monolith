@@ -324,25 +324,6 @@
         "type": "intervention"
     },
     {
-        "name": "Prepare bolus ($fluid, $volume)",
-        "description": "Prepare a bolus of a specific fluid at a specific volume",
-        "exampleInputs": ["Prepare a 500 mL bolus of normal saline", "Can you prepare a bolus ringer acetate 120 milliliters"],
-        "exampleActions": ["Prepare bolus (normal saline, 500mL)", "Prepare bolus (ringer acetate, 120mL)"],
-        "examples": [
-            {
-                "input": "Prepare a 500 mL bolus of normal saline",
-                "action": "Prepare bolus (normal saline, 500mL)"
-            },
-            {
-                "input": "Can you prepare a bolus ringer acetate 120 milliliters",
-                "action": "Prepare bolus (ringer acetate, 120mL)"
-            }
-        ],
-        "requirements": [],
-        "animationId": "prepare bolus",
-        "type": "other"
-    },
-    {
         "name": "Wait ($event)",
         "description": "Wait for a specific event to occur, for example another nurse preparing IV access.",
         "exampleInputs": ["Wait for IV access to be established", "Do X when the nurse has prepared the bolus", "Administer bolus once we have IV access"],
@@ -367,20 +348,20 @@
     },
     {
         "name": "Administer bolus ($bolus)",
-        "description": "Give the patient a bolus of fluid",
-        "exampleInputs": ["Give the patient the bolus", "Administer the bolus nurse Smith prepared"],
+        "description": "Give the patient a bolus of fluid. Must specify dosage.",
+        "exampleInputs": ["Give the patient 120mL ringers lactate", "Administer saline bolus 500mL"],
         "exampleActions": ["Administer bolus (ringers lactate, 120mL)", "Administer bolus (normal saline, 500mL)"],
         "examples": [
             {
-                "input": "Give the patient the bolus",
+                "input": "Give the patient 120mL ringers lactate",
                 "action": "Administer bolus (ringers lactate, 120mL)"
             },
             {
-                "input": "Administer the bolus nurse Smith prepared",
+                "input": "Push saline bolus 500mL",
                 "action": "Administer bolus (normal saline, 500mL)"
             }
         ],
-        "requirements": ["A bolus must be prepared and ready to be administered"],
+        "requirements": [],
         "animationId": "administer bolus",
         "type": "intervention"
     },

@@ -6,6 +6,7 @@ from pydantic import BaseModel
 import chromadb
 from chromadb.utils import embedding_functions
 from packages.medagogic_sim.logger.logger import get_logger, logging
+import random
 
 import dotenv
 dotenv.load_dotenv()
@@ -142,8 +143,11 @@ class ActionDatabase:
         return [self.actions[int(i)] for i in action_ids]
     
 
-    def get_relevant_actions_markdown(self, user_input: str, top_n=8) -> str:
+    def get_relevant_actions_markdown(self, user_input: str, top_n=8, shuffle=False) -> str:
         actions = self.get_relevant_actions(user_input, top_n=top_n)
+        if shuffle:
+            random.shuffle(actions)
+
         full_markdown = ACTIONS_HEADER + "\n" + "\n".join([a.markdown for a in actions])
         logger.debug(f"{user_input}\n{full_markdown}")
         return full_markdown
