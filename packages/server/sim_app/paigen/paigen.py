@@ -2,7 +2,7 @@ from __future__ import annotations
 from fastapi import APIRouter
 
 from packages.server.sim_app.paigen.imported.simulation_types_old import Vitals
-from packages.server.sim_app.paigen.exercise_creation_types import ExerciseCreationParams, GeneratedExerciseData, ExerciseCreationVitalSigns, ExerciseCreationABCDE, ExerciseCreationFutureState
+from packages.server.sim_app.paigen.paigen_types import ExerciseCreationParams, GeneratedExerciseData, ExerciseCreationVitalSigns, ExerciseCreationABCDE, ExerciseCreationFutureState
 from packages.medagogic_sim.gpt.medagogic_gpt import gpt, GPTMessage, MODEL_GPT4
 import asyncio
 
