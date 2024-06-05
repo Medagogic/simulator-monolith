@@ -6,7 +6,10 @@ from web_architecture.sessionserver import SessionServer
 
 def gunicorn():
     server = SessionServer(session_handler_class=Router_MedSim, static_api_class=MedagogicAPI)
-    server.session_manager.create_session(session_id="default-session")
+
+    # Create a default session
+    # server.session_manager.create_session(session_id="default-session")
+    
     return server.app
 
 

@@ -3,7 +3,7 @@ from typing import Dict, List, Union
 from fastapi import Query
 from packages.medagogic_sim.exercise_storage.exercise_storage import ExerciseModel, ExerciseStorage
 from packages.server.web_architecture.static_api import StaticAPI
-from packages.server.sim_app.paigen.exercise_creator import PaigenAPI
+from packages.server.sim_app.paigen.paigen import PaigenAPI
 from packages.medagogic_sim.logger.logger import get_logger, logging
 
 logger = get_logger(level=logging.INFO)

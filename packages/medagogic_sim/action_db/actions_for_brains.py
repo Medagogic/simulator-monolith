@@ -109,6 +109,7 @@ class ActionDatabase:
         self.client: chromadb.API = chromadb.Client()
 
         openai_ef = embedding_functions.OpenAIEmbeddingFunction(
+                api_key=os.getenv("OPENAI_API_KEY"),
                 model_name="text-embedding-ada-002"
             )
 
