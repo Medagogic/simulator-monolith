@@ -3,7 +3,7 @@ from typing import Dict, List, Union
 from fastapi import Query
 from packages.medagogic_sim.exercise_storage.exercise_storage import ExerciseModel, ExerciseStorage
 from packages.server.web_architecture.static_api import StaticAPI
-from packages.server.sim_app.exercise_creation.exercise_creator import ExerciseCreatorAPI
+from packages.server.sim_app.paigen.exercise_creator import PaigenAPI
 from packages.medagogic_sim.logger.logger import get_logger, logging
 
 logger = get_logger(level=logging.INFO)
@@ -11,7 +11,7 @@ logger = get_logger(level=logging.INFO)
 class MedagogicAPI(StaticAPI):
     def __init__(self):
         super().__init__()
-        self.exercise_creator = ExerciseCreatorAPI(self.router)
+        self.paigen_api = PaigenAPI(self.router)
         self.exercise_storage = ExerciseStorage()
 
         self.router.add_api_route("/exercises/list", self.search_exercises, methods=["GET"])

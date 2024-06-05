@@ -1,8 +1,8 @@
 from __future__ import annotations
 from fastapi import APIRouter
 
-from packages.server.sim_app.exercise_creation.imported.simulation_types_old import Vitals
-from packages.server.sim_app.exercise_creation.exercise_creation_types import ExerciseCreationParams, GeneratedExerciseData, ExerciseCreationVitalSigns, ExerciseCreationABCDE, ExerciseCreationFutureState
+from packages.server.sim_app.paigen.imported.simulation_types_old import Vitals
+from packages.server.sim_app.paigen.exercise_creation_types import ExerciseCreationParams, GeneratedExerciseData, ExerciseCreationVitalSigns, ExerciseCreationABCDE, ExerciseCreationFutureState
 from packages.medagogic_sim.gpt.medagogic_gpt import gpt, GPTMessage, MODEL_GPT4
 import asyncio
 
@@ -143,9 +143,9 @@ async def generate_exercise(patient_info: str, simulation_instructions: str="N/A
 
 
 from packages.server.web_architecture.static_api import StaticAPIHandler
-from packages.server.sim_app.exercise_creation.imported.markdownexercise import MarkdownExercise
+from packages.server.sim_app.paigen.imported.markdownexercise import MarkdownExercise
 
-class ExerciseCreatorAPI(StaticAPIHandler):
+class PaigenAPI(StaticAPIHandler):
     def __init__(self, router: APIRouter):
         super().__init__(router)
         self.router.post("/generate_exercise")(self.handle_generate)
